@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <ImageView
+            android:id="@+id/background_image"
+            android:scaleType="centerCrop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/layout_activity_simple"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:windowSoftInputMode="adjustPan">
+
+            <include layout="@layout/layout_toolbar"/>
+
+            <!-- Content main body (populated by fragment)-->
+            <FrameLayout
+                android:id="@+id/fragment_container_activity_simple"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:foreground="?android:windowContentOverlay"/>
+
+        </LinearLayout>
+
+        <!-- Content login view (populated by action sheet login fragment)-->
+        <FrameLayout
+            android:id="@+id/fragment_container_login"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        <!-- Content edit view (populated by action sheet edit fragment)-->
+        <FrameLayout
+            android:id="@+id/fragment_container_edit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        <!-- Content file view (populated by action sheet file fragment)-->
+        <FrameLayout
+            android:id="@+id/fragment_container_file"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        <!-- Content help view (populated by action sheet help fragment)-->
+        <FrameLayout
+            android:id="@+id/fragment_container_help"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        <!-- Content settings view (populated by action sheet settings fragment)-->
+        <FrameLayout
+            android:id="@+id/fragment_container_settings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>
+
+

@@ -1,4 +1,117 @@
 <resources>
-    <string name="app_name">Odile</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">Eskey</string>
+    <string name="content_provider_authority">com.wolfie.eskey.fileprovider</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="menu_item_settings">Settings</string>
+    <string name="menu_item_export">Export</string>
+    <string name="menu_item_import">Import</string>
+
+    <string name="menu_item_help">Help</string>
+    <string name="menu_item_backup">Backup</string>
+    <string name="menu_item_restore">Restore</string>
+
+    <string name="st001">First time Eskey login</string>
+    <string name="st002">Eskey login</string>
+    <string name="st003">Please define a new master password</string>
+    <string name="st004">Please enter your master password</string>
+    <string name="st005">Session has timed out</string>
+    <string name="st006">Wrong password</string>
+    <string name="st007">Password and confirm-password don\'t match</string>
+    <string name="st008">Password write failed</string>
+    <string name="st009">Initialisation succeeded, you may now login\nPlease enter your master password</string>
+    <string name="st010">Fields have been modified\nclick CANCEL to close without saving</string>
+    <string name="st011">Password should not have\nleading or trailing white-space</string>
+    <string name="st012">Specify the export filename to be written into directory:\n</string>
+    <string name="st013">External storage is not available</string>
+    <string name="st014">Export to clear text</string>
+    <string name="st015">Import from clear text</string>
+    <string name="st014a">Backup to cipher text</string>
+    <string name="st015a">Restore from cipher text</string>
+    <string name="st016">Access to public storage has \npreviously been denied\nGo to settings/apps/eskey \nto grant permission</string>
+    <string name="st017">Access to public storage not permitted</string>
+    <string name="st018">The external storage media is not available\nfor read/write access\nPerhaps it is not mounted</string>
+    <string name="st019">
+        Select the storage type.
+        \nPrivate storage can be access using adb/root
+        \nPublic storage requires granting STORAGE permission
+        \nInternal storage must be selected for auto emailing
+    </string>
+    <string name="st020">Private Storage Directory\n%1$s</string>
+    <string name="st021">Public Storage Directory\n%1$s</string>
+    <string name="st022">Export</string>
+    <string name="st023">Import</string>
+    <string name="st024">Backup</string>
+    <string name="st025">Restore</string>
+    <string name="st026">
+        Eskey manages a local store of encrypted data.
+        \n\nThe cipher-text (ie, encrypted) data may be backed up and restored using local files.
+        You may also export and import the data as clear-text (ie, as un-encrypted data).
+        \n\nWhen performing file I/O operations, the user specifies whether to access
+        the private storage directory or the public storage directory.
+        \n\nIf you select the public storage directory, then you must grant the app storage access permission.
+        This permission may be revoked (or re-granted) by editing the app settings.
+        The public storage directory is normally shared (eg, as a mounted USB drive to a host computer).
+        \n\nNo special permission is needed for Eskey to access the private storage directory. Note that the
+        private storage directory is not shared by Android and can typically only be accessed by root (eg,
+        adb/debugging technique).
+    </string>
+    <string name="st027">
+        Enter the new password and the confirmation-password,
+        \nand press CHANGE PASSWORD
+        \n\nIf the password change is successful, Eskey will logout
+        \nand return you to the login screen,
+        \nwhere you may re-login using the new password.
+    </string>
+    <string name="st028">Text has been entered; press CANCEL to close</string>
+    <string name="st029">Password change succeeded, you may now login\nPlease enter your master password</string>
+    <string name="st030">There are no entries\nmatching the search text</string>
+    <string name="st031">Backup file emailed successfully</string>
+    <string name="st032">Backup file emailure cancelled</string>
+    <string name="st033">Internal Storage Directory\n%1$s</string>
+
+    <string name="im001">St. Basil\'s Cathedral (1)</string>
+    <string name="im002">St. Basil\'s Cathedral (2)</string>
+    <string name="im003">Tall Trees</string>
+    <string name="im004">Arkhangelsk houses</string>
+    <string name="im005">Church of The Saviour on Spilt Blood (1)</string>
+    <string name="im006">Church of The Saviour on Spilt Blood (2)</string>
+    <string name="im007">Church of Immaculate Conception, Moscow</string>
+    <string name="im008">The Motherland Call, Volgograd</string>
+    <string name="im009">Spire from Peter And Paul Fortress</string>
+    <string name="im010">Rostov Citadel</string>
+    <string name="im011">Sevastopol Memorial to Scuttled Ships (1)</string>
+    <string name="im012">Sevastopol Memorial to Scuttled Ships (2)</string>
+    <string name="im013">Chapel at Valaam Monastery</string>
+    <string name="im014">Icon from Valaam Monastery</string>
+    <string name="im015">Valaam Monastery (1)</string>
+    <string name="im016">Valaam Monastery (2)</string>
+
+    <string name="im017">Bolshoi Theatre, Moscow</string>
+    <string name="im018">Peterhof Palace, SPB</string>
+    <string name="im019">Grocery store, Moscow</string>
+    <string name="im020">Lake Ladoga</string>
+    <string name="im021">Qolsharif Mosque, Kazan, Tatarstan</string>
+    <string name="im022">Resurrection Church Kremlin, Rostov Veliky</string>
+    <string name="im023">Ostankino Tower, Moscow</string>
+    <string name="im024">Church, Uglich</string>
+    <string name="im025">Chesme Church, St. Petersburg</string>
+    <string name="im026">Trinity Church, Bellinghausen, Antarctica</string>
+    <string name="im027">Mayakovskaya Metro, Moscow</string>
+    <string name="im028">Singer Building (home of books), SPB (1)</string>
+    <string name="im029">Singer Building (home of books), SPB (2)</string>
+    <string name="im030">Komsomolskaya Metro, Moscow</string>
+    <string name="im031">Transfiguration Church, Kizhi Island, Karelia</string>
+    <string name="im032">Scarlet Sails, St. Petersburg</string>
+    <string name="im033">Gagarin Monument, Gagarin Square, Moscow</string>
+    <string name="im034">St. George Nykhas, Uastyrdzhi, Ossetia</string>
+    <string name="im035">The Motherland Calls, Mamayev Kurgan</string>
+    <string name="im036">Smolny Convent, St. Petersburg</string>
+    <string name="im037">Vladisvostok Station, Trans Siberian Railway</string>
+    <string name="im038">Suzdal Church</string>
+    <string name="im039">Rooftop Angels, St. Petersburg</string>
+
 </resources>
