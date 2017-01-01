@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import com.android.internal.util.Predicate;
 import com.wolfie.odile.model.DataSet;
+import com.wolfie.odile.model.ImageEnum;
 import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.PhraseGroup;
 import com.wolfie.odile.model.loader.AsyncListeningTask;
@@ -31,6 +32,8 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     // DrawerPresenter.resume() to reload the nav menu
     private DataSet mDataSet;
     private List<String> mHeadings;
+
+    private int mImageIndex = 0;    // Index into the ImageEnum.
 
     public ListPresenter(ListUi listUi) {
         super(listUi);
@@ -173,6 +176,15 @@ public class ListPresenter extends BasePresenter<ListUi> implements
         }
     }
 
+    public void bumpImage() {
+        if (++mImageIndex >= ImageEnum.values().length) {
+            mImageIndex = 0;
+        }
+        getUi().setBackgroundImage(mImageIndex);
+        getUi().hidePullToRefreshSpinner();
+
+    }
+
     @Nullable
     public String getGroupName() {
         return mGroupName;
@@ -183,6 +195,9 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     }
 
     public interface ListUi extends BaseUi {
+
+        void hidePullToRefreshSpinner();
+        void setBackgroundImage(int enumIndex);
 
         // Show phrases from the list of groups.
         void showPhrases(@Nullable List<PhraseGroup> groups);

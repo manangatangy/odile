@@ -11,11 +11,17 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         >
-        <com.wolfie.odile.view.adapter.ScrollListeningRecyclerView
-            android:id="@+id/recycler_view"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            />
+            >
+            <com.wolfie.odile.view.adapter.ScrollListeningRecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+        </android.support.v4.widget.SwipeRefreshLayout>
     </LinearLayout>
 
     <TextView

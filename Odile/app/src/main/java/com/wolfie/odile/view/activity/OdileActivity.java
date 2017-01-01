@@ -44,7 +44,7 @@ public class OdileActivity extends SimpleActivity {
 //        int sessionTimeout = prefs.getInt(SettingsPresenter.PREF_SESSION_TIMEOUT, TimeoutMonitor.DEFAULT_TIMEOUT);
 //        mMainPresenter.setTimeout(sessionTimeout, false);       // No need to start; we are not yet logged in
 //        int enumIndex = prefs.getInt(SettingsPresenter.PREF_SESSION_BACKGROUND_IMAGE, 0);
-        setBackgroundImage(3);
+        setBackgroundImage(0);
 
         // Create the main content fragment into it's container.
         setupFragment(ListFragment.class.getName(), R.id.fragment_container_activity_simple, null);

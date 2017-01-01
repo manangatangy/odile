@@ -3,6 +3,7 @@ package com.wolfie.odile.view.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.PhraseGroup;
 import com.wolfie.odile.presenter.ListPresenter;
 import com.wolfie.odile.util.DefaultLayoutManager;
+import com.wolfie.odile.view.activity.SimpleActivity;
 import com.wolfie.odile.view.adapter.GroupingRecyclerAdapter;
 import com.wolfie.odile.view.adapter.GroupingRecyclerAdapter.AdapterMode;
 import com.wolfie.odile.view.adapter.ScrollListeningRecyclerView;
@@ -31,7 +33,8 @@ import butterknife.OnClick;
 public class ListFragment extends BaseFragment implements
         ListUi,
         ScrollListeningRecyclerView.ItemScrollListener,
-        GroupingRecyclerAdapter.OnItemInListClickedListener {
+        GroupingRecyclerAdapter.OnItemInListClickedListener,
+        SwipeRefreshLayout.OnRefreshListener{
 
     @BindView(R.id.sticky_header)
     View mStickyHeaderFrame;
@@ -41,6 +44,9 @@ public class ListFragment extends BaseFragment implements
 
     @BindView(R.id.heading_text_view)
     TextView mStickyHeaderText;
+
+    @BindView(R.id.swipe_refresh)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     @BindView(R.id.recycler_view)
     ScrollListeningRecyclerView mRecyclerView;
@@ -81,6 +87,26 @@ public class ListFragment extends BaseFragment implements
         super.onViewCreated(view, savedInstanceState);
         mRecyclerView.setLayoutManager(new DefaultLayoutManager(getContext()));
         mRecyclerView.setItemScrollListener(this);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
+    }
+
+    @Override
+    public void onRefresh() {
+        mListPresenter.bumpImage();
+    }
+
+    @Override
+    public void hidePullToRefreshSpinner() {
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void setBackgroundImage(int enumIndex) {
+        if (mBaseActivity instanceof SimpleActivity) {
+            SimpleActivity simpleActivity = (SimpleActivity)mBaseActivity;
+            simpleActivity.setBackgroundImage(enumIndex);
+        }
     }
 
     /**
