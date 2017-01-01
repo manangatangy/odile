@@ -8,11 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.wolfie.odile.R;
+import com.wolfie.odile.model.Phrase;
+import com.wolfie.odile.model.PhraseGroup;
 import com.wolfie.odile.view.adapter.viewholder.BaseViewHolder;
 import com.wolfie.odile.view.adapter.viewholder.HeadingViewHolder;
 import com.wolfie.odile.view.adapter.viewholder.ItemViewHolder;
-import com.wolfie.odile.model.Entry;
-import com.wolfie.odile.model.EntryGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class GroupingRecyclerAdapter extends PlaceholderRecyclerAdapter<BaseView
     private static final int VIEW_TYPE_ENTRY = 1;
 
     private OnItemInListClickedListener mOnItemInListClickedListener;
-    private List<EntryGroup> mGroups = new ArrayList<>();
+    private List<PhraseGroup> mGroups = new ArrayList<>();
 
     private @Nullable String mHighlightText;
     private @AdapterMode int mMode;
@@ -102,50 +102,50 @@ public class GroupingRecyclerAdapter extends PlaceholderRecyclerAdapter<BaseView
 
     /**
      * The data in mGroups is mapped to the adapter one to one, plus one item for the
-     * heading of each group.  An EntryGroup must not have null fields.
+     * heading of each group.  A PhraseGroup must not have null fields.
      */
     @Override
     public int getItemCount() {
         int count = 0;
-        for (EntryGroup group : mGroups) {
+        for (PhraseGroup group : mGroups) {
             ++count;
-            count += group.getEntries().size();
+            count += group.getPhrases().size();
         }
         return count;
     }
 
     /**
-     * @return either the String (heading) or Entry at the specified position in the adapter.
+     * @return either the String (heading) or Phrase at the specified position in the adapter.
      */
     public Object getItemAt(int position) {
         int count = 0;
-        for (EntryGroup group : mGroups) {
+        for (PhraseGroup group : mGroups) {
             // Check if the heading is at the position.
             if (count++ == position) {
                 return group.getHeading();
             }
             // Skip this part if there's no items in the group
             // Only iterate through the list if we know the position falls within this list
-            if (count + group.getEntries().size() > position) {
-                for (Entry entry : group.getEntries()) {
+            if (count + group.getPhrases().size() > position) {
+                for (Phrase phrase : group.getPhrases()) {
                     if (count++ == position) {
-                        return entry;
+                        return phrase;
                     }
                 }
             } else {
-                count += group.getEntries().size();
+                count += group.getPhrases().size();
             }
         }
         return null;
     }
 
     /**
-     * Load the specified EntryGroups into the adapter.
-     * @param groups Lists of entries to display.
+     * Load the specified PhraseGroups into the adapter.
+     * @param groups Lists of phrases to display.
      * @param highlightText Used for binding the viewHolders, for details
      *                      refer to {@link ItemViewHolder#bind(Object, String)}
      */
-    public void setGroups(List<EntryGroup> groups, @Nullable String highlightText) {
+    public void setGroups(List<PhraseGroup> groups, @Nullable String highlightText) {
         mGroups.clear();
         mGroups.addAll(groups);
         mHighlightText = highlightText;
@@ -162,7 +162,7 @@ public class GroupingRecyclerAdapter extends PlaceholderRecyclerAdapter<BaseView
     }
 
     public interface OnItemInListClickedListener {
-        void onListItemClick(Entry selectedEntry);
+        void onListItemClick(Phrase selectedPhrase);
     }
 
     @IntDef({AdapterMode.EXPANDING_CONTRACTING, AdapterMode.FIXED_EXPANDED})

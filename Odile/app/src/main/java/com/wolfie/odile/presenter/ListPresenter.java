@@ -6,8 +6,8 @@ import android.text.TextUtils;
 
 import com.android.internal.util.Predicate;
 import com.wolfie.odile.model.DataSet;
-import com.wolfie.odile.model.Entry;
-import com.wolfie.odile.model.EntryGroup;
+import com.wolfie.odile.model.Phrase;
+import com.wolfie.odile.model.PhraseGroup;
 import com.wolfie.odile.model.loader.AsyncListeningTask;
 import com.wolfie.odile.presenter.ListPresenter.ListUi;
 import com.wolfie.odile.view.BaseUi;
@@ -22,12 +22,12 @@ public class ListPresenter extends BasePresenter<ListUi> implements
 
     private final static String KEY_LIST_GROUPNAME = "KEY_LIST_GROUPNAME";
 
-    // If non-null, then only show entries from this group.
+    // If non-null, then only show phrases from this group.
     @Nullable
     private String mGroupName;
 
     // These values are not saved, but refreshed upon resume.
-    // Note that mHeadings and mGroupName are taken from here by
+    // Note that mHeadings and mGroup are taken from here by
     // DrawerPresenter.resume() to reload the nav menu
     private DataSet mDataSet;
     private List<String> mHeadings;
@@ -40,7 +40,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     public void resume() {
         super.resume();
         // TODO - what about the searchCriterion ?
-        loadEntries();
+        loadPhrases();
     }
 
     @Override
@@ -65,13 +65,13 @@ public class ListPresenter extends BasePresenter<ListUi> implements
         return true;        // Means: not consumed here.
     }
 
-    public void loadEntries() {
+    public void loadPhrases() {
         MainPresenter mainPresenter = getUi().findPresenter(null);
         if (mainPresenter != null) {
-            mainPresenter.getEntryLoader().read(this);
+            mainPresenter.getPhraseLoader().read(this);
         }
         getUi().setAddEntryVisibility(true);
-        getUi().hideNoFilteredEntriesWarning();
+        getUi().hideNoFilteredPhrasesWarning();
     }
 
     /**
@@ -82,36 +82,36 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     @Override
     public void onCompletion(DataSet dataSet) {
         mDataSet = dataSet;
-        mHeadings = EntryGroup.buildHeadingsList(dataSet);
+        mHeadings = PhraseGroup.buildHeadingsList(dataSet);
         setGroupName(mGroupName);
     }
 
     /**
      * Set the new group name for filtering, use it with the existing
-     * (already loaded) DataSet to build a list of structured entries,
+     * (already loaded) DataSet to build a list of structured phrases,
      * and pass to the ui for display. Called by the DrawerPresenter.
      */
     public void setGroupName(@Nullable String groupName) {
         mGroupName = groupName;
         if (mDataSet != null) {
-            List<EntryGroup> groups = EntryGroup.buildGroups(mGroupName, mDataSet);
-            getUi().showEntries(groups);
+            List<PhraseGroup> groups = PhraseGroup.buildGroups(mGroupName, mDataSet);
+            getUi().showPhrases(groups);
         }
     }
 
-    private List<EntryGroup> mTempGroups;           // Contains all entries.
-    private List<EntryGroup> mFilteredGroups;       // Contains entries filtered from mTempGroups.
+    private List<PhraseGroup> mTempGroups;           // Contains all phrases.
+    private List<PhraseGroup> mFilteredGroups;       // Contains phrases filtered from mTempGroups.
 
     @Override
     public void onQueryClick() {
         // For the duration of the query, the mGroupName and mDataSet are left untouched
         // and a new temporary filtered dataSet is used for display.
         // As the query text changes, filter the tempGroups --> filteredGroups
-        // and pass it into showEntries with the searchText
+        // and pass it into showPhrases with the searchText
 
-        mTempGroups = EntryGroup.buildSingleGroup("Matching entries", mDataSet);
-        mFilteredGroups = EntryGroup.buildSingleGroup("Matching entries", null);
-        getUi().showFilteredEntries(mTempGroups, "");       // Will show all all entries, since no search-filtering yet
+        mTempGroups = PhraseGroup.buildSingleGroup("Matching phrases", mDataSet);
+        mFilteredGroups = PhraseGroup.buildSingleGroup("Matching phrases", null);
+        getUi().showFilteredPhrases(mTempGroups, "");       // Will show all all phrases, since no search-filtering yet
         getUi().setAddEntryVisibility(false);               // Add function disabled.
     }
 
@@ -120,23 +120,23 @@ public class ListPresenter extends BasePresenter<ListUi> implements
         // Use mTempGroups as a flag to indicate if onQueryClick has been called yet
         // because onQueryTextChange seems to get called first.
         if (mTempGroups != null) {
-            getUi().hideNoFilteredEntriesWarning();
+            getUi().hideNoFilteredPhrasesWarning();
             if (TextUtils.isEmpty(criteria)) {
                 // Use unfiltered list
-                getUi().showFilteredEntries(mTempGroups, "");
+                getUi().showFilteredPhrases(mTempGroups, "");
             } else {
                 // Filter
-                List<Entry> filteredEntries = mFilteredGroups.get(0).getEntries();
+                List<Phrase> filteredEntries = mFilteredGroups.get(0).getPhrases();
                 filteredEntries.clear();
-                Predicate<Entry> predicate = getFilterPredicate(criteria);
-                for (Entry entry : mTempGroups.get(0).getEntries()) {
-                    if (predicate.apply(entry)) {
-                        filteredEntries.add(entry);
+                Predicate<Phrase> predicate = getFilterPredicate(criteria);
+                for (Phrase phrase : mTempGroups.get(0).getPhrases()) {
+                    if (predicate.apply(phrase)) {
+                        filteredEntries.add(phrase);
                     }
                 }
-                getUi().showFilteredEntries(mFilteredGroups, criteria);
+                getUi().showFilteredPhrases(mFilteredGroups, criteria);
                 if (filteredEntries.size() == 0) {
-                    getUi().showNoFilteredEntriesWarning();
+                    getUi().showNoFilteredPhrasesWarning();
                 }
             }
         }
@@ -144,31 +144,31 @@ public class ListPresenter extends BasePresenter<ListUi> implements
 
     @Override
     public void onQueryClose() {
-        getUi().hideNoFilteredEntriesWarning();
+        getUi().hideNoFilteredPhrasesWarning();
         // Refresh the list with the previous groupName/mDataSet
         onCompletion(mDataSet);
         getUi().setAddEntryVisibility(true);       // Add function re-enabled.
         mTempGroups = null;
     }
 
-    protected Predicate<Entry> getFilterPredicate(final String criteria) {
-        return new Predicate<Entry>() {
+    protected Predicate<Phrase> getFilterPredicate(final String criteria) {
+        return new Predicate<Phrase>() {
             @Override
-            public boolean apply(Entry entry) {
-                return entry.getEntryName().toLowerCase().contains(criteria.toLowerCase())
-                        || entry.getContent().toLowerCase().contains(criteria.toLowerCase());
+            public boolean apply(Phrase phrase) {
+                return phrase.getRussian().toLowerCase().contains(criteria.toLowerCase())
+                        || phrase.getEnglish().toLowerCase().contains(criteria.toLowerCase());
             }
         };
     }
 
-    public void onListItemClick(Entry selectedEntry) {
+    public void onListItemClick(Phrase selectedPhrase) {
         EditPresenter editPresenter = getUi().findPresenter(EditFragment.class);
         if (editPresenter != null) {
-            if (selectedEntry != null) {
-                editPresenter.editEntry(selectedEntry);
+            if (selectedPhrase != null) {
+                editPresenter.editPhrase(selectedPhrase);
             } else {
-                // Set up a new Entry for the currently selected groupname.
-                editPresenter.editNewEntry(mGroupName);
+                // Set up a new Phrase for the currently selected group name.
+                editPresenter.editNewPhrase(mGroupName);
             }
         }
     }
@@ -184,17 +184,17 @@ public class ListPresenter extends BasePresenter<ListUi> implements
 
     public interface ListUi extends BaseUi {
 
-        // Show entries from the list of groups.
-        void showEntries(@Nullable List<EntryGroup> groups);
-        // Show entries, all expanded (with contract disabled) and search text highlighted in each entry.
+        // Show phrases from the list of groups.
+        void showPhrases(@Nullable List<PhraseGroup> groups);
+        // Show phrases, all expanded (with contract disabled) and search text highlighted in each phrase.
         // The sticky header is static, with the single group heading used.
-        void showFilteredEntries(@Nullable List<EntryGroup> groups, @Nullable String searchText);
+        void showFilteredPhrases(@Nullable List<PhraseGroup> groups, @Nullable String searchText);
 
         void setAddEntryVisibility(boolean visible);
         void hideStickyHeader();
 
-        void showNoFilteredEntriesWarning();
-        void hideNoFilteredEntriesWarning();
+        void showNoFilteredPhrasesWarning();
+        void hideNoFilteredPhrasesWarning();
 
     }
 

@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.wolfie.odile.R;
-import com.wolfie.odile.model.Entry;
+import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.loader.AsyncListeningTask;
 import com.wolfie.odile.view.ActionSheetUi;
 import com.wolfie.odile.view.BaseUi;
@@ -18,7 +18,7 @@ public class EditPresenter extends BasePresenter<EditUi> implements
     private final static String KEY_EDIT_ACTION_SHEET_SHOWING = "KEY_EDIT_ACTION_SHEET_SHOWING";
     private final static String KEY_EDIT_ACTION_SHEET_ENTRY = "KEY_EDIT_ACTION_SHEET_ENTRY";
 
-    private Entry mEntry;
+    private Phrase mPhrase;
     private boolean mIsShowing;
 
     public EditPresenter(EditUi editUi) {
@@ -28,7 +28,6 @@ public class EditPresenter extends BasePresenter<EditUi> implements
     @Override
     public void resume() {
         super.resume();
-        MainPresenter mainPresenter = getUi().findPresenter(null);
         if (!mIsShowing) {
             getUi().hide();
         } else {
@@ -59,42 +58,42 @@ public class EditPresenter extends BasePresenter<EditUi> implements
     }
 
     /**
-     * Use the existing values in the Entry to populate the fields, and show the view.
-     * A null entry is allowed, it means create a new entry with all empty fields for editing.
+     * Use the existing values in the Phrase to populate the fields, and show the view.
+     * A null entry is allowed, it means create a new phrase with all empty fields for editing.
      */
-    public void editEntry(@Nullable Entry entry) {
-        mEntry = (entry != null) ? entry : Entry.create("", "", "");
+    public void editPhrase(@Nullable Phrase entry) {
+        mPhrase = (entry != null) ? entry : Phrase.create("", "", "", "", null);
         getUi().show();
     }
 
     /**
-     * Create a new Entry for the specified group, and show its fields for editing.
+     * Create a new Phrase for the specified group, and show its fields for editing.
      * If the groupname is name, then set all the fields to empty string
      */
-    public void editNewEntry(@Nullable String groupName) {
-        editEntry(groupName == null ? null : Entry.create("", groupName, ""));
+    public void editNewPhrase(@Nullable String groupName) {
+        editPhrase(groupName == null ? null : Phrase.create(groupName, "", "", "", null));
     }
 
     /**
      * This is not called on resume, only when the view is shown by the user.
      */
     public void onShow() {
-        getUi().enableDeleteButton(!mEntry.isNew());
-        getUi().setTitleText(mEntry.isNew() ? "Create Entry" : "Modify Entry");
+        getUi().enableDeleteButton(!mPhrase.isNew());
+        getUi().setTitleText(mPhrase.isNew() ? "Create Phrase" : "Modify Phrase");
         getUi().clearErrorMessage();
         getUi().clearDescription();
-        getUi().setTextValues(mEntry);
+        getUi().setTextValues(mPhrase);
     }
 
     public void onClickSave() {
-        mEntry = getUi().getTextValues(mEntry);
+        mPhrase = getUi().getTextValues(mPhrase);
         getUi().dismissKeyboard(true);
 
         MainPresenter mainPresenter = getUi().findPresenter(null);
-        if (mEntry.isNew()) {
-            mainPresenter.getEntryLoader().insert(mEntry, this);
+        if (mPhrase.isNew()) {
+            mainPresenter.getPhraseLoader().insert(mPhrase, this);
         } else {
-            mainPresenter.getEntryLoader().update(mEntry, this);
+            mainPresenter.getPhraseLoader().update(mPhrase, this);
         }
         // TODO after edit, contract the view box
     }
@@ -104,11 +103,11 @@ public class EditPresenter extends BasePresenter<EditUi> implements
     }
 
     public void onClickDelete() {
-        mEntry = getUi().getTextValues(mEntry);
+        mPhrase = getUi().getTextValues(mPhrase);
         getUi().dismissKeyboard(true);
 
         MainPresenter mainPresenter = getUi().findPresenter(null);
-        mainPresenter.getEntryLoader().delete(mEntry, this);
+        mainPresenter.getPhraseLoader().delete(mPhrase, this);
     }
 
     public void onClickCancel() {
@@ -131,7 +130,7 @@ public class EditPresenter extends BasePresenter<EditUi> implements
     }
 
     private boolean showErrorIfModified() {
-        boolean isModified = getUi().isEntryModified(mEntry);
+        boolean isModified = getUi().isPhraseModified(mPhrase);
         if (isModified) {
             getUi().setErrorMessage(R.string.st010);
         }
@@ -139,13 +138,13 @@ public class EditPresenter extends BasePresenter<EditUi> implements
     }
 
     /**
-     * callback from getEntryLoader().insert/update/delete
+     * callback from getPhraseLoader().insert/update/delete
      */
     @Override
     public void onCompletion(Boolean aBoolean) {
         ListPresenter listPresenter = getUi().findPresenter(ListFragment.class);
         if (listPresenter != null) {
-            listPresenter.loadEntries();
+            listPresenter.loadPhrases();
         }
     }
 
@@ -153,9 +152,9 @@ public class EditPresenter extends BasePresenter<EditUi> implements
 
         void setTitleText(String title);
         void enableDeleteButton(boolean enable);
-        void setTextValues(Entry entry);
-        Entry getTextValues(Entry entry);
-        boolean isEntryModified(Entry entry);
+        void setTextValues(Phrase phrase);
+        Phrase getTextValues(Phrase phrase);
+        boolean isPhraseModified(Phrase phrase);
         void setDescription(@StringRes int resourceId);
         void clearDescription();
         void setErrorMessage(@StringRes int resourceId);

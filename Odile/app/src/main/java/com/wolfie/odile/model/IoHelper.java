@@ -1,8 +1,5 @@
 package com.wolfie.odile.model;
 
-import android.support.annotation.Nullable;
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
@@ -19,27 +16,27 @@ import java.util.List;
 public class IoHelper {
 
     @Expose
-    private List<Entry> entries;
+    private List<Phrase> phrases;
 
     public IoHelper() {
         // No arg ctor for deserialiser.
     }
 
-    public String export(List<Entry> encryptedEntries) {
-        this.entries = encryptedEntries;
-        DataSet.sort(this.entries);
+    public String export(List<Phrase> phrases) {
+        this.phrases = phrases;
+        DataSet.sort(this.phrases);
         Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
         return gson.toJson(this);
     }
 
-    public List<Entry> inport(InputStreamReader isr) throws JsonSyntaxException, JsonIOException {
+    public List<Phrase> inport(InputStreamReader isr) throws JsonSyntaxException, JsonIOException {
         Gson gson = new Gson();
         IoHelper ioHelper = gson.fromJson(isr, IoHelper.class);
-        return ioHelper.entries;
+        return ioHelper.phrases;
     }
 
-    public List<Entry> getEntries() {
-        return entries;
+    public List<Phrase> getPhrases() {
+        return phrases;
     }
 
 }

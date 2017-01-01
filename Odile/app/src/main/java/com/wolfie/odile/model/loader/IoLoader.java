@@ -5,8 +5,8 @@ import android.support.annotation.Nullable;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.wolfie.odile.model.DataSet;
-import com.wolfie.odile.model.Entry;
 import com.wolfie.odile.model.IoHelper;
+import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.database.Source;
 
 import java.io.BufferedWriter;
@@ -27,13 +27,6 @@ import java.util.List;
 public class IoLoader {
 
     private Source mDataSource;
-
-    // During import, the password is needed to decrypt the imported cipher text.
-    private String mPassword;
-    // Cleartext is indicated if we have no password (during import) or no masterdata (during export).
-    private boolean mAsClearText;
-    // During import/restore, optionally delete existing entries first.
-    private boolean mIsOverwrite;
 
     public IoLoader(Source dataSource) {
         mDataSource = dataSource;
@@ -60,9 +53,7 @@ public class IoLoader {
         new ExportTask(listener).execute(file);
     }
 
-    public void inport(boolean isOverwrite,
-                       File file, AsyncListeningTask.Listener<IoResult> listener) {
-        mIsOverwrite = isOverwrite;
+    public void inport(File file, AsyncListeningTask.Listener<IoResult> listener) {
         new ImportTask(listener).execute(file);
     }
 
@@ -72,11 +63,8 @@ public class IoLoader {
         }
         @Override
         public IoResult runInBackground(File file) {
-            DataSet dataSet = mDataSource.read();
-            List<Entry> entries = dataSet.getEntries();
-
-            String json = new IoHelper().export(entries);
-
+            List<Phrase> phrases = mDataSource.read();
+            String json = new IoHelper().export(phrases);
             IoResult ioResult = null;
             FileOutputStream fos = null;
             BufferedWriter bw = null;
@@ -84,7 +72,7 @@ public class IoLoader {
                 fos = new FileOutputStream(file);
                 bw = new BufferedWriter(new OutputStreamWriter(fos, "UTF-8"));
                 bw.write(json);
-                ioResult = new SuccessResult("Exported " + entries.size() + " entries");
+                ioResult = new SuccessResult("Exported " + phrases.size() + " phrases");
             } catch (FileNotFoundException fnfe) {
                 return new FailureResult("FileNotFound opening\n" + file.getName());
             } catch (UnsupportedEncodingException usce) {
@@ -119,17 +107,13 @@ public class IoLoader {
             try {
                 FileInputStream fis = new FileInputStream(file);
                 isr = new InputStreamReader(fis);
+                List<Phrase> phrases = new IoHelper().inport(isr);
 
-                List<Entry> entries = new IoHelper().inport(isr);
-
-                // Load into database, optionally clearing existing data first. (Retain existing session key).
-                if (mIsOverwrite) {
-                    mDataSource.deleteAll();
+                mDataSource.deleteAll();
+                for (int i = 0; i < phrases.size(); i++) {
+                    mDataSource.insert(phrases.get(i));
                 }
-                for (int i = 0; i < entries.size(); i++) {
-                    mDataSource.insert(entries.get(i));
-                }
-                ioResult = new SuccessResult("Imported " + entries.size() + " entries");
+                ioResult = new SuccessResult("Imported " + phrases.size() + " phrases");
             } catch (FileNotFoundException fnfe) {
                 return new FailureResult("FileNotFound opening\n" + file.getPath());
             } catch (JsonIOException jioe) {

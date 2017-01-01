@@ -7,8 +7,8 @@ import android.preference.PreferenceManager;
 
 import com.wolfie.odile.model.database.Helper;
 import com.wolfie.odile.model.database.Source;
-import com.wolfie.odile.model.loader.EntryLoader;
 import com.wolfie.odile.model.loader.IoLoader;
+import com.wolfie.odile.model.loader.PhraseLoader;
 import com.wolfie.odile.view.BaseUi;
 
 /**
@@ -21,7 +21,7 @@ public class MainPresenter extends BasePresenter<BaseUi> {
     private SQLiteDatabase mDatabase;
     private Source mSource;
 
-    private EntryLoader mEntryLoader;
+    private PhraseLoader mPhraseLoader;
 
     // This presenter needs no ui (all the ui is performed by the other frags)
     public MainPresenter(BaseUi baseUi, Context context) {
@@ -29,14 +29,13 @@ public class MainPresenter extends BasePresenter<BaseUi> {
 
         mHelper = new Helper(context);
         mDatabase = mHelper.getWritableDatabase();
-
         mSource = new Source(mDatabase);
 
-        mEntryLoader = new EntryLoader(context, mSource);
+        mPhraseLoader = new PhraseLoader(mSource);
     }
 
-    public EntryLoader getEntryLoader() {
-        return mEntryLoader;
+    public PhraseLoader getPhraseLoader() {
+        return mPhraseLoader;
     }
 
 }

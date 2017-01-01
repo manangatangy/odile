@@ -3,15 +3,14 @@ package com.wolfie.odile.view.adapter.viewholder;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
 import com.wolfie.odile.R;
+import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.view.adapter.GroupingRecyclerAdapter;
-import com.wolfie.odile.model.Entry;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,17 +35,20 @@ public class ItemViewHolder extends BaseViewHolder {
     @BindView(R.id.item_left_spacer)
     View mDetailLeftSpacerView;
 
-    @BindView(R.id.item_text_view)
-    TextView mTitleTextView;
+    @BindView(R.id.russian_text_view)
+    TextView mRussianTextView;
 
-    @BindView(R.id.content_text_view)
-    TextView mContentTextView;
+    @BindView(R.id.translit_text_view)
+    TextView mTranslitTextView;
+
+    @BindView(R.id.english_text_view)
+    TextView mEnglishTextView;
 
     @BindView(R.id.edit_image)
     View mEditView;
 
     private int mLeftSpacedWidth;
-    private Entry mEntry;
+    private Phrase mPhrase;
     private GroupingRecyclerAdapter.OnItemInListClickedListener mListener;
 
     public ItemViewHolder(View view, GroupingRecyclerAdapter.OnItemInListClickedListener listener) {
@@ -64,15 +66,16 @@ public class ItemViewHolder extends BaseViewHolder {
      */
     @Override
     public void bind(Object item, @Nullable String highlightText) {
-        mEntry = (Entry)item;
+        mPhrase = (Phrase)item;
         // Note that the content text may or may not actually be showing (depending on the expanded state).
-        mTitleTextView.setText(highlight(mEntry.getEntryName(), highlightText));
-        mContentTextView.setText(highlight(mEntry.getContent(), highlightText));
+        mRussianTextView.setText(highlight(mPhrase.getRussian(), highlightText));
+        mTranslitTextView.setText(mPhrase.getTranslit());
+        mEnglishTextView.setText(highlight(mPhrase.getEnglish(), highlightText));
         mEditView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onListItemClick(mEntry);
+                    mListener.onListItemClick(mPhrase);
                 }
             }
         });

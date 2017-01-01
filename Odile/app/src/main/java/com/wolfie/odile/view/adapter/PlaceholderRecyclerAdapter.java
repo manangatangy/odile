@@ -4,10 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 /**
- * Created by david on 11/09/16.
- */
-
-/**
  * Observes the adapter dataset, and when on changed, if there are no items sets the the
  * placeHolderView to visible, otherwise sets it gone.
  */

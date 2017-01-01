@@ -11,11 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.wolfie.odile.R;
-import com.wolfie.odile.model.Entry;
+import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.presenter.EditPresenter;
 import com.wolfie.odile.presenter.EditPresenter.EditUi;
-import com.wolfie.odile.util.KeyboardUtils;
-import com.wolfie.odile.view.activity.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,16 +30,20 @@ public class EditFragment extends ActionSheetFragment implements EditUi {
     TextView mTextDescription;
 
     @Nullable
-    @BindView(R.id.edit_text_name)
-    EditText mEditName;
-
-    @Nullable
     @BindView(R.id.edit_text_group)
     EditText mEditGroup;
 
     @Nullable
-    @BindView(R.id.edit_text_content)
-    EditText mEditContent;
+    @BindView(R.id.edit_text_russian)
+    EditText mEditRussian;
+
+    @Nullable
+    @BindView(R.id.edit_text_translit)
+    EditText mEditTranslit;
+
+    @Nullable
+    @BindView(R.id.edit_text_english)
+    EditText mEditEnglish;
 
     @Nullable
     @BindView(R.id.text_error)
@@ -120,31 +122,36 @@ public class EditFragment extends ActionSheetFragment implements EditUi {
     }
 
     @Override
-    public void setTextValues(Entry entry) {
-        mEditName.setText(entry.getEntryName());
-        mEditGroup.setText(entry.getGroupName());
-        mEditContent.setText(entry.getContent());
+    public void setTextValues(Phrase phrase) {
+        mEditGroup.setText(phrase.getGroup());
+        mEditRussian.setText(phrase.getRussian());
+        mEditTranslit.setText(phrase.getTranslit());
+        mEditEnglish.setText(phrase.getEnglish());
     }
 
     @Override
-    public Entry getTextValues(Entry entry) {
-        String name = mEditName.getText().toString();
+    public Phrase getTextValues(Phrase phrase) {
         String group = mEditGroup.getText().toString();
-        String content = mEditContent.getText().toString();
-        entry.setEntryName(name);
-        entry.setGroupName(group);
-        entry.setContent(content);
-        return entry;
+        String russian = mEditRussian.getText().toString();
+        String translit = mEditTranslit.getText().toString();
+        String english = mEditEnglish.getText().toString();
+        phrase.setGroup(group);
+        phrase.setRussian(russian);
+        phrase.setTranslit(translit);
+        phrase.setEnglish(english);
+        return phrase;
     }
 
     @Override
-    public boolean isEntryModified(Entry entry) {
-        String name = mEditName.getText().toString();
+    public boolean isPhraseModified(Phrase phrase) {
         String group = mEditGroup.getText().toString();
-        String content = mEditContent.getText().toString();
-        return !equals(name, (entry == null) ? null : entry.getEntryName()) ||
-                !equals(group, (entry == null) ? null : entry.getGroupName()) ||
-                !equals(content, (entry == null) ? null : entry.getContent());
+        String russian = mEditRussian.getText().toString();
+        String translit = mEditTranslit.getText().toString();
+        String english = mEditEnglish.getText().toString();
+        return !equals(group, (phrase == null) ? null : phrase.getGroup()) ||
+                !equals(russian, (phrase == null) ? null : phrase.getRussian()) ||
+                !equals(translit, (phrase == null) ? null : phrase.getTranslit()) ||
+                !equals(english, (phrase == null) ? null : phrase.getEnglish());
     }
 
     private boolean equals(@Nullable String val1, @Nullable String val2) {

@@ -5,14 +5,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
-import com.wolfie.odile.model.DataSet;
-import com.wolfie.odile.model.Entry;
+import com.wolfie.odile.model.Phrase;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Wraps a database to provide the basic CRUD operations for both tables; master and entries.
+ * Wraps a database to provide the basic CRUD operations for the spends table.
  * These methods are best called in a background thread, using a loader.
  */
 public class Source {
@@ -23,48 +22,48 @@ public class Source {
         mDatabase = database;
     }
 
-    public boolean insert(Entry entry) {
-        long result = mDatabase.insert(MetaData.ENTRIES_TABLE, null, makeContentValues(entry));
+    public boolean insert(Phrase phrase) {
+        long result = mDatabase.insert(MetaData.PHRASE_TABLE, null, makeContentValues(phrase));
         return result != -1;
     }
 
-    public boolean update(Entry entry) {
-        int result = mDatabase.update(MetaData.ENTRIES_TABLE, makeContentValues(entry),
-                    MetaData.ENTRIES_ID + "=" + entry.getId(), null);
+    public boolean update(Phrase phrase) {
+        int result = mDatabase.update(MetaData.PHRASE_TABLE, makeContentValues(phrase),
+                MetaData.PHRASE_ID + "=" + phrase.getId(), null);
         return result != 0;
     }
 
-    public boolean delete(Entry entry) {
-        int result =  mDatabase.delete(MetaData.ENTRIES_TABLE, MetaData.ENTRIES_ID + "=" + entry.getId(), null);
+    public boolean delete(Phrase phrase) {
+        int result =  mDatabase.delete(MetaData.PHRASE_TABLE, MetaData.PHRASE_ID + "=" + phrase.getId(), null);
         return result != 0;
     }
 
     public void deleteAll() {
-        mDatabase.delete(MetaData.ENTRIES_TABLE, null, null);
+        mDatabase.delete(MetaData.PHRASE_TABLE, null, null);
     }
 
-    public @NonNull DataSet read() {
-        List<Entry> entries = new ArrayList<>();
-        // No point sorting here - the strings are encrypted - duh!
-        Cursor cursor = mDatabase.query(MetaData.ENTRIES_TABLE, MetaData.ENTRIES_ALL_COLUMNS, null,
-                null, null, null, null);
+    public @NonNull List<Phrase> read() {
+        List<Phrase> spends = new ArrayList<>();
+        Cursor cursor = mDatabase.query(MetaData.PHRASE_TABLE, MetaData.PHRASE_ALL_COLUMNS,
+                null, null, null, null, MetaData.PHRASE_ID);
         if (cursor != null && cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
-                Entry entry = Entry.from(cursor);
-                entries.add(entry);
+                Phrase phrase = Phrase.from(cursor);
+                spends.add(phrase);
                 cursor.moveToNext();
             }
             cursor.close();
         }
-        DataSet dataSet = new DataSet(entries);
-        return dataSet;
+        return spends;
     }
 
-    private ContentValues makeContentValues(Entry entry) {
+    private ContentValues makeContentValues(Phrase phrase) {
         ContentValues values = new ContentValues();
-        values.put(MetaData.ENTRIES_GROUP, entry.getGroupName());
-        values.put(MetaData.ENTRIES_ENTRY, entry.getEntryName());
-        values.put(MetaData.ENTRIES_CONTENT, entry.getContent());
+        values.put(MetaData.PHRASE_GROUP, phrase.getGroup());
+        values.put(MetaData.PHRASE_RUSSIAN, phrase.getRussian());
+        values.put(MetaData.PHRASE_ENGLISH, phrase.getEnglish());
+        values.put(MetaData.PHRASE_TRANSLIT, phrase.getTranslit());
+        values.put(MetaData.PHRASE_PATH, phrase.getPath());
         return values;
     }
 

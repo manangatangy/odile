@@ -17,14 +17,13 @@ public class Helper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         try {
-            db.execSQL("CREATE TABLE " + MetaData.ENTRIES_TABLE + " ("
-                    + MetaData.ENTRIES_ID + " INTEGER PRIMARY KEY,"
-                    + MetaData.ENTRIES_GROUP + " TEXT NOT NULL,"
-                    + MetaData.ENTRIES_ENTRY + " TEXT NOT NULL,"
-                    + MetaData.ENTRIES_CONTENT + " TEXT NOT NULL);");
-            db.execSQL("CREATE TABLE " + MetaData.MASTER_TABLE + " ("
-                    + MetaData.MASTER_SALT + " TEXT NOT NULL,"
-                    + MetaData.MASTER_KEY + " TEXT NOT NULL);");
+            db.execSQL("CREATE TABLE " + MetaData.PHRASE_TABLE + " ("
+                    + MetaData.PHRASE_ID + " INTEGER PRIMARY KEY,"
+                    + MetaData.PHRASE_GROUP + " TEXT NOT NULL,"
+                    + MetaData.PHRASE_RUSSIAN + " TEXT NOT NULL,"
+                    + MetaData.PHRASE_ENGLISH + " TEXT NOT NULL,"
+                    + MetaData.PHRASE_TRANSLIT + " TEXT NOT NULL,"
+                    + MetaData.PHRASE_PATH + " TEXT);");
         } catch (SQLException e) {
             Log.d(TAG, "SQLite exception: " + e.getLocalizedMessage());
         }
@@ -32,8 +31,7 @@ public class Helper extends SQLiteOpenHelper {
 
     public void dropTables(SQLiteDatabase db) {
         try {
-            db.execSQL("DROP TABLE " + MetaData.ENTRIES_TABLE);
-            db.execSQL("DROP TABLE " + MetaData.MASTER_TABLE);
+            db.execSQL("DROP TABLE " + MetaData.PHRASE_TABLE);
         } catch (SQLException e) {
             Log.d(TAG, "SQLite exception: " + e.getLocalizedMessage());
         }

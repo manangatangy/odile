@@ -6,42 +6,47 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * This is a collection of Entry's passed between the database and the UI.
+ * This is a collection of Phrases passed between the database and the UI.
  */
 public class DataSet {
 
-    private List<Entry> mEntries = new ArrayList<>();
+    private List<Phrase> mPhrases = new ArrayList<>();
 
-    public List<Entry> getEntries() {
-        return mEntries;
+    public List<Phrase> getPhrases() {
+        return mPhrases;
     }
 
-    public DataSet(List<Entry> pEntries) {
-        this.mEntries = pEntries;
+    public DataSet(List<Phrase> phrases) {
+        this.mPhrases = phrases;
     }
 
-    public static void sort(List<Entry> entries) {
-        Collections.sort(entries, new Comparator<Entry>() {
+    /**
+     * @param phrases will be sorted on the group string and then the id integer, so
+     *                that Phrases in the same group are sorted on entry order.
+     */
+    public static void sort(List<Phrase> phrases) {
+        Collections.sort(phrases, new Comparator<Phrase>() {
             /**
              * @return an integer < 0 if {@code lhs} is less than {@code rhs}, 0 if they are
              *         equal, and > 0 if {@code lhs} is greater than {@code rhs}.
              */
             @Override
-            public int compare(Entry lhs, Entry rhs) {
-                int compare = lhs.getGroupName().compareToIgnoreCase(rhs.getGroupName());
+            public int compare(Phrase lhs, Phrase rhs) {
+                int compare = lhs.getGroup().compareToIgnoreCase(rhs.getGroup());
                 if (compare == 0) {
-                    compare = lhs.getEntryName().compareToIgnoreCase(rhs.getEntryName());
+                    compare = Integer.compare(lhs.getId(), rhs.getId());
                 }
                 return compare;
             }
         });
     }
 
-    public static void sortOnName(List<Entry> entries) {
-        Collections.sort(entries, new Comparator<Entry>() {
+    public static void sortOnId(List<Phrase> phrases) {
+        Collections.sort(phrases, new Comparator<Phrase>() {
             @Override
-            public int compare(Entry lhs, Entry rhs) {
-                return lhs.getEntryName().compareToIgnoreCase(rhs.getEntryName());
+            public int compare(Phrase lhs, Phrase rhs) {
+                // the value 0 if x == y; a value less than 0 if x < y; and a value greater than 0 if x > y
+                return Integer.compare(lhs.getId(), rhs.getId());
             }
         });
     }

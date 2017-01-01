@@ -14,8 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.wolfie.odile.R;
-import com.wolfie.odile.model.Entry;
-import com.wolfie.odile.model.EntryGroup;
+import com.wolfie.odile.model.Phrase;
+import com.wolfie.odile.model.PhraseGroup;
 import com.wolfie.odile.presenter.ListPresenter;
 import com.wolfie.odile.util.DefaultLayoutManager;
 import com.wolfie.odile.view.adapter.GroupingRecyclerAdapter;
@@ -84,12 +84,12 @@ public class ListFragment extends BaseFragment implements
     }
 
     /**
-     * Display the entries in an expanding/contracting list view, with no highlighting.
-     * @param groups Lists of entries to display.  If null, clear the list. Otherwise
+     * Display the phrases in an expanding/contracting list view, with no highlighting.
+     * @param groups Lists of phrases to display.  If null, clear the list. Otherwise
      *               also scroll to the top of the list.
      */
     @Override
-    public void showEntries(@Nullable List<EntryGroup> groups) {
+    public void showPhrases(@Nullable List<PhraseGroup> groups) {
         mAutoUpdateStickyHeader = true;
         if (groups == null) {
             getAdapter(AdapterMode.EXPANDING_CONTRACTING).clearItems();
@@ -103,16 +103,16 @@ public class ListFragment extends BaseFragment implements
     }
 
     /**
-     * Display the entries in an fixed expanded list view, with highlighting.
-     * Shows all the entries expanded, fixes the sticky header to a static text,
-     * rather than the auto-updating value (depending on which entry is at the top).
-     * @param groups Lists of entries to display.  If null, clear the list. Otherwise
+     * Display the phrases in an fixed expanded list view, with highlighting.
+     * Shows all the phrases expanded, fixes the sticky header to a static text,
+     * rather than the auto-updating value (depending on which phrase is at the top).
+     * @param groups Lists of phrases to display.  If null, clear the list. Otherwise
      *               also scroll to the top of the list.
      * @param searchText If not blank, then use to highlight the fields in the viewHolders.
      */
-    public void showFilteredEntries(@NonNull List<EntryGroup> groups, @NonNull String searchText) {
+    public void showFilteredPhrases(@NonNull List<PhraseGroup> groups, @NonNull String searchText) {
         mAutoUpdateStickyHeader = false;
-        int matches = groups.get(0).getEntries().size();        // Must be one EntryGroup
+        int matches = groups.get(0).getPhrases().size();        // Must be one PhraseGroup
         mStickyHeaderText.setText(groups.get(0).getHeading() + ":  " + matches);
 
         getAdapter(AdapterMode.FIXED_EXPANDED).setGroups(groups, searchText);
@@ -142,19 +142,16 @@ public class ListFragment extends BaseFragment implements
     public void onItemAlignedToTop(int position) {
         if (mAutoUpdateStickyHeader) {
             // This method is called by the ScrollListeningRecyclerView.  At this stage,
-            // showEntries or showFilteredEntries should have already been called to populate
+            // showPhrases or showFilteredPhrases should have already been called to populate
             // the list, so there should be an adapter instance already associated with the
             // recyclerView (and we don't need to specify the AdapterMode).
             if (mRecyclerView.getAdapter() != null) {
                 GroupingRecyclerAdapter adapter = (GroupingRecyclerAdapter)mRecyclerView.getAdapter();
                 Object item = adapter.getItemAt(position);
                 String headerText;
-                if (item instanceof Entry) {
-                    Entry entry = (Entry) item;
-                    headerText = entry.getGroupName();
-//            if (headerText == null || headerText.length() == 0) {
-//                return;
-//            }
+                if (item instanceof Phrase) {
+                    Phrase phrase = (Phrase) item;
+                    headerText = phrase.getGroup();
                 } else {
                     headerText = (String) item;
                 }
@@ -166,12 +163,12 @@ public class ListFragment extends BaseFragment implements
     }
 
     @Override
-    public void showNoFilteredEntriesWarning() {
+    public void showNoFilteredPhrasesWarning() {
         mNoFilteredEntriesWarning.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void hideNoFilteredEntriesWarning() {
+    public void hideNoFilteredPhrasesWarning() {
         mNoFilteredEntriesWarning.setVisibility(View.GONE);
     }
 
@@ -186,8 +183,8 @@ public class ListFragment extends BaseFragment implements
     }
 
     @Override
-    public void onListItemClick(Entry selectedEntry) {
-        mListPresenter.onListItemClick(selectedEntry);
+    public void onListItemClick(Phrase selectedPhrase) {
+        mListPresenter.onListItemClick(selectedPhrase);
     }
 
 }

@@ -21,7 +21,6 @@ public class DrawerPresenter extends BasePresenter<DrawerUi> {
     @Override
     public void resume() {
         super.resume();
-        MainPresenter mainPresenter = getUi().findPresenter(null);
         if (!mIsOpen) {
             getUi().closeDrawer();
         } else {

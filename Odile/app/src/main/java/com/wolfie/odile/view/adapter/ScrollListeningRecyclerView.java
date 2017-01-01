@@ -6,10 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
-/**
- * Created by david on 11/09/16.
- */
-
 public class ScrollListeningRecyclerView extends RecyclerView {
 
     private ItemScrollListener mItemScrollListener;
