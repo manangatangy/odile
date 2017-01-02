@@ -20,7 +20,7 @@ public class MainPresenter extends BasePresenter<BaseUi> {
     private Helper mHelper;
     private SQLiteDatabase mDatabase;
     private Source mSource;
-
+    private IoLoader mIoLoader;
     private PhraseLoader mPhraseLoader;
 
     // This presenter needs no ui (all the ui is performed by the other frags)
@@ -30,8 +30,12 @@ public class MainPresenter extends BasePresenter<BaseUi> {
         mHelper = new Helper(context);
         mDatabase = mHelper.getWritableDatabase();
         mSource = new Source(mDatabase);
-
+        mIoLoader = new IoLoader(mSource);
         mPhraseLoader = new PhraseLoader(mSource);
+    }
+
+    public IoLoader getIoLoader() {
+        return mIoLoader;
     }
 
     public PhraseLoader getPhraseLoader() {

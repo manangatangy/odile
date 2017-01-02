@@ -27,6 +27,8 @@ import java.util.List;
 public class IoLoader {
 
     private Source mDataSource;
+    // During import/restore, optionally delete existing entries first.
+    private boolean mIsOverwrite;
 
     public IoLoader(Source dataSource) {
         mDataSource = dataSource;
@@ -53,7 +55,8 @@ public class IoLoader {
         new ExportTask(listener).execute(file);
     }
 
-    public void inport(File file, AsyncListeningTask.Listener<IoResult> listener) {
+    public void inport(boolean isOverwrite, File file, AsyncListeningTask.Listener<IoResult> listener) {
+        mIsOverwrite = isOverwrite;
         new ImportTask(listener).execute(file);
     }
 
@@ -109,7 +112,10 @@ public class IoLoader {
                 isr = new InputStreamReader(fis);
                 List<Phrase> phrases = new IoHelper().inport(isr);
 
-                mDataSource.deleteAll();
+                // Load into database, optionally clearing existing data first. (Retain existing session key).
+                if (mIsOverwrite) {
+                    mDataSource.deleteAll();
+                }
                 for (int i = 0; i < phrases.size(); i++) {
                     mDataSource.insert(phrases.get(i));
                 }

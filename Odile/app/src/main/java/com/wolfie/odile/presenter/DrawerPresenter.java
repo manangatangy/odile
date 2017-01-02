@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.wolfie.odile.view.BaseUi;
 import com.wolfie.odile.presenter.DrawerPresenter.DrawerUi;
+import com.wolfie.odile.view.fragment.FileFragment;
 import com.wolfie.odile.view.fragment.ListFragment;
 
 import java.util.List;
@@ -91,13 +92,13 @@ public class DrawerPresenter extends BasePresenter<DrawerUi> {
     }
     public void onMenuExportClick() {
         getUi().closeDrawer();
-//        FilePresenter filePresenter = getUi().findPresenter(FileFragment.class);
-//        filePresenter.exporting();
+        FilePresenter filePresenter = getUi().findPresenter(FileFragment.class);
+        filePresenter.exporting();
     }
     public void onMenuImportClick() {
         getUi().closeDrawer();
-//        FilePresenter filePresenter = getUi().findPresenter(FileFragment.class);
-//        filePresenter.importing();
+        FilePresenter filePresenter = getUi().findPresenter(FileFragment.class);
+        filePresenter.importing();
     }
     public void onMenuBackup() {
         getUi().closeDrawer();

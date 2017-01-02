@@ -14,24 +14,12 @@
     <string name="menu_item_backup">Backup</string>
     <string name="menu_item_restore">Restore</string>
 
-    <string name="st001">First time Eskey login</string>
-    <string name="st002">Eskey login</string>
-    <string name="st003">Please define a new master password</string>
-    <string name="st004">Please enter your master password</string>
-    <string name="st005">Session has timed out</string>
-    <string name="st006">Wrong password</string>
-    <string name="st007">Password and confirm-password don\'t match</string>
-    <string name="st008">Password write failed</string>
-    <string name="st009">Initialisation succeeded, you may now login\nPlease enter your master password</string>
     <string name="st010">Fields have been modified\nclick CANCEL to close without saving</string>
-    <string name="st011">Password should not have\nleading or trailing white-space</string>
     <string name="st012">Specify the export filename to be written into directory:\n</string>
     <string name="st013">External storage is not available</string>
     <string name="st014">Export to clear text</string>
     <string name="st015">Import from clear text</string>
-    <string name="st014a">Backup to cipher text</string>
-    <string name="st015a">Restore from cipher text</string>
-    <string name="st016">Access to public storage has \npreviously been denied\nGo to settings/apps/eskey \nto grant permission</string>
+    <string name="st016">Access to public storage has \npreviously been denied\nGo to settings/apps/odile \nto grant permission</string>
     <string name="st017">Access to public storage not permitted</string>
     <string name="st018">The external storage media is not available\nfor read/write access\nPerhaps it is not mounted</string>
     <string name="st019">
@@ -44,8 +32,6 @@
     <string name="st021">Public Storage Directory\n%1$s</string>
     <string name="st022">Export</string>
     <string name="st023">Import</string>
-    <string name="st024">Backup</string>
-    <string name="st025">Restore</string>
     <string name="st026">
         Eskey manages a local store of encrypted data.
         \n\nThe cipher-text (ie, encrypted) data may be backed up and restored using local files.
@@ -59,15 +45,7 @@
         private storage directory is not shared by Android and can typically only be accessed by root (eg,
         adb/debugging technique).
     </string>
-    <string name="st027">
-        Enter the new password and the confirmation-password,
-        \nand press CHANGE PASSWORD
-        \n\nIf the password change is successful, Eskey will logout
-        \nand return you to the login screen,
-        \nwhere you may re-login using the new password.
-    </string>
     <string name="st028">Text has been entered; press CANCEL to close</string>
-    <string name="st029">Password change succeeded, you may now login\nPlease enter your master password</string>
     <string name="st030">There are no entries\nmatching the search text</string>
     <string name="st031">Backup file emailed successfully</string>
     <string name="st032">Backup file emailure cancelled</string>

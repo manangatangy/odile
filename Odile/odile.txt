@@ -1,0 +1,220 @@
+{
+  "phrases": [
+    {
+      "mEnglish": "Hi",
+      "mGroup": "Greetings",
+      "mRussian": "Привет",
+      "mTranslit": "Privyet"
+    },
+    {
+      "mEnglish": "Bye",
+      "mGroup": "Greetings",
+      "mRussian": "Пока",
+      "mTranslit": "Paka"
+    },
+    {
+      "mEnglish": "Hello",
+      "mGroup": "Greetings",
+      "mRussian": "Здравствуйте",
+      "mTranslit": "Zdravstvuyte"
+    },
+    {
+      "mEnglish": "Good morning",
+      "mGroup": "Greetings",
+      "mRussian": "Доброе утро",
+      "mTranslit": "Dobraye utro"
+    },
+    {
+      "mEnglish": "Good day",
+      "mGroup": "Greetings",
+      "mRussian": "Добрый день",
+      "mTranslit": "Dobryy den"
+    },
+    {
+      "mEnglish": "Good evening",
+      "mGroup": "Greetings",
+      "mRussian": "Добрый вечер",
+      "mTranslit": "Dobryy vecher"
+    },
+    {
+      "mEnglish": "Goodbye",
+      "mGroup": "Greetings",
+      "mRussian": "До свидания",
+      "mTranslit": "Do svidanyia"
+    },
+    {
+      "mEnglish": "Til tomorrow",
+      "mGroup": "Greetings",
+      "mRussian": "До завтрд",
+      "mTranslit": "Do zavtra"
+    },
+    {
+      "mEnglish": "Happy new year",
+      "mGroup": "Greetings",
+      "mRussian": "С новым годом",
+      "mTranslit": "s novym godom"
+    },
+    {
+      "mEnglish": "Please/you're welcome",
+      "mGroup": "Manners",
+      "mRussian": "Пожалуйста",
+      "mTranslit": "Pozhaluysta"
+    },
+    {
+      "mEnglish": "Thank you",
+      "mGroup": "Manners",
+      "mRussian": "Спасибо",
+      "mTranslit": "Spasiba"
+    },
+    {
+      "mEnglish": "May I",
+      "mGroup": "Manners",
+      "mRussian": "Можно",
+      "mTranslit": "Mozhno"
+    },
+    {
+      "mEnglish": "Yes, it is possible",
+      "mGroup": "Manners",
+      "mRussian": "Да можно",
+      "mTranslit": "Mozhno"
+    },
+    {
+      "mEnglish": "I would like",
+      "mGroup": "Manners",
+      "mRussian": "Я буду",
+      "mTranslit": "Ya budu"
+    },
+    {
+      "mEnglish": "Not at all",
+      "mGroup": "Manners",
+      "mRussian": "Не за что",
+      "mTranslit": "Ne za shto"
+    },
+    {
+      "mEnglish": "Breakfast",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Zavtrak"
+    },
+    {
+      "mEnglish": "Main afternoon meal",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Abyed"
+    },
+    {
+      "mEnglish": "Supper",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Uzhin"
+    },
+    {
+      "mEnglish": "Porridge",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Kusha"
+    },
+    {
+      "mEnglish": "Tea",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Chai"
+    },
+    {
+      "mEnglish": "Coffee",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Kofe"
+    },
+    {
+      "mEnglish": "Bread",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Khleb"
+    },
+    {
+      "mEnglish": "Fermented yeast drink",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Kvass"
+    },
+    {
+      "mEnglish": "Style of rye bread",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Barradinski"
+    },
+    {
+      "mEnglish": "Pancakes",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Blini"
+    },
+    {
+      "mEnglish": "Sausage",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "xx"
+    },
+    {
+      "mEnglish": "Soup",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Soop"
+    },
+    {
+      "mEnglish": "Beetroot soup",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Borshcht"
+    },
+    {
+      "mEnglish": "Cabbage soup",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Shchi"
+    },
+    {
+      "mEnglish": "Spicy lamb meal",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Kharcho"
+    },
+    {
+      "mEnglish": "Potato",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Kartochki"
+    },
+    {
+      "mEnglish": "Beer",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Peeva"
+    },
+    {
+      "mEnglish": "Vodka",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Vodka"
+    },
+    {
+      "mEnglish": "Water",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Voda"
+    },
+    {
+      "mEnglish": "Milk",
+      "mGroup": "Meals/Food",
+      "mRussian": "xx",
+      "mTranslit": "Maloka?"
+    },
+    {
+      "mEnglish": "Rabbit",
+      "mGroup": "Animals",
+      "mRussian": "xx",
+      "mTranslit": "Krolik"
+    }
+  ]
+}
