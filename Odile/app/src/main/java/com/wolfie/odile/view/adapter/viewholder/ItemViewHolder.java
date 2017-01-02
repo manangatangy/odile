@@ -71,11 +71,19 @@ public class ItemViewHolder extends BaseViewHolder {
         mRussianTextView.setText(highlight(mPhrase.getRussian(), highlightText));
         mTranslitTextView.setText(mPhrase.getTranslit());
         mEnglishTextView.setText(highlight(mPhrase.getEnglish(), highlightText));
+        mRussianTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onRussianTextClick(mPhrase);
+                }
+            }
+        });
         mEditView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onListItemClick(mPhrase);
+                    mListener.onEditItemClick(mPhrase);
                 }
             }
         });

@@ -1,6 +1,7 @@
 package com.wolfie.odile.presenter;
 
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -16,7 +17,7 @@ import com.wolfie.odile.view.activity.OdileActivity;
 import com.wolfie.odile.view.fragment.EditFragment;
 
 import java.util.List;
-
+import java.util.Locale;
 
 public class ListPresenter extends BasePresenter<ListUi> implements
         AsyncListeningTask.Listener<DataSet>, OdileActivity.SearchListener {
@@ -26,6 +27,11 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     // If non-null, then only show phrases from this group.
     @Nullable
     private String mGroupName;
+
+    private Locale mLanguageLocale = new Locale("ru", "RU");
+    private TextToSpeech mTextToSpeech;
+    private boolean mTextToSpeechReady = false;
+    private boolean mTextToSpeechLanguageAvailable = false;
 
     // These values are not saved, but refreshed upon resume.
     // Note that mHeadings and mGroup are taken from here by
@@ -37,6 +43,26 @@ public class ListPresenter extends BasePresenter<ListUi> implements
 
     public ListPresenter(ListUi listUi) {
         super(listUi);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mTextToSpeech = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    mTextToSpeechReady = true;
+                    if (mTextToSpeech.isLanguageAvailable(mLanguageLocale) != TextToSpeech.LANG_NOT_SUPPORTED) {
+                        mTextToSpeech.setLanguage(mLanguageLocale);
+                        mTextToSpeechLanguageAvailable = true;
+                    }
+                } else {
+                    mTextToSpeech = null;
+                    getUi().showBanner("Error: TextToSpeech failed to initialise");
+                }
+            }
+        });
     }
 
     @Override
@@ -164,7 +190,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
         };
     }
 
-    public void onListItemClick(Phrase selectedPhrase) {
+    public void onEditItemClick(Phrase selectedPhrase) {
         EditPresenter editPresenter = getUi().findPresenter(EditFragment.class);
         if (editPresenter != null) {
             if (selectedPhrase != null) {
@@ -173,6 +199,17 @@ public class ListPresenter extends BasePresenter<ListUi> implements
                 // Set up a new Phrase for the currently selected group name.
                 editPresenter.editNewPhrase(mGroupName);
             }
+        }
+    }
+
+    public void onRussianTextClick(Phrase selectedPhrase) {
+        if (!mTextToSpeechReady) {
+            getUi().showBanner("Error: TextToSpeech not yet initialised");
+        } else if (!mTextToSpeechLanguageAvailable) {
+            getUi().showBanner("Error: TextToSpeech Russian not available");
+        } else {
+            String text = selectedPhrase.getRussian();
+            mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
         }
     }
 

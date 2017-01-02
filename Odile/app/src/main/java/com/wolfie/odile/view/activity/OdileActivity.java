@@ -1,8 +1,10 @@
 package com.wolfie.odile.view.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.LayoutRes;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -22,6 +24,8 @@ import com.wolfie.odile.view.fragment.DrawerFragment;
 import butterknife.BindView;
 
 public class OdileActivity extends SimpleActivity {
+
+    private static final int REQUEST_TTS_DATA_CHECK = 345;
 
     @BindView(R.id.layout_activity_drawer)
     public DrawerLayout mDrawer;
@@ -64,6 +68,20 @@ public class OdileActivity extends SimpleActivity {
         // Create the settings (activity sheet) fragment into it's container.
 //        setupFragment(SettingsFragment.class.getName(), R.id.fragment_container_settings, null);
 
+        Intent checkIntent = new Intent();
+        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+        startActivityForResult(checkIntent, REQUEST_TTS_DATA_CHECK);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_TTS_DATA_CHECK) {
+            if (resultCode != TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                Intent installIntent = new Intent();
+                installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                startActivity(installIntent);
+            }
+        }
     }
 
     @Override

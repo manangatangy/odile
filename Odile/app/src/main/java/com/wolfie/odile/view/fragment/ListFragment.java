@@ -59,7 +59,7 @@ public class ListFragment extends BaseFragment implements
 
     @OnClick(R.id.add_entry_fab)
     public void onAddEntryClick() {
-        mListPresenter.onListItemClick(null);
+        mListPresenter.onEditItemClick(null);
     }
 
     private ListPresenter mListPresenter;
@@ -209,8 +209,13 @@ public class ListFragment extends BaseFragment implements
     }
 
     @Override
-    public void onListItemClick(Phrase selectedPhrase) {
-        mListPresenter.onListItemClick(selectedPhrase);
+    public void onEditItemClick(Phrase selectedPhrase) {
+        mListPresenter.onEditItemClick(selectedPhrase);
+    }
+
+    @Override
+    public void onRussianTextClick(Phrase selectedPhrase) {
+        mListPresenter.onRussianTextClick(selectedPhrase);
     }
 
 }

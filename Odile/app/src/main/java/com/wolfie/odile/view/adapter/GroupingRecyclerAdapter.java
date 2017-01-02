@@ -162,7 +162,8 @@ public class GroupingRecyclerAdapter extends PlaceholderRecyclerAdapter<BaseView
     }
 
     public interface OnItemInListClickedListener {
-        void onListItemClick(Phrase selectedPhrase);
+        void onRussianTextClick(Phrase selectedPhrase);     // Click on the Russian text (expanded or contracted).
+        void onEditItemClick(Phrase selectedPhrase);        // Click on the edit icon (only visible when expanded)
     }
 
     @IntDef({AdapterMode.EXPANDING_CONTRACTING, AdapterMode.FIXED_EXPANDED})
