@@ -112,7 +112,7 @@ public class IoLoader {
                 isr = new InputStreamReader(fis);
                 List<Phrase> phrases = new IoHelper().inport(isr);
 
-                // Load into database, optionally clearing existing data first. (Retain existing session key).
+                // Load into database, optionally clearing existing data first.
                 if (mIsOverwrite) {
                     mDataSource.deleteAll();
                 }

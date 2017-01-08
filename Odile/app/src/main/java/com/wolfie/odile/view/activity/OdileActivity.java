@@ -13,8 +13,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.OpenFileActivityBuilder;
 import com.wolfie.odile.R;
+import com.wolfie.odile.presenter.BasePresenter;
 import com.wolfie.odile.presenter.ListPresenter;
 import com.wolfie.odile.presenter.MainPresenter;
 import com.wolfie.odile.view.fragment.EditFragment;
@@ -26,7 +31,9 @@ import butterknife.BindView;
 
 public class OdileActivity extends SimpleActivity {
 
-    private static final int REQUEST_TTS_DATA_CHECK = 345;
+    public static final int REQUEST_TTS_DATA_CHECK = 345;
+    public static final int REQUEST_DRIVE_RESOLUTION = 346;
+    public static final int REQUEST_DRIVE_OPENER = 347;
 
     @BindView(R.id.layout_activity_drawer)
     public DrawerLayout mDrawer;
@@ -76,13 +83,33 @@ public class OdileActivity extends SimpleActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_TTS_DATA_CHECK) {
-            if (resultCode != TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                Intent installIntent = new Intent();
-                installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                startActivity(installIntent);
-            }
+        switch (requestCode) {
+            case REQUEST_TTS_DATA_CHECK:
+                if (resultCode != TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                    Intent installIntent = new Intent();
+                    installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                    startActivity(installIntent);
+                }
+                break;
+            case REQUEST_DRIVE_RESOLUTION:
+                if (resultCode == RESULT_OK) {
+                    mMainPresenter.restoreFromGoogleDrive();
+                } else {
+                    Toast.makeText(this, "Can't resolve Google Drive connection", Toast.LENGTH_LONG).show();
+                }
+                break;
+            case REQUEST_DRIVE_OPENER:
+                if (resultCode == RESULT_OK) {
+                    DriveId driveId = data.getParcelableExtra(OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
+                    mMainPresenter.retrieveFileContents(driveId);
+                } else {
+                    Toast.makeText(this, "Can't open Google Drive file", Toast.LENGTH_LONG).show();
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
         }
+
     }
 
     @Override
@@ -110,6 +137,12 @@ public class OdileActivity extends SimpleActivity {
         MenuItemCompat.setOnActionExpandListener(searchItem, searchViewHandler);
 
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMainPresenter.setActivity(this);       // Hacky.
     }
 
     /**

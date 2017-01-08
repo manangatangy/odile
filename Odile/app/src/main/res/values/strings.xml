@@ -12,13 +12,13 @@
 
     <string name="menu_item_help">Help</string>
     <string name="menu_item_backup">Backup</string>
-    <string name="menu_item_restore">Restore</string>
+    <string name="menu_item_restore">Restore (from Google Drive)</string>
 
     <string name="st010">Fields have been modified\nclick CANCEL to close without saving</string>
     <string name="st012">Specify the export filename to be written into directory:\n</string>
     <string name="st013">External storage is not available</string>
-    <string name="st014">Export to clear text</string>
-    <string name="st015">Import from clear text</string>
+    <string name="st014">Export</string>
+    <string name="st015">Import</string>
     <string name="st016">Access to public storage has \npreviously been denied\nGo to settings/apps/odile \nto grant permission</string>
     <string name="st017">Access to public storage not permitted</string>
     <string name="st018">The external storage media is not available\nfor read/write access\nPerhaps it is not mounted</string>
