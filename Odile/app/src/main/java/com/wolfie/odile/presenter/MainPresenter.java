@@ -25,6 +25,9 @@ import com.wolfie.odile.model.loader.IoLoader;
 import com.wolfie.odile.model.loader.PhraseLoader;
 import com.wolfie.odile.view.BaseUi;
 import com.wolfie.odile.view.activity.BaseActivity;
+import com.wolfie.odile.view.activity.OdileActivity;
+import com.wolfie.odile.view.activity.SimpleActivity;
+import com.wolfie.odile.view.fragment.DrawerFragment;
 import com.wolfie.odile.view.fragment.ListFragment;
 
 import static com.wolfie.odile.view.activity.OdileActivity.REQUEST_DRIVE_OPENER;
@@ -74,11 +77,11 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
      * AppCompatActivity.onDestroy and BasePresenter.onDestroy, we hack it by directly
      * coupling the OdileActivity and the MainPresenter.
      */
-    public void setActivity(BaseActivity baseActivity) {
-        mBaseActivity = baseActivity;
+    public void setActivity(OdileActivity odileActivity) {
+        mOdileActivity = odileActivity;
     }
 
-    private BaseActivity mBaseActivity;
+    private OdileActivity mOdileActivity;
     private GoogleApiClient mGoogleApiClient;
 
     @Override
@@ -96,7 +99,7 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
 
     public void restoreFromGoogleDrive() {
         disconnect();
-        mGoogleApiClient = new GoogleApiClient.Builder(mBaseActivity)
+        mGoogleApiClient = new GoogleApiClient.Builder(mOdileActivity)
                 .addApi(Drive.API)
                 .addScope(Drive.SCOPE_FILE)
                 .addOnConnectionFailedListener(this)
@@ -114,10 +117,10 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         if (!connectionResult.hasResolution()) {      // Show the localized error dialog.
             GoogleApiAvailability.getInstance()
-                    .getErrorDialog(mBaseActivity, connectionResult.getErrorCode(), 0).show();
+                    .getErrorDialog(mOdileActivity, connectionResult.getErrorCode(), 0).show();
         } else {
             try {
-                connectionResult.startResolutionForResult(mBaseActivity, REQUEST_DRIVE_RESOLUTION);
+                connectionResult.startResolutionForResult(mOdileActivity, REQUEST_DRIVE_RESOLUTION);
             } catch (IntentSender.SendIntentException e) {
                 Log.e(TAG, "Exception while starting resolution activity", e);
             }
@@ -132,32 +135,38 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
                 .setMimeType(new String[] { "text/plain", "text/html" })
                 .build(mGoogleApiClient);
         try {
-            mBaseActivity.startIntentSenderForResult(intentSender, REQUEST_DRIVE_OPENER, null, 0, 0, 0);
+            mOdileActivity.startIntentSenderForResult(intentSender, REQUEST_DRIVE_OPENER, null, 0, 0, 0);
             // Calls back ==> retrieveFileContents()
         } catch (IntentSender.SendIntentException e) {
             Log.w(TAG, "Unable to send intent", e);
         }
     }
 
-    public void retrieveFileContents(DriveId driveId) {
-        mDriveLoader.restore(false, driveId, this);
+    public void retrieveFileContents(@Nullable DriveId driveId) {
+        if (driveId == null) {
+            showMessage("No Google Drive file was selected");
+        } else {
+            mOdileActivity.showLoadingOverlay();
+            mDriveLoader.restore(true, driveId, this);
+        }
     }
 
     @Override
     public void onCompletion(DriveLoader.DriveResult driveResult) {
         if (driveResult.mFailureMessage != null) {
             showMessage(driveResult.mFailureMessage);
-        }
-        if (driveResult.mSuccessMessage != null) {
+        } else if (driveResult.mSuccessMessage != null) {
             // Refresh list
-            ListPresenter listPresenter = mBaseActivity.findPresenter(ListFragment.class);
+            ListPresenter listPresenter = mOdileActivity.findPresenter(ListFragment.class);
             listPresenter.loadPhrases();
             showMessage(driveResult.mSuccessMessage);
         }
+        mOdileActivity.closeMenuDrawer();
+        mOdileActivity.hideLoadingOverlay();
     }
 
     public void showMessage(String message) {
-        Toast.makeText(mBaseActivity, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(mOdileActivity, message, Toast.LENGTH_LONG).show();
     }
 
 }

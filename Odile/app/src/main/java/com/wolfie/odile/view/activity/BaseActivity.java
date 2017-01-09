@@ -1,6 +1,5 @@
 package com.wolfie.odile.view.activity;
 
-import android.app.Activity;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;

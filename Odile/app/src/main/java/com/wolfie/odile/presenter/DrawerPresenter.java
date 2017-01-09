@@ -2,6 +2,7 @@ package com.wolfie.odile.presenter;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.wolfie.odile.view.BaseUi;
 import com.wolfie.odile.presenter.DrawerPresenter.DrawerUi;
@@ -22,6 +23,7 @@ public class DrawerPresenter extends BasePresenter<DrawerUi> {
     @Override
     public void resume() {
         super.resume();
+        Log.d(MainPresenter.TAG, "DrawerPresenter.resume, mIsOpen=" + mIsOpen);
         if (!mIsOpen) {
             getUi().closeDrawer();
         } else {
@@ -32,7 +34,8 @@ public class DrawerPresenter extends BasePresenter<DrawerUi> {
     @Override
     public void pause() {
         super.pause();
-        mIsOpen = getUi().isDrawerOpen();
+        mIsOpen = !getUi().isDrawerClosed();
+        Log.d(MainPresenter.TAG, "DrawerPresenter.pause, mIsOpen=" + mIsOpen);
     }
 
     @Override
@@ -73,7 +76,7 @@ public class DrawerPresenter extends BasePresenter<DrawerUi> {
 
     @Override
     public boolean backPressed() {
-        if (!getUi().isDrawerOpen()) {
+        if (getUi().isDrawerClosed()) {
             return true;        // Means: not consumed here
         }
         getUi().closeDrawer();
@@ -106,13 +109,14 @@ public class DrawerPresenter extends BasePresenter<DrawerUi> {
 //        filePresenter.backup();
     }
     public void onMenuRestore() {
-        getUi().closeDrawer();
+//        getUi().closeDrawer();
         MainPresenter mainPresenter = getUi().findPresenter(null);
         mainPresenter.restoreFromGoogleDrive();
     }
 
     public interface DrawerUi extends BaseUi {
-        boolean isDrawerOpen();
+//        boolean isDrawerOpen();
+        boolean isDrawerClosed();
         void closeDrawer();
         void refreshListWithHeadings(List<String> headings);
         void selectListItem(@Nullable String selected);

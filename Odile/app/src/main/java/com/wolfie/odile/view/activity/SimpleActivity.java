@@ -1,5 +1,7 @@
 package com.wolfie.odile.view.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.IdRes;

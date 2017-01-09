@@ -2,246 +2,287 @@
   "phrases": [
     {
       "mEnglish": "Hi",
-      "mGroup": "Greetings",
+      "mGroup": "Jim-1",
       "mRussian": "Привет",
       "mTranslit": "Privyet"
     },
     {
       "mEnglish": "Bye",
-      "mGroup": "Greetings",
+      "mGroup": "Jim-1",
       "mRussian": "Пока",
       "mTranslit": "Paka"
     },
     {
       "mEnglish": "Hello",
-      "mGroup": "Greetings",
+      "mGroup": "Jim-1",
       "mRussian": "Здравствуйте",
       "mTranslit": "Zdravstvuyte"
     },
     {
       "mEnglish": "Good morning",
-      "mGroup": "Greetings",
+      "mGroup": "Jim-1",
       "mRussian": "Доброе утро",
       "mTranslit": "Dobraye utro"
     },
     {
       "mEnglish": "Good day",
-      "mGroup": "Greetings",
+      "mGroup": "Jim-1",
       "mRussian": "Добрый день",
       "mTranslit": "Dobryy den"
     },
     {
       "mEnglish": "Good evening",
-      "mGroup": "Greetings",
+      "mGroup": "Jim-1",
       "mRussian": "Добрый вечер",
       "mTranslit": "Dobryy vecher"
     },
     {
       "mEnglish": "Goodbye",
-      "mGroup": "Greetings",
+      "mGroup": "Jim-1",
       "mRussian": "До свидания",
       "mTranslit": "Do svidanyia"
     },
     {
       "mEnglish": "Til tomorrow",
-      "mGroup": "Greetings",
+      "mGroup": "Jim-1",
       "mRussian": "До завтрд",
       "mTranslit": "Do zavtra"
     },
     {
       "mEnglish": "Happy new year",
-      "mGroup": "Greetings",
+      "mGroup": "Jim-1",
       "mRussian": "С новым годом",
       "mTranslit": "s novym godom"
     },
     {
       "mEnglish": "Please/you're welcome",
-      "mGroup": "Manners",
+      "mGroup": "Jim-1",
       "mRussian": "Пожалуйста",
       "mTranslit": "Pozhaluysta"
     },
     {
       "mEnglish": "Thank you",
-      "mGroup": "Manners",
+      "mGroup": "Jim-1",
       "mRussian": "Спасибо",
       "mTranslit": "Spasiba"
     },
     {
       "mEnglish": "May I",
-      "mGroup": "Manners",
+      "mGroup": "Jim-1",
       "mRussian": "Можно",
       "mTranslit": "Mozhno"
     },
     {
       "mEnglish": "Yes, it is possible",
-      "mGroup": "Manners",
+      "mGroup": "Jim-1",
       "mRussian": "Да можно",
       "mTranslit": "Mozhno"
     },
     {
       "mEnglish": "I would like",
-      "mGroup": "Manners",
+      "mGroup": "Jim-1",
       "mRussian": "Я буду",
       "mTranslit": "Ya budu"
     },
+
     {
       "mEnglish": "Not at all",
-      "mGroup": "Manners",
+      "mGroup": "Jim-1",
       "mRussian": "Не за что",
       "mTranslit": "Ne za shto"
     },
     {
       "mEnglish": "Breakfast",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Завтрак",
       "mTranslit": "Zavtrak"
     },
     {
       "mEnglish": "Main afternoon meal",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Обед",
       "mTranslit": "Abyed"
     },
     {
       "mEnglish": "Supper",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Ужин",
       "mTranslit": "Uzhin"
     },
     {
       "mEnglish": "Porridge",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Каша",
       "mTranslit": "Kusha"
     },
     {
       "mEnglish": "Tea",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Чай",
       "mTranslit": "Chai"
     },
     {
       "mEnglish": "Coffee",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Кофе",
       "mTranslit": "Kofe"
     },
     {
       "mEnglish": "Bread",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Хлеб",
       "mTranslit": "Khleb"
     },
     {
       "mEnglish": "Fermented yeast drink",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Квас",
       "mTranslit": "Kvass"
     },
     {
       "mEnglish": "Style of rye bread",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Вородински",
       "mTranslit": "Barradinski"
     },
     {
       "mEnglish": "Pancakes",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Блины",
       "mTranslit": "Blini"
     },
     {
       "mEnglish": "Sausage",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Колбаска",
       "mTranslit": "xx"
     },
     {
       "mEnglish": "Soup",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Суп",
       "mTranslit": "Soop"
     },
     {
       "mEnglish": "Beetroot soup",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Борщ",
       "mTranslit": "Borshcht"
     },
     {
       "mEnglish": "Cabbage soup",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Щи",
       "mTranslit": "Shchi"
     },
     {
       "mEnglish": "Spicy lamb meal",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Хорчо",
       "mTranslit": "Kharcho"
     },
     {
       "mEnglish": "Potato",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Картошка",
       "mTranslit": "Kartochka"
     },
     {
       "mEnglish": "Beer",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Пиво",
       "mTranslit": "Peeva"
     },
     {
       "mEnglish": "Vodka",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Водка",
       "mTranslit": "Vodka"
     },
     {
       "mEnglish": "Water",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Вода",
       "mTranslit": "Voda"
     },
     {
       "mEnglish": "Milk",
-      "mGroup": "Meals/Food",
+      "mGroup": "Jim-2",
       "mRussian": "Молоко",
       "mTranslit": "Molako"
     },
     {
       "mEnglish": "Fool",
-      "mGroup": "Misc",
+      "mGroup": "Jim-2",
       "mRussian": "Дурак",
       "mTranslit": "Durak"
     },
     {
       "mEnglish": "Cards",
-      "mGroup": "Misc",
+      "mGroup": "Jim-2",
       "mRussian": "Картошки",
       "mTranslit": "Kartochki"
     },
 
+{  "mGroup": "Jim-3",  "mEnglish": "What is it ?",  "mRussian": "Что это ?",  "mTranslit": "Chto eto"  },
+{  "mGroup": "Jim-3",  "mEnglish": "One (when counting) (time?)",  "mRussian": "раз",  "mTranslit": "raz"  },
+{  "mGroup": "Jim-3",  "mEnglish": "One (when adjectival)",  "mRussian": "один",  "mTranslit": "odin"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Salad",  "mRussian": "Салат",  "mTranslit": "Salat"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Rice",  "mRussian": "Рис",  "mTranslit": "Ris"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Meat",  "mRussian": "Мясо",  "mTranslit": "Myaso"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Lamb",  "mRussian": "xягненокx",  "mTranslit": "yagnenok"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Beef",  "mRussian": "говяжий",  "mTranslit": "govyazhiy"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Pork",  "mRussian": "Свинина",  "mTranslit": "Svinina"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Fish",  "mRussian": "Рыба",  "mTranslit": "Ryba"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Husband",  "mRussian": "Муж",  "mTranslit": "Muzh"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Man",  "mRussian": "мужчина",  "mTranslit": "muzhchina"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Wife",  "mRussian": "Жена",  "mTranslit": "Zhena"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Woman",  "mRussian": "Женщина",  "mTranslit": "Zhenshchina"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Daughter",  "mRussian": "Дочка",  "mTranslit": "Dochkav"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Children",  "mRussian": "Дети",  "mTranslit": "Deti"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Mother",  "mRussian": "Мать",  "mTranslit": "Mat"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Father",  "mRussian": "Отец",  "mTranslit": "Otets"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Brother",  "mRussian": "Брат",  "mTranslit": "Brat"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Sister",  "mRussian": "Сестра",  "mTranslit": "Sestra"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Parents",  "mRussian": "Родители",  "mTranslit": "Roditeli"  },
+{  "mGroup": "Jim-3",  "mEnglish": "CLose male friend",  "mRussian": "друг",  "mTranslit": "drug"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Close female friend",  "mRussian": "подруга",  "mTranslit": "podruga"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Acquaintance",  "mRussian": "xx",  "mTranslit": "xx"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Visa",  "mRussian": "виза",  "mTranslit": "viza"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Passport",  "mRussian": "пасспорт",  "mTranslit": "pasport"  },
+{  "mGroup": "Jim-3",  "mEnglish": "How much is ...?",  "mRussian": "Сколько стоит",  "mTranslit": "Skol'ko stoit"  },
+{  "mGroup": "Jim-3",  "mEnglish": "What ?",  "mRussian": "Что",  "mTranslit": "Chto"  },
+{  "mGroup": "Jim-3",  "mEnglish": "What is it ?",  "mRussian": "Что это",  "mTranslit": "Chto eto"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Where? (location)",  "mRussian": "Где ?",  "mTranslit": "Gde"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Where? (how to get there)",  "mRussian": "Куда ?",  "mTranslit": "Kuda"  },
+{  "mGroup": "Jim-3",  "mEnglish": "They call me David",  "mRussian": "Меня зовут Давид",  "mTranslit": "Menya zovut David"  },
+{  "mGroup": "Jim-3",  "mEnglish": "What do they call you?",  "mRussian": "Как вас зовут ?",  "mTranslit": "Kak vas zovut"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Very pleasant",  "mRussian": "Очень приятно",  "mTranslit": "Ochen' priyatno"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Excuse me (sorry)",  "mRussian": "Извините",  "mTranslit": "Izvinite"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Very good",  "mRussian": "Очень Хорошо",  "mTranslit": "Ochen' Khorosho"  },
+{  "mGroup": "Jim-3",  "mEnglish": "Very bad",  "mRussian": "Очень плохо",  "mTranslit": "Ochen' plokho"  },
 
-{  "mGroup": "Misc",  "mEnglish": "How much is ...?",  "mRussian": "Сколько стоит",  "mTranslit": "Skol'ko stoit"  },
-{  "mGroup": "Misc",  "mEnglish": "What ?",  "mRussian": "Что",  "mTranslit": "Chto"  },
-{  "mGroup": "Misc",  "mEnglish": "What is it ?",  "mRussian": "Что зто",  "mTranslit": "Chto eto"  },
-{  "mGroup": "Misc",  "mRussian": "Где ?",  "mEnglish": "Where? (location)",  "mTranslit": "Gde"  },
-{  "mGroup": "Misc",  "mRussian": "Куда ?",  "mEnglish": "Where? (how to get there)",  "mTranslit": "Kuda"  },
-{  "mGroup": "Misc",  "mRussian": "Как вас зовут ?",  "mEnglish": "What do they call you?",  "mTranslit": "Kak vas zovut"  },
-{  "mGroup": "Misc",  "mEnglish": "Very pleasant",  "mRussian": "Очень приятно",  "mTranslit": "Ochen' priyatno"  },
-{  "mGroup": "Misc",  "mEnglish": "Excuse me (sorry)",  "mRussian": "Извините",  "mTranslit": "Izvinite"  },
-{  "mGroup": "Misc",  "mEnglish": "They call me David",  "mRussian": "Меня зовут Давид",  "mTranslit": "Menya zovut David"  },
-{  "mGroup": "Misc",  "mEnglish": "Very good",  "mRussian": "Очень Хорошо",  "mTranslit": "Ochen' Khorosho"  },
-{  "mGroup": "Misc",  "mEnglish": "xx",  "mRussian": "xx",  "mTranslit": "xx"  },
+{  "mGroup": "Jim-4",  "mEnglish": "I have",  				"mRussian": "у меня есто",  "mTranslit": "U menya yest'"  },
+{  "mGroup": "Jim-4",  "mEnglish": "You have",  			"mRussian": "у теня есто",  "mTranslit": "U tebya yest'"  },
+{  "mGroup": "Jim-4",  "mEnglish": "You (you plural) have", "mRussian": "у вас есто",  "mTranslit": "U vas yest'"  },
+{  "mGroup": "Jim-4",  "mEnglish": "New year/fir tree",  	"mRussian": "Елка",  "mTranslit": "Elka"  },
+{  "mGroup": "Jim-4",  "mEnglish": "Amour",  				"mRussian": "жарко",  "mTranslit": ZHarko"  },
+{  "mGroup": "Jim-4",  "mEnglish": "Love (also girl name)", "mRussian": "любов",  "mTranslit": "Lyubov"  },
+{  "mGroup": "Jim-4",  "mEnglish": "Nothing to speak of",  	"mRussian": "Ничего",  "mTranslit": "Nichego"  },
+{  "mGroup": "Jim-4",  "mEnglish": "Also",  				"mRussian": "Также",  "mTranslit": "Takzhe"  },
+{  "mGroup": "Jim-4",  "mEnglish": "Person",  				"mRussian": "Человек",  "mTranslit": "Chelovek"  },
+{  "mGroup": "Jim-4",  "mEnglish": "People (plural)",  		"mRussian": "люди",  "mTranslit": "Lyudi"  },
+{  "mGroup": "Jim-4",  "mEnglish": "University",  			"mRussian": "Университет",  "mTranslit": "Universitet"  },
+{  "mGroup": "Jim-4",  "mEnglish": "Football",			  	"mRussian": "Футбол",  "mTranslit": "Futbol"  },
+{  "mGroup": "Jim-4",  "mEnglish": "Good",				  	"mRussian": "Хорошо",  "mTranslit": "KHorosho"  },
+{  "mGroup": "Jim-4",  "mEnglish": "Do you want some tea?", "mRussian": "Хочешь чаю ?",  "mTranslit": "KHochesh' chayu"  },
+{  "mGroup": "Jim-4",  "mEnglish": "Price",		  			"mRussian": "Цена",  "mTranslit": "TSena"  },
+{  "mGroup": "Jim-4",  "mEnglish": "School", 	 			"mRussian": "Школа",  "mTranslit": "SHkola"  },
+{  "mGroup": "Jim-4",  "mEnglish": "Tongue or language",  	"mRussian": "Язык",  "mTranslit": "YAzyk"  },
+{  "mGroup": "Jim-4",  "mEnglish": "Egg", 		 			"mRussian": "Яйцо",  "mTranslit": "YAytso"  },
 
+{  "mGroup": "Misc",  "mEnglish": "Rabbit", 		 			"mRussian": "Кролик",  "mTranslit": "Krolik"  }
 
-    {
-      "mEnglish": "Rabbit",
-      "mGroup": "Misc",
-      "mRussian": "Кролик",
-      "mTranslit": "Krolik"
-    }
-  ]
+   ]
 }
+

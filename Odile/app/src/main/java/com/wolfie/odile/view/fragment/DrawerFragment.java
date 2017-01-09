@@ -136,21 +136,26 @@ public class DrawerFragment extends BaseFragment implements
         mDrawerPresenter.onMenuRestore();
     }
 
+//    @Override
+//    public boolean isDrawerOpen() {
+//        return getEskeyActivity().mDrawer.isDrawerOpen(Gravity.LEFT);
+//    }
+
     @Override
-    public boolean isDrawerOpen() {
-        return getEskeyActivity().mDrawer.isDrawerOpen(Gravity.LEFT);
+    public boolean isDrawerClosed() {
+        return !getEskeyActivity().mDrawer.isDrawerOpen(Gravity.LEFT);
     }
 
     @Override
     public void closeDrawer() {
-        if (isDrawerOpen()) {
+        if (!isDrawerClosed()) {
             getEskeyActivity().mDrawer.closeDrawer(Gravity.LEFT);
         }
     }
 
     @Override
     public void openDrawer() {
-        if (!isDrawerOpen()) {
+        if (isDrawerClosed()) {
             getEskeyActivity().mDrawer.openDrawer(Gravity.LEFT);
         }
     }

@@ -1,9 +1,9 @@
 package com.wolfie.odile.view.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.LayoutRes;
 import android.support.v4.view.MenuItemCompat;
@@ -12,14 +12,12 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.OpenFileActivityBuilder;
 import com.wolfie.odile.R;
-import com.wolfie.odile.presenter.BasePresenter;
+import com.wolfie.odile.presenter.DrawerPresenter;
 import com.wolfie.odile.presenter.ListPresenter;
 import com.wolfie.odile.presenter.MainPresenter;
 import com.wolfie.odile.view.fragment.EditFragment;
@@ -37,6 +35,9 @@ public class OdileActivity extends SimpleActivity {
 
     @BindView(R.id.layout_activity_drawer)
     public DrawerLayout mDrawer;
+
+    @BindView(R.id.progress_overlay)
+    View mProgressOverlayView;
 
     private MainPresenter mMainPresenter;
 
@@ -99,12 +100,13 @@ public class OdileActivity extends SimpleActivity {
                 }
                 break;
             case REQUEST_DRIVE_OPENER:
+                DriveId driveId = null;         // Null means no file selected.
                 if (resultCode == RESULT_OK) {
-                    DriveId driveId = data.getParcelableExtra(OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
-                    mMainPresenter.retrieveFileContents(driveId);
-                } else {
-                    Toast.makeText(this, "Can't open Google Drive file", Toast.LENGTH_LONG).show();
+                    driveId = data.getParcelableExtra(OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
                 }
+                mMainPresenter.retrieveFileContents(driveId);
+//                } else {
+//                }
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
@@ -143,6 +145,40 @@ public class OdileActivity extends SimpleActivity {
     protected void onResume() {
         super.onResume();
         mMainPresenter.setActivity(this);       // Hacky.
+    }
+
+    public void closeMenuDrawer() {
+        DrawerPresenter drawerPresenter = findPresenter(DrawerFragment.class);
+        drawerPresenter.closeDrawer();
+    }
+
+    /**
+     * @param view         View to animate
+     * @param toVisibility Visibility at the end of animation
+     * @param toAlpha      Alpha at the end of animation
+     * @param duration     Animation duration in ms
+     * Ref: http://stackoverflow.com/a/29542951
+     */
+    private void animateView(final View view, final int toVisibility, float toAlpha, int duration) {
+        boolean show = (toVisibility == View.VISIBLE);
+        if (show) {
+            view.setAlpha(0);
+        }
+        view.setVisibility(View.VISIBLE);
+        view.animate().setDuration(duration).alpha(show ? toAlpha : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                view.setVisibility(toVisibility);
+            }
+        });
+    }
+
+    public void showLoadingOverlay() {
+        animateView(mProgressOverlayView, View.VISIBLE, 0.4f, 200);
+    }
+
+    public void hideLoadingOverlay() {
+        animateView(mProgressOverlayView, View.GONE, 0, 200);
     }
 
     /**

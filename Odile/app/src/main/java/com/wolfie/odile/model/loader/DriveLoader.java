@@ -84,7 +84,6 @@ public class DriveLoader {
                 }
                 for (int i = 0; i < phrases.size(); i++) {
                     mDataSource.insert(phrases.get(i));
-                    Log.i(MainPresenter.TAG, "insert");
                 }
                 driveResult = new SuccessResult("Restored from Google Drive " + phrases.size() + " phrases");
             } catch (JsonIOException jioe) {
