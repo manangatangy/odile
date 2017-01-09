@@ -3,10 +3,12 @@ package com.wolfie.odile.model.loader;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
+import com.wolfie.odile.presenter.MainPresenter;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -50,18 +52,21 @@ public abstract class AsyncConnectedTask<PARAMS, RESULT> extends AsyncListeningT
                 latch.countDown();
             }
         });
+        Log.i(MainPresenter.TAG, "runInBackground");
         mClient.connect();
         try {
             latch.await();
         } catch (InterruptedException e) {
             return null;
         }
+        Log.i(MainPresenter.TAG, "connect has returned");
         if (!mClient.isConnected()) {
             return null;
         }
         try {
             return runInBackgroundConnected(entry);
         } finally {
+            Log.i(MainPresenter.TAG, "disconnecting...");
             mClient.disconnect();
         }
     }

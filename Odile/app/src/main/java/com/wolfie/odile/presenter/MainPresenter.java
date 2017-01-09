@@ -39,7 +39,7 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
         GoogleApiClient.OnConnectionFailedListener,
         AsyncListeningTask.Listener<DriveLoader.DriveResult> {
 
-    private static final String TAG = "OdileMainPresenter";
+    public static final String TAG = "OdileMainPresenter";
 
     private Helper mHelper;
     private SQLiteDatabase mDatabase;

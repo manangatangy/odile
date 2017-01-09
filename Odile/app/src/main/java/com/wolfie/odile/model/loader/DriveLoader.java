@@ -2,6 +2,7 @@ package com.wolfie.odile.model.loader;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveContents;
@@ -12,6 +13,7 @@ import com.google.gson.JsonSyntaxException;
 import com.wolfie.odile.model.IoHelper;
 import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.database.Source;
+import com.wolfie.odile.presenter.MainPresenter;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -59,24 +61,30 @@ public class DriveLoader {
 
         @Override
         public DriveResult runInBackgroundConnected(DriveId driveId) {
+            Log.i(MainPresenter.TAG, "runInBackgroundConnected");
             DriveFile driveFile = driveId.asDriveFile();
             DriveApi.DriveContentsResult driveContentsResult =
                     driveFile.open(getGoogleApiClient(), DriveFile.MODE_READ_ONLY, null).await();
+            Log.i(MainPresenter.TAG, "driveFile.open");
             if (!driveContentsResult.getStatus().isSuccess()) {
                 return new FailureResult("Can't open Google Drive file");
             }
             DriveContents driveContents = driveContentsResult.getDriveContents();
+            Log.i(MainPresenter.TAG, "getDriveContents");
             DriveResult driveResult = null;
             InputStreamReader isr = null;
             try {
                 isr = new InputStreamReader(driveContents.getInputStream());
+                Log.i(MainPresenter.TAG, "getInputStream");
                 List<Phrase> phrases = new IoHelper().inport(isr);
+                Log.i(MainPresenter.TAG, "inport");
                 // Load into database, optionally clearing existing data first.
                 if (mIsOverwrite) {
                     mDataSource.deleteAll();
                 }
                 for (int i = 0; i < phrases.size(); i++) {
                     mDataSource.insert(phrases.get(i));
+                    Log.i(MainPresenter.TAG, "insert");
                 }
                 driveResult = new SuccessResult("Restored from Google Drive " + phrases.size() + " phrases");
             } catch (JsonIOException jioe) {
