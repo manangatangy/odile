@@ -29,6 +29,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     private String mGroupName;
 
     private Locale mLanguageLocale = new Locale("ru", "RU");
+    // https://android-developers.googleblog.com/2009/09/introduction-to-text-to-speech-in.html
     private TextToSpeech mTextToSpeech;
     private boolean mTextToSpeechReady = false;
     private boolean mTextToSpeechLanguageAvailable = false;
@@ -48,6 +49,9 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    public void initTextToSpeech() {
         mTextToSpeech = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -70,11 +74,17 @@ public class ListPresenter extends BasePresenter<ListUi> implements
         super.resume();
         // TODO - what about the searchCriterion ?
         loadPhrases();
+        initTextToSpeech();
     }
 
     @Override
     public void pause() {
         super.pause();
+        if (mTextToSpeech != null) {
+            mTextToSpeech.stop();
+            mTextToSpeech.shutdown();
+            mTextToSpeech = null;
+        }
     }
 
     @Override

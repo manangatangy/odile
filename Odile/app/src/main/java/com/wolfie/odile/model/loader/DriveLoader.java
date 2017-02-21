@@ -83,7 +83,11 @@ public class DriveLoader {
                     mDataSource.deleteAll();
                 }
                 for (int i = 0; i < phrases.size(); i++) {
-                    mDataSource.insert(phrases.get(i));
+                    Phrase phrase = phrases.get(i);
+                    if (phrase != null) {
+                        // Protect against empty last record, caused by trailing comma in json
+                        mDataSource.insert(phrase);
+                    }
                 }
                 driveResult = new SuccessResult("Restored from Google Drive " + phrases.size() + " phrases");
             } catch (JsonIOException jioe) {

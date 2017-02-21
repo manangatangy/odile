@@ -32,12 +32,12 @@ public class PhraseGroup {
      * Assumes the Phrases in the DataSet are ordered by group name.
      */
     public static List<PhraseGroup> buildGroups(String heading, DataSet dataSet) {
+        int totalPhrases = 0;
         List<PhraseGroup> groups = new ArrayList<>();
         String currentGroup = null;
         List<Phrase> currentPhrases = null;
-        for (Phrase entry : dataSet.getPhrases()) {
-            Log.d("odile", "PhraseGroup.buildGroups(): group:" + entry.getGroup() + ", name=" + entry.getId());
-            if (!entry.getGroup().equals(currentGroup)) {
+        for (Phrase phrase : dataSet.getPhrases()) {
+            if (!phrase.getGroup().equals(currentGroup)) {
                 // This entry is in a different group to the previous one, close
                 // off the current list (if one has been started).
                 if (currentPhrases != null && currentGroup != null) {
@@ -45,24 +45,31 @@ public class PhraseGroup {
                     groups.add(group);
                     currentPhrases = null;
                     currentGroup = null;
+                    int p = group.getPhrases().size();
+                    Log.d("PhraseGroup", "added group(" + group.getHeading() + ") with " + p + " phrases");
+                    totalPhrases += p;
                 }
             }
-            boolean mustCollect = (heading == null || entry.getGroup().equals(heading));
+            boolean mustCollect = (heading == null || phrase.getGroup().equals(heading));
             if  (mustCollect) {
                 if  (currentPhrases == null) {
                     // This group name must be collected and we have not yet started a
                     // group for, so start a new current group for it.
                     currentPhrases = new ArrayList<>();
-                    currentGroup = entry.getGroup();
+                    currentGroup = phrase.getGroup();
                 }
-                currentPhrases.add(entry);
+                currentPhrases.add(phrase);
             }
         }
         // If there is a current group being collected, close it off and add it in.
         if (currentPhrases != null && currentGroup != null) {
             PhraseGroup group = new PhraseGroup(currentGroup, currentPhrases);
             groups.add(group);
+            int p = group.getPhrases().size();
+            Log.d("PhraseGroup", "added group(" + group.getHeading() + ") with " + p + " phrases");
+            totalPhrases += p;
         }
+        Log.d("PhraseGroup", "total phrases: " + totalPhrases);
         return groups;
     }
 
