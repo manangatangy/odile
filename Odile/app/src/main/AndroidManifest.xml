@@ -36,6 +36,12 @@
         ".expandingadaper.ExpandableListActivity"
         ".MainNavDrawerActivity"
         -->
+        <service
+            android:name=".talker.TalkerService"
+            android:label="OdileTalkerService"
+            android:exported="false"
+            >
+        </service>
 
     </application>
 

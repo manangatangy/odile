@@ -2,13 +2,18 @@ package com.wolfie.odile.view.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.LayoutRes;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +25,7 @@ import com.wolfie.odile.R;
 import com.wolfie.odile.presenter.DrawerPresenter;
 import com.wolfie.odile.presenter.ListPresenter;
 import com.wolfie.odile.presenter.MainPresenter;
+import com.wolfie.odile.talker.TalkerService;
 import com.wolfie.odile.view.fragment.EditFragment;
 import com.wolfie.odile.view.fragment.FileFragment;
 import com.wolfie.odile.view.fragment.ListFragment;
@@ -32,6 +38,9 @@ public class OdileActivity extends SimpleActivity {
     public static final int REQUEST_TTS_DATA_CHECK = 345;
     public static final int REQUEST_DRIVE_RESOLUTION = 346;
     public static final int REQUEST_DRIVE_OPENER = 347;
+
+    private TalkerService mBoundTalkerService;
+    private boolean mServiceIsBound = false;
 
     @BindView(R.id.layout_activity_drawer)
     public DrawerLayout mDrawer;
@@ -144,7 +153,14 @@ public class OdileActivity extends SimpleActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        doBindService();
         mMainPresenter.setActivity(this);       // Hacky.
+    }
+
+    @Override
+    public void onPause() {
+        doUnbindService();
+        super.onPause();
     }
 
     public void closeMenuDrawer() {
@@ -235,4 +251,29 @@ public class OdileActivity extends SimpleActivity {
         void onQueryTextChange(String newText);
         void onQueryClose();
     }
+
+    // Ref http://developer.android.com/reference/android/app/Service.html#LocalServiceSample
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mBoundTalkerService = ((TalkerService.LocalBinder)service).getService();
+//            mBoundTalkerService.addStatusChangeListener(OdileActivity.this);
+        }
+        public void onServiceDisconnected(ComponentName className) {
+            mBoundTalkerService = null;
+        }
+    };
+
+    void doBindService() {
+        bindService(new Intent(OdileActivity.this, TalkerService.class), mServiceConnection, Context.BIND_AUTO_CREATE);
+        mServiceIsBound = true;
+    }
+
+    void doUnbindService() {
+        if (mServiceIsBound) {
+            unbindService(mServiceConnection);
+            mBoundTalkerService = null;
+            mServiceIsBound = false;
+        }
+    }
+
 }

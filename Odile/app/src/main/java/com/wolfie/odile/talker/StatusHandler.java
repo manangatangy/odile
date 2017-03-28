@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class StatusHandler extends Handler {
 
-    private TalkerStatus mMostRecentTalkerStatus = null;
+    private TalkerStatus mMostRecentTalkerStatus = new TalkerStatus();
     private List<StatusChangeListener> mStatusChangeListenerList = new ArrayList<StatusChangeListener>();
 
     public interface StatusChangeListener {
@@ -35,7 +35,7 @@ public class StatusHandler extends Handler {
      * May be called on threads other than the one that created the StatusHandler.
      * @param talkerStatus
      */
-    public void sendMessage(TalkerStatus talkerStatus) {
+    public void sendStatus(TalkerStatus talkerStatus) {
         Message message = Message.obtain(this, 0, talkerStatus);
         sendMessage(message);
     }

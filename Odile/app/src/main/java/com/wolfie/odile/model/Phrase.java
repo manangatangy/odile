@@ -1,6 +1,8 @@
 package com.wolfie.odile.model;
 
 import android.database.Cursor;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.wolfie.odile.model.database.MetaData;
@@ -9,7 +11,7 @@ import com.wolfie.odile.model.database.MetaData;
  * The primary data class, held on the database and represented in the ListFragment.
  * Only the mId field is unique.  There are no relationships between any other fields.
  */
-public class Phrase {
+public class Phrase implements Parcelable {
 
     private int mId = -1;
     @Expose
@@ -23,7 +25,45 @@ public class Phrase {
     @Expose
     private String mPath;
 
-    public Phrase() {
+    private Phrase() {
+    }
+
+    public Phrase(Parcel in) {
+        this();
+        read(in);
+    }
+
+    private void read(Parcel in) {
+        mId = in.readInt();
+        mGroup = in.readString();
+        mRussian = in.readString();
+        mEnglish = in.readString();
+        mTranslit = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Phrase> CREATOR =
+            new Creator<Phrase>() {
+                public Phrase createFromParcel(Parcel in) {
+                    return new Phrase(in);
+                }
+
+                public Phrase[] newArray(int size) {
+                    return new Phrase[size];
+                }
+            };
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mId);
+        dest.writeString(mGroup);
+        dest.writeString(mRussian);
+        dest.writeString(mEnglish);
+        dest.writeString(mTranslit);
     }
 
     private Phrase(int id, String group, String russian, String english, String translit, String path) {
@@ -32,7 +72,7 @@ public class Phrase {
         mRussian = russian;
         mEnglish = english;
         mTranslit = translit;
-        mPath = path;
+        mPath = path;       // TODO delete
     }
 
     public boolean isNew() {

@@ -1,11 +1,8 @@
 package com.wolfie.odile.talker;
 
-import android.util.Log;
-
 /**
- * Created by david on 23/03/17.
+ *
  */
-
 public class TalkerThread extends TimerHandlerThread {
 
     private StatusHandler mStatusHandler;   // For sending status updates to.
@@ -18,7 +15,9 @@ public class TalkerThread extends TimerHandlerThread {
     @Override
     public void handleCommand(TalkerCommand cmd) {
         // ...
-        exit();
+        if (cmd == null) {      // TODO null == "QUIT/STOP/EXIT"
+            exit();
+        }
     }
 
     @Override
@@ -27,7 +26,7 @@ public class TalkerThread extends TimerHandlerThread {
     }
 
     private void exit() {
-        mStatusHandler.sendMessage(new TalkerStatus());     // Set status back to standby ?
+        mStatusHandler.sendStatus(null);     // TODO null ==> "STOPPED/STANDBY"
         cancelTimer();  // Just in case.
         quit();         // Quit the child thread.
     }

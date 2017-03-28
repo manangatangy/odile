@@ -1,5 +1,7 @@
 package com.wolfie.odile.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -9,10 +11,56 @@ import java.util.List;
  * Used to organise the phrases, prior to displaying them.  Typically all
  * the records in mPhrases have the same group (which is held in mHeading).
  */
-public class PhraseGroup {
+public class PhraseGroup implements Parcelable {
 
     private String mHeading;
     private List<Phrase> mPhrases;
+
+    private PhraseGroup() {
+        mPhrases = new ArrayList<>();
+    }
+
+    public PhraseGroup(Parcel in) {
+        this();
+        read(in);
+    }
+
+    private void read(Parcel in) {
+        mHeading = in.readString();
+        mPhrases.clear();
+        int size = in.readInt();
+        for (int i = 0; i < size; i++) {
+            Phrase phrase = new Phrase(in);
+            mPhrases.add(phrase);
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Parcelable.Creator<PhraseGroup> CREATOR =
+            new Parcelable.Creator<PhraseGroup>() {
+                public PhraseGroup createFromParcel(Parcel in) {
+                    return new PhraseGroup(in);
+                }
+
+                public PhraseGroup[] newArray(int size) {
+                    return new PhraseGroup[size];
+                }
+            };
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mHeading);
+        int size = mPhrases.size();
+        dest.writeInt(size);
+        for (int i = 0; i < size; i++) {
+            Phrase phrase = mPhrases.get(i);
+            phrase.writeToParcel(dest, flags);
+        }
+    }
 
     public PhraseGroup(String heading, List<Phrase> phrases) {
         mHeading = heading;
@@ -27,7 +75,7 @@ public class PhraseGroup {
     }
 
     /**
-     * Build a list of PhraseGroups from the DataSet.  If the heading is non-null, then return
+     * Build a list of PhraseGroups from the DataSet.  If the heading is non-null, then return`
      * only a list of only one PhraseGroup, whose heading matches the specified heading.
      * Assumes the Phrases in the DataSet are ordered by group name.
      */
