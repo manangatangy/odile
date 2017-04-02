@@ -178,4 +178,7 @@ public abstract class BaseFragment extends Fragment implements BaseUi {
         Snackbar.make(getView(), message, LENGTH_LONG).show();
     }
 
+    public OdileActivity getOdileActivity() {
+        return (mBaseActivity instanceof OdileActivity) ? (OdileActivity)mBaseActivity : null;
+    }
 }

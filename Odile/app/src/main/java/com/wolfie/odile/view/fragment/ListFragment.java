@@ -62,6 +62,11 @@ public class ListFragment extends BaseFragment implements
         mListPresenter.onEditItemClick(null);
     }
 
+    @OnClick(R.id.add_speak_fab)
+    public void onSpeakClick() {
+        mListPresenter.onSpeakClick();
+    }
+
     private ListPresenter mListPresenter;
 
     private boolean mAutoUpdateStickyHeader;

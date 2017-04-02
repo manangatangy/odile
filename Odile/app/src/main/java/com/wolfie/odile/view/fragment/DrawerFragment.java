@@ -127,13 +127,13 @@ public class DrawerFragment extends BaseFragment implements
     void onMenuHelp() {
         mDrawerPresenter.onMenuHelp();
     }
-    @OnClick(R.id.menu_item_backup)
-    void onMenuBackup() {
-        mDrawerPresenter.onMenuBackup();
+    @OnClick(R.id.menu_item_save)
+    void onMenuSave() {
+        mDrawerPresenter.onMenuSave();
     }
-    @OnClick(R.id.menu_item_restore)
-    void onMenuRestore() {
-        mDrawerPresenter.onMenuRestore();
+    @OnClick(R.id.menu_item_load)
+    void onMenuLoad() {
+        mDrawerPresenter.onMenuLoad();
     }
 
 //    @Override

@@ -30,6 +30,7 @@ import com.wolfie.odile.view.fragment.EditFragment;
 import com.wolfie.odile.view.fragment.FileFragment;
 import com.wolfie.odile.view.fragment.ListFragment;
 import com.wolfie.odile.view.fragment.DrawerFragment;
+import com.wolfie.odile.view.fragment.TalkFragment;
 
 import butterknife.BindView;
 
@@ -38,9 +39,6 @@ public class OdileActivity extends SimpleActivity {
     public static final int REQUEST_TTS_DATA_CHECK = 345;
     public static final int REQUEST_DRIVE_RESOLUTION = 346;
     public static final int REQUEST_DRIVE_OPENER = 347;
-
-    private TalkerService mBoundTalkerService;
-    private boolean mServiceIsBound = false;
 
     @BindView(R.id.layout_activity_drawer)
     public DrawerLayout mDrawer;
@@ -80,8 +78,8 @@ public class OdileActivity extends SimpleActivity {
         // Create the file (activity sheet) fragment into it's container.
         setupFragment(FileFragment.class.getName(), R.id.fragment_container_file, null);
 
-        // Create the help (activity sheet) fragment into it's container.
-//        setupFragment(HelpFragment.class.getName(), R.id.fragment_container_help, null);
+        // Create the talk (activity sheet) fragment into it's container.
+        setupFragment(TalkFragment.class.getName(), R.id.fragment_container_talk, null);
 
         // Create the settings (activity sheet) fragment into it's container.
 //        setupFragment(SettingsFragment.class.getName(), R.id.fragment_container_settings, null);
@@ -252,13 +250,24 @@ public class OdileActivity extends SimpleActivity {
         void onQueryClose();
     }
 
+    private TalkerService mBoundTalkerService;
+    private boolean mServiceIsBound = false;
+
     // Ref http://developer.android.com/reference/android/app/Service.html#LocalServiceSample
     private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             mBoundTalkerService = ((TalkerService.LocalBinder)service).getService();
+            if (mServiceBoundListener != null) {
+                mServiceBoundListener.onBound(mBoundTalkerService);
+            }
 //            mBoundTalkerService.addStatusChangeListener(OdileActivity.this);
         }
+        @Override
         public void onServiceDisconnected(ComponentName className) {
+            if (mServiceBoundListener != null) {
+                mServiceBoundListener.onUnBound(mBoundTalkerService);
+            }
             mBoundTalkerService = null;
         }
     };
@@ -271,9 +280,22 @@ public class OdileActivity extends SimpleActivity {
     void doUnbindService() {
         if (mServiceIsBound) {
             unbindService(mServiceConnection);
+            // It seems that the mBoundTalkerService is sometimes null
+            if (mServiceBoundListener != null && mBoundTalkerService != null) {
+                mServiceBoundListener.onUnBound(mBoundTalkerService);
+            }
             mBoundTalkerService = null;
             mServiceIsBound = false;
         }
+    }
+
+    private ServiceBoundListener mServiceBoundListener;
+    public void setServiceBoundListener(ServiceBoundListener serviceBoundListener) {
+        mServiceBoundListener = serviceBoundListener;
+    }
+    public interface ServiceBoundListener {
+        void onBound(TalkerService mBoundTalkerService);
+        void onUnBound(TalkerService mBoundTalkerService);
     }
 
 }

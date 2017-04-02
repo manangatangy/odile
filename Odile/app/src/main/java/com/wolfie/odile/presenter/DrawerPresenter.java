@@ -103,12 +103,12 @@ public class DrawerPresenter extends BasePresenter<DrawerUi> {
         FilePresenter filePresenter = getUi().findPresenter(FileFragment.class);
         filePresenter.importing();
     }
-    public void onMenuBackup() {
+    public void onMenuSave() {
         getUi().closeDrawer();
 //        FilePresenter filePresenter = getUi().findPresenter(FileFragment.class);
 //        filePresenter.backup();
     }
-    public void onMenuRestore() {
+    public void onMenuLoad() {
 //        getUi().closeDrawer();
         MainPresenter mainPresenter = getUi().findPresenter(null);
         mainPresenter.restoreFromGoogleDrive();

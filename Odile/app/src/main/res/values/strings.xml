@@ -9,10 +9,18 @@
     <string name="menu_item_settings">Settings</string>
     <string name="menu_item_export">Export</string>
     <string name="menu_item_import">Import</string>
+    <string name="menu_item_local_file">(local file)</string>
 
+    <string name="menu_item_save">Save</string>
+    <string name="menu_item_load">Load</string>
     <string name="menu_item_help">Help</string>
     <string name="menu_item_backup">Backup</string>
-    <string name="menu_item_restore">Restore (from GDrive)</string>
+    <string name="menu_item_restore">Restore</string>
+    <string name="menu_item_gdrive">(GDrive)</string>
+
+    <string name="menu_item_desc_clear">(clear text)</string>
+    <string name="menu_item_desc_cipher">(cipher text)</string>
+    <string name="menu_item_desc_gdrive">(Google Drive)</string>
 
     <string name="st010">Fields have been modified\nclick CANCEL to close without saving</string>
     <string name="st012">Specify the export filename to be written into directory:\n</string>
@@ -50,6 +58,8 @@
     <string name="st031">Backup file emailed successfully</string>
     <string name="st032">Backup file emailure cancelled</string>
     <string name="st033">Internal Storage Directory\n%1$s</string>
+
+    <string name="st040">Talking in progress; press CLOSE to stop talking</string>
 
     <string name="im001">St. Basil\'s Cathedral (1)</string>
     <string name="im002">St. Basil\'s Cathedral (2)</string>

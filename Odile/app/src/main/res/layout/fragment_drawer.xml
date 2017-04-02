@@ -11,13 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/holo_blue_bright"
-        android:paddingTop="24dp"
+        android:paddingTop="10dp"
         android:paddingBottom="12dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark"
         android:orientation="horizontal"
         >
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,24 +36,65 @@
                 android:text="@string/menu_item_export"
                 />
             <TextView
+                style="@style/MenuItemDesc"
+                android:text="@string/menu_item_local_file"
+                />
+            <!--<TextView-->
+                <!--android:id="@+id/menu_item_backup"-->
+                <!--style="@style/MenuItem"-->
+                <!--android:text="@string/menu_item_backup"-->
+                <!--/>-->
+            <!--<TextView-->
+                <!--style="@style/MenuItemDesc"-->
+                <!--android:text="@string/menu_item_gdrive"-->
+                <!--/>-->
+            <TextView
+                android:id="@+id/menu_item_save"
+                style="@style/MenuItem"
+                android:text="@string/menu_item_save"
+                />
+            <TextView
+                style="@style/MenuItemDesc"
+                android:text="@string/menu_item_desc_gdrive"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            >
+            <TextView
+                android:id="@+id/menu_item_help"
+                style="@style/MenuItem"
+                android:text="@string/menu_item_help"
+                />
+            <TextView
                 android:id="@+id/menu_item_import"
                 style="@style/MenuItem"
                 android:text="@string/menu_item_import"
                 />
             <TextView
-                android:id="@+id/menu_item_backup"
+                style="@style/MenuItemDesc"
+                android:text="@string/menu_item_local_file"
+                />
+            <!--<TextView-->
+                <!--android:id="@+id/menu_item_restore"-->
+                <!--style="@style/MenuItem"-->
+                <!--android:text="@string/menu_item_restore"-->
+                <!--/>-->
+            <!--<TextView-->
+                <!--style="@style/MenuItemDesc"-->
+                <!--android:text="@string/menu_item_gdrive"-->
+                <!--/>-->
+            <TextView
+                android:id="@+id/menu_item_load"
                 style="@style/MenuItem"
-                android:text="@string/menu_item_backup"
+                android:text="@string/menu_item_load"
                 />
             <TextView
-                android:id="@+id/menu_item_restore"
-                style="@style/MenuItem"
-                android:text="@string/menu_item_restore"
-                />
-            <TextView
-                android:id="@+id/menu_item_help"
-                style="@style/MenuItem"
-                android:text="@string/menu_item_help"
+                style="@style/MenuItemDesc"
+                android:text="@string/menu_item_desc_gdrive"
                 />
         </LinearLayout>
 

@@ -39,12 +39,12 @@ public abstract class TimerHandlerThread extends HandlerThread {
         });
     }
 
-    public void sendCommand(TalkerCommand cmd) {
-        Message message = Message.obtain(mCommandHandler, 0, 0, 0, cmd);
+    public void sendCommand(TalkerCommand talkerCommand) {
+        Message message = Message.obtain(mCommandHandler, 0, 0, 0, talkerCommand);
         mCommandHandler.sendMessage(message);
     }
 
-    public abstract void handleCommand(TalkerCommand cmd);
+    public abstract void handleCommand(TalkerCommand talkerCommand);
 
     /**
      * Process a timer event.
@@ -60,9 +60,10 @@ public abstract class TimerHandlerThread extends HandlerThread {
      * another timed invocation should be arranged.
      */
     protected void setTimer(final int initialTimerPeriod) {
+        cancelTimer();
         mTimerHandler = new Handler() {
             @Override
-            public void handleMessage(Message msg) {
+            public void handleMessage(Message message) {
                 long nextTimerPeriod = handleTimer();
                 if (nextTimerPeriod != TIMER_CANCEL) {
                     if (nextTimerPeriod == TIMER_PERIOD_UNCHANGED) {

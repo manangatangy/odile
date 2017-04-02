@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class StatusHandler extends Handler {
 
-    private TalkerStatus mMostRecentTalkerStatus = new TalkerStatus();
+    private TalkerStatus mMostRecentTalkerStatus = null;
     private List<StatusChangeListener> mStatusChangeListenerList = new ArrayList<StatusChangeListener>();
 
     public interface StatusChangeListener {

@@ -57,6 +57,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
+        <!-- Content talk view (populated by action sheet talk fragment)-->
+        <FrameLayout
+            android:id="@+id/fragment_container_talk"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
         <!-- Content help view (populated by action sheet help fragment)-->
         <FrameLayout
             android:id="@+id/fragment_container_help"

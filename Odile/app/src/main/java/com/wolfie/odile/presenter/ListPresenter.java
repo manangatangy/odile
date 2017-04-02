@@ -15,6 +15,7 @@ import com.wolfie.odile.presenter.ListPresenter.ListUi;
 import com.wolfie.odile.view.BaseUi;
 import com.wolfie.odile.view.activity.OdileActivity;
 import com.wolfie.odile.view.fragment.EditFragment;
+import com.wolfie.odile.view.fragment.TalkFragment;
 
 import java.util.List;
 import java.util.Locale;
@@ -135,9 +136,20 @@ public class ListPresenter extends BasePresenter<ListUi> implements
         if (mDataSet != null) {
             List<PhraseGroup> groups = PhraseGroup.buildGroups(mGroupName, mDataSet);
             getUi().showPhrases(groups);
+            mDisplayGroups = groups;
         }
     }
 
+    private List<PhraseGroup> mDisplayGroups;        // References the currently displayed groups.
+
+    public PhraseGroup getDisplayGroups() {
+        if (mDisplayGroups != null) {
+            if (mDisplayGroups.size() > 0) {
+                return mDisplayGroups.get(0);
+            }
+        }
+        return null;
+    }
     private List<PhraseGroup> mTempGroups;           // Contains all phrases.
     private List<PhraseGroup> mFilteredGroups;       // Contains phrases filtered from mTempGroups.
 
@@ -151,6 +163,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
         mTempGroups = PhraseGroup.buildSingleGroup("Matching phrases", mDataSet);
         mFilteredGroups = PhraseGroup.buildSingleGroup("Matching phrases", null);
         getUi().showFilteredPhrases(mTempGroups, "");       // Will show all all phrases, since no search-filtering yet
+        mDisplayGroups = mTempGroups;
         getUi().setAddEntryVisibility(false);               // Add function disabled.
     }
 
@@ -163,6 +176,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
             if (TextUtils.isEmpty(criteria)) {
                 // Use unfiltered list
                 getUi().showFilteredPhrases(mTempGroups, "");
+                mDisplayGroups = mTempGroups;
             } else {
                 // Filter
                 List<Phrase> filteredEntries = mFilteredGroups.get(0).getPhrases();
@@ -174,6 +188,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
                     }
                 }
                 getUi().showFilteredPhrases(mFilteredGroups, criteria);
+                mDisplayGroups = mFilteredGroups;
                 if (filteredEntries.size() == 0) {
                     getUi().showNoFilteredPhrasesWarning();
                 }
@@ -209,6 +224,13 @@ public class ListPresenter extends BasePresenter<ListUi> implements
                 // Set up a new Phrase for the currently selected group name.
                 editPresenter.editNewPhrase(mGroupName);
             }
+        }
+    }
+
+    public void onSpeakClick() {
+        TalkPresenter talkPresenter = getUi().findPresenter(TalkFragment.class);
+        if (talkPresenter != null) {
+            talkPresenter.getUi().show();
         }
     }
 
