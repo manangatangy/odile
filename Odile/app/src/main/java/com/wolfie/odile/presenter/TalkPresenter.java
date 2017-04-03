@@ -5,19 +5,19 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.wolfie.odile.R;
-import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.PhraseGroup;
+import com.wolfie.odile.presenter.TalkPresenter.TalkUi;
 import com.wolfie.odile.talker.StatusHandler;
 import com.wolfie.odile.talker.TalkerCommand;
 import com.wolfie.odile.talker.TalkerService;
 import com.wolfie.odile.talker.TalkerStatus;
 import com.wolfie.odile.view.ActionSheetUi;
-import com.wolfie.odile.presenter.TalkPresenter.TalkUi;
 import com.wolfie.odile.view.activity.OdileActivity;
+import com.wolfie.odile.view.activity.ServiceBinder.ServiceBinderListener;
 import com.wolfie.odile.view.fragment.ListFragment;
 
 public class TalkPresenter extends BasePresenter<TalkUi>
-        implements OdileActivity.ServiceBoundListener, StatusHandler.StatusChangeListener {
+        implements ServiceBinderListener, StatusHandler.StatusChangeListener {
 
     private final static String KEY_TALK_ACTION_SHEET_SHOWING = "KEY_TALK_ACTION_SHEET_SHOWING";
 
@@ -36,7 +36,7 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         } else {
             getUi().show();
         }
-        getUi().getOdileActivity().setServiceBoundListener(this);
+        getUi().getOdileActivity().setServiceBinderListener(this);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         super.pause();
         mIsShowing = getUi().isShowing();
         getUi().dismissKeyboard(false);
-        getUi().getOdileActivity().setServiceBoundListener(null);
+        getUi().getOdileActivity().setServiceBinderListener(null);
     }
 
     @Override
@@ -57,16 +57,6 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         mIsShowing = savedState.getBoolean(KEY_TALK_ACTION_SHEET_SHOWING, false);
     }
 
-    @Override
-    public void onBound(TalkerService mBoundTalkerService) {
-        mBoundTalkerService.getStatusHandler().addStatusChangeListener(this);
-    }
-
-    @Override
-    public void onUnBound(TalkerService mBoundTalkerService) {
-        mBoundTalkerService.getStatusHandler().removeStatusChangeListener(this);
-    }
-
     /**
      * This is not called on resume, only when the view is shown by the user.
      */
@@ -74,6 +64,15 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         ListPresenter listPresenter = getUi().findPresenter(ListFragment.class);
         PhraseGroup phraseGroup = listPresenter.getDisplayGroups();
         getUi().startService(new TalkerCommand(TalkerCommand.Command.SET_PHRASES, phraseGroup));
+    }
+
+    @Override
+    public void onServiceBound(TalkerService mBoundTalkerService) {
+        mBoundTalkerService.getStatusHandler().addStatusChangeListener(this);
+    }
+    @Override
+    public void onServiceUnBound(TalkerService mBoundTalkerService) {
+        mBoundTalkerService.getStatusHandler().removeStatusChangeListener(this);
     }
 
     @Override
