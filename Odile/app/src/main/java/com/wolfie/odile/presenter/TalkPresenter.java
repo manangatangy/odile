@@ -63,6 +63,7 @@ public class TalkPresenter extends BasePresenter<TalkUi>
     public void onShow() {
         ListPresenter listPresenter = getUi().findPresenter(ListFragment.class);
         PhraseGroup phraseGroup = listPresenter.getDisplayGroups();
+        // TODO support null phrase group
         getUi().startService(new TalkerCommand(TalkerCommand.Command.SET_PHRASES, phraseGroup));
     }
 
