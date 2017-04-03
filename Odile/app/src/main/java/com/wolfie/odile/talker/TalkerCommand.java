@@ -20,14 +20,19 @@ public class TalkerCommand implements Parcelable {
         mPhraseGroups = new ArrayList<>();
     }
 
-    public TalkerCommand(Command command, @NonNull List<PhraseGroup> phraseGroups) {
+    public TalkerCommand(Command command) {
+        this();
         mCommand = command;
-        mPhraseGroups = phraseGroups;
     }
 
     public TalkerCommand(Parcel in) {
         this();
         read(in);
+    }
+
+    public TalkerCommand(Command command, @NonNull List<PhraseGroup> phraseGroups) {
+        mCommand = command;
+        mPhraseGroups = phraseGroups;
     }
 
     private void read(Parcel in) {

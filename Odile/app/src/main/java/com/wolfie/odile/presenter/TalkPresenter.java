@@ -7,7 +7,7 @@ import android.support.annotation.StringRes;
 import com.wolfie.odile.R;
 import com.wolfie.odile.model.PhraseGroup;
 import com.wolfie.odile.presenter.TalkPresenter.TalkUi;
-import com.wolfie.odile.talker.StatusHandler;
+import com.wolfie.odile.talker.StatusChannel;
 import com.wolfie.odile.talker.TalkerCommand;
 import com.wolfie.odile.talker.TalkerService;
 import com.wolfie.odile.talker.TalkerStatus;
@@ -20,12 +20,12 @@ import com.wolfie.odile.view.fragment.ListFragment;
 import java.util.List;
 
 public class TalkPresenter extends BasePresenter<TalkUi>
-        implements ServiceBinderListener, StatusHandler.StatusChangeListener {
+        implements ServiceBinderListener, StatusChannel.StatusListener {
 
     private final static String KEY_TALK_ACTION_SHEET_SHOWING = "KEY_TALK_ACTION_SHEET_SHOWING";
 
     private boolean mIsShowing;
-    private boolean mIsSpeaking;
+    private TalkerStatus.State mTalkerState;    // Only valid after onStatus() called (not saved).
 
     public TalkPresenter(TalkPresenter.TalkUi talkUi) {
         super(talkUi);
@@ -40,6 +40,7 @@ public class TalkPresenter extends BasePresenter<TalkUi>
             getUi().show();
         }
         getUi().bindServiceAndListen(this);
+        // Causes callback to onServiceBound().
     }
 
     @Override
@@ -60,51 +61,66 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         mIsShowing = savedState.getBoolean(KEY_TALK_ACTION_SHEET_SHOWING, false);
     }
 
+    @Override
+    public void onServiceBound(TalkerService mBoundTalkerService) {
+        mBoundTalkerService.getStatusChannel().addStatusListener(this);
+        // Causes callback to onStatus().
+    }
+    @Override
+    public void onServiceUnBound(TalkerService mBoundTalkerService) {
+        mBoundTalkerService.getStatusChannel().removeStatusListener(this);
+    }
+
+    @Override
+    public void onStatus(TalkerStatus talkerStatus) {
+        mTalkerState = talkerStatus.getState();
+
+        getUi().setTitleText(talkerStatus.getState().title());
+        getUi().setSubTitleText(talkerStatus.getSubTitle());
+        String desc = (mTalkerState == TalkerStatus.State.STOPPED) ? "" : talkerStatus.getText();
+        getUi().setDescriptionText(desc);
+
+        getUi().setCloseButtonEnabled(mTalkerState != TalkerStatus.State.SPEAKING);
+        getUi().setActionButtonEnabled(true);
+        getUi().setRepeatButtonEnabled(mTalkerState == TalkerStatus.State.PAUSED);
+
+        getUi().setActionButtonText(talkerStatus.getState().getActionText());
+    }
+
     /**
      * This is not called on resume, only when the view is shown by the user.
      */
     public void onShow() {
-        ListPresenter listPresenter = getUi().findPresenter(ListFragment.class);
-        List<PhraseGroup> phraseGroups = listPresenter.getDisplayGroups();
-        // TODO support null phrase group
-        getUi().startService(new TalkerCommand(TalkerCommand.Command.SET_PHRASES, phraseGroups));
-    }
-
-    @Override
-    public void onServiceBound(TalkerService mBoundTalkerService) {
-        mBoundTalkerService.getStatusHandler().addStatusChangeListener(this);
-    }
-    @Override
-    public void onServiceUnBound(TalkerService mBoundTalkerService) {
-        mBoundTalkerService.getStatusHandler().removeStatusChangeListener(this);
-    }
-
-    @Override
-    public void onStatusChange(TalkerStatus talkerStatus) {
-        getUi().setTitleText(talkerStatus.getState().title());
-        getUi().setSubTitleText(talkerStatus.getSubTitle());
-        String desc = (talkerStatus.getState() == TalkerStatus.State.STOPPED) ? ""
-                : talkerStatus.getText();
-        getUi().setDescriptionText(desc);
-
-        mIsSpeaking = (talkerStatus.getState() == TalkerStatus.State.SPEAKING);
-        getUi().setCloseButtonEnabled(!mIsSpeaking);
-        getUi().setActionButtonEnabled(true);
-        getUi().setRepeatButtonEnabled(talkerStatus.getState() == TalkerStatus.State.PAUSED);
-
-        getUi().setActionButtonText(talkerStatus.getState().getActionText());
+        // If we are resuming the activity it is possible that the service has been
+        // speaking in the background (indicated by state PAUSED or SPEAKING).
+        // Only set the phrases if the state is STOPPED (which will occur when
+        // the speaker gets to the end of the list, of if the CLOSE button clicked).
+        // Note: mTalkerState will be null until we trigger a status change by
+        // sending a command.
+        if (mTalkerState == null || mTalkerState == TalkerStatus.State.STOPPED) {
+            ListPresenter listPresenter = getUi().findPresenter(ListFragment.class);
+            List<PhraseGroup> phraseGroups = listPresenter.getDisplayGroups();
+            getUi().startService(new TalkerCommand(TalkerCommand.Command.SET_PHRASES, phraseGroups));
+        }
     }
 
     public void onClickClose() {
         // Check if talking and show error message if so, else close.
         if (!showErrorIfSpeaking()) {
+            // SET_PHRASE will set the state to STOPPED, so that the next time onShow()
+            // occurs, the phrases can be assigned.
+            getUi().startService(new TalkerCommand(TalkerCommand.Command.SET_PHRASES));
             getUi().hide();
         }
     }
 
     public void onClickAction() {
-
+        TalkerCommand.Command command = (mTalkerState == TalkerStatus.State.SPEAKING)
+                ? TalkerCommand.Command.PAUSE : TalkerCommand.Command.SPEAK;
+        getUi().startService(new TalkerCommand(command));
+        getUi().clearErrorMessage();
     }
+
     public void onClickRepeat() {
 
     }
@@ -122,10 +138,11 @@ public class TalkPresenter extends BasePresenter<TalkUi>
     }
 
     private boolean showErrorIfSpeaking() {
-        if (mIsSpeaking) {
+        if (mTalkerState == TalkerStatus.State.SPEAKING) {
             getUi().setErrorMessage(R.string.st040);
+            return true;
         }
-        return mIsSpeaking;
+        return false;
     }
 
     public interface TalkUi extends ActionSheetUi {

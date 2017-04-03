@@ -6,7 +6,7 @@ import android.content.Context;
  * Created by david on 24/03/17.
  */
 
-public class TalkerNotifier implements StatusHandler.StatusChangeListener {
+public class TalkerNotifier implements StatusChannel.StatusListener {
 
     private Context mContext;
 
@@ -15,7 +15,7 @@ public class TalkerNotifier implements StatusHandler.StatusChangeListener {
     }
 
     @Override
-    public void onStatusChange(TalkerStatus talkerStatus) {
+    public void onStatus(TalkerStatus talkerStatus) {
 
     }
 }

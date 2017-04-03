@@ -13,6 +13,7 @@ import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.PhraseGroup;
 import com.wolfie.odile.model.loader.AsyncListeningTask;
 import com.wolfie.odile.presenter.ListPresenter.ListUi;
+import com.wolfie.odile.talker.Speaker;
 import com.wolfie.odile.view.BaseUi;
 import com.wolfie.odile.view.activity.OdileActivity;
 import com.wolfie.odile.view.fragment.EditFragment;
@@ -30,11 +31,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     @Nullable
     private String mGroupName;
 
-    private Locale mLanguageLocale = new Locale("ru", "RU");
-    // https://android-developers.googleblog.com/2009/09/introduction-to-text-to-speech-in.html
-    private TextToSpeech mTextToSpeech;
-    private boolean mTextToSpeechReady = false;
-    private boolean mTextToSpeechLanguageAvailable = false;
+    private Speaker mSpeaker;
 
     // These values are not saved, but refreshed upon resume.
     // Note that mHeadings and mGroup are taken from here by
@@ -53,40 +50,18 @@ public class ListPresenter extends BasePresenter<ListUi> implements
         super.onCreate(savedInstanceState);
     }
 
-    public void initTextToSpeech() {
-        mTextToSpeech = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status == TextToSpeech.SUCCESS) {
-                    mTextToSpeechReady = true;
-                    if (mTextToSpeech.isLanguageAvailable(mLanguageLocale) != TextToSpeech.LANG_NOT_SUPPORTED) {
-                        mTextToSpeech.setLanguage(mLanguageLocale);
-                        mTextToSpeechLanguageAvailable = true;
-                    }
-                } else {
-                    mTextToSpeech = null;
-                    getUi().showBanner("Error: TextToSpeech failed to initialise");
-                }
-            }
-        });
-    }
-
     @Override
     public void resume() {
         super.resume();
         // TODO - what about the searchCriterion ?
         loadPhrases();
-        initTextToSpeech();
+        mSpeaker = new Speaker(getContext());
     }
 
     @Override
     public void pause() {
         super.pause();
-        if (mTextToSpeech != null) {
-            mTextToSpeech.stop();
-            mTextToSpeech.shutdown();
-            mTextToSpeech = null;
-        }
+        mSpeaker.stop();
     }
 
     @Override
@@ -233,13 +208,9 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     }
 
     public void onRussianTextClick(Phrase selectedPhrase) {
-        if (!mTextToSpeechReady) {
-            getUi().showBanner("Error: TextToSpeech not yet initialised");
-        } else if (!mTextToSpeechLanguageAvailable) {
-            getUi().showBanner("Error: TextToSpeech Russian not available");
-        } else {
-            String text = selectedPhrase.getRussian();
-            mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        String errorMsg = mSpeaker.speak(selectedPhrase.getRussian());
+        if (errorMsg != null) {
+            getUi().showBanner(errorMsg);
         }
     }
 

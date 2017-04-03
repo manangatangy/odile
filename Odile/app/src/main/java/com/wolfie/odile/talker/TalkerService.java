@@ -17,7 +17,8 @@ import android.os.IBinder;
 
  Foo foo = getIntent().getExtras().getParcelable("KEY_FOO");
 
- * The Service owns the StatusHandler and the the TalkerThread.
+ * The Service owns the StatusChannel and the the TalkerThread.
+ * Ref: http://stackoverflow.com/a/15772151
  */
 
 public class TalkerService extends Service {
@@ -26,7 +27,7 @@ public class TalkerService extends Service {
 
     private final IBinder mBinder = new LocalBinder();
 
-    private StatusHandler mStatusHandler = new StatusHandler();
+    private StatusChannel mStatusChannel = new StatusChannel();
 
     private TalkerThread mTalkerThread;
     private TalkerNotifier mTalkerNotifier;
@@ -44,28 +45,30 @@ public class TalkerService extends Service {
 
     @Override
     public void onCreate() {
-        mTalkerThread = new TalkerThread(mStatusHandler);
+        mTalkerThread = new TalkerThread(mStatusChannel, this);
         mTalkerThread.start();
         mTalkerThread.waitUntilReady();
-
-
         // notifier should only be created when backgrounding the activity
 //        mTalkerNotifier = new TalkerNotifier(this);
-//        mStatusHandler.addStatusChangeListener(mTalkerNotifier);
+//        mStatusChannel.addStatusListener(mTalkerNotifier);
     }
 
     @Override
     public void onDestroy() {
+        releaseResources();
+    }
+
+    private void releaseResources() {
         if (mTalkerThread != null) {
-            mTalkerThread.quitSafely();
+            mTalkerThread.sendCommand(null);
             mTalkerThread = null;
         }
         // TODO shutdown the notifier
-        // No need to remove listeners from StatusHandler; it is destroyed.
+        // No need to remove listeners from StatusChannel; it is destroyed.
     }
 
-    public StatusHandler getStatusHandler() {
-        return mStatusHandler;
+    public StatusChannel getStatusChannel() {
+        return mStatusChannel;
     }
 
     /**

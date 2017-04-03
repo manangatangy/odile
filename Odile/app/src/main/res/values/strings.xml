@@ -59,7 +59,7 @@
     <string name="st032">Backup file emailure cancelled</string>
     <string name="st033">Internal Storage Directory\n%1$s</string>
 
-    <string name="st040">Talking in progress; press CLOSE to stop talking</string>
+    <string name="st040">Talking in progress; press PAUSE to stop talking</string>
 
     <string name="im001">St. Basil\'s Cathedral (1)</string>
     <string name="im002">St. Basil\'s Cathedral (2)</string>

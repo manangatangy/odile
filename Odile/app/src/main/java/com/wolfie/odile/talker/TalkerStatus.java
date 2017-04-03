@@ -54,9 +54,9 @@ public class TalkerStatus {
     }
 
     public enum State {
-        STOPPED("SELECTED: ", "SPEAK"),
-        SPEAKING("SPEAKING: ", "PAUSE"),
-        PAUSED("PAUSED AT: ", "RESUME");
+        STOPPED("Selected: ", "SPEAK"),
+        SPEAKING("Speaking: ", "PAUSE"),
+        PAUSED("Paused at: ", "RESUME");
 
         private String mTitle;
         private String mActionText;

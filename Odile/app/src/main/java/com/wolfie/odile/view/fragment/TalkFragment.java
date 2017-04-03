@@ -1,11 +1,7 @@
 package com.wolfie.odile.view.fragment;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
@@ -17,10 +13,8 @@ import android.widget.TextView;
 import com.wolfie.odile.R;
 import com.wolfie.odile.presenter.TalkPresenter;
 import com.wolfie.odile.presenter.TalkPresenter.TalkUi;
-import com.wolfie.odile.talker.StatusHandler;
 import com.wolfie.odile.talker.TalkerCommand;
 import com.wolfie.odile.talker.TalkerService;
-import com.wolfie.odile.view.activity.OdileActivity;
 import com.wolfie.odile.view.activity.ServiceBinder;
 
 import butterknife.BindView;
