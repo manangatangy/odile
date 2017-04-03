@@ -1,6 +1,12 @@
 package com.wolfie.odile.talker;
 
+import android.support.annotation.NonNull;
+
+import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.PhraseGroup;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -9,7 +15,7 @@ public class TalkerThread extends TimerHandlerThread {
 
     private StatusHandler mStatusHandler;   // For sending status updates to.
     private TalkerStatus mTalkerStatus = new TalkerStatus();
-    private PhraseGroup mPhraseGroup;
+    private List<Phrase> mPhrases;
 
     public TalkerThread(StatusHandler statusHandler) {
         super("TalkerThread");
@@ -25,8 +31,8 @@ public class TalkerThread extends TimerHandlerThread {
                 // TODO ???
                 break;
             case SET_PHRASES:
-                mPhraseGroup = talkerCommand.mPhraseGroup;
-                mTalkerStatus.setTotal(mPhraseGroup.getPhrases().size());
+                mPhrases = getPhrases(talkerCommand.mPhraseGroups);
+                mTalkerStatus.setTotal(mPhrases.size());
                 // State should not be running; make sure of it.
                 mTalkerStatus.setCounter(0);
                 mTalkerStatus.setState(TalkerStatus.State.STOPPED);
@@ -53,4 +59,14 @@ public class TalkerThread extends TimerHandlerThread {
         cancelTimer();  // Just in case.
     }
 
+    @NonNull
+    private List<Phrase> getPhrases(@NonNull List<PhraseGroup> phraseGroups) {
+        List<Phrase> phrases = new ArrayList<>();
+        for (PhraseGroup phraseGroup : phraseGroups) {
+            for (Phrase phrase : phraseGroup.getPhrases()) {
+                phrases.add(phrase);
+            }
+        }
+        return phrases;
+    }
 }

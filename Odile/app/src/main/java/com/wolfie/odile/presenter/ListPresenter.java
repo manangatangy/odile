@@ -2,6 +2,7 @@ package com.wolfie.odile.presenter;
 
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -140,16 +141,13 @@ public class ListPresenter extends BasePresenter<ListUi> implements
         }
     }
 
+    public List<PhraseGroup> getDisplayGroups() {
+        return mDisplayGroups;
+    }
+
+    @NonNull
     private List<PhraseGroup> mDisplayGroups;        // References the currently displayed groups.
 
-    public PhraseGroup getDisplayGroups() {
-        if (mDisplayGroups != null) {
-            if (mDisplayGroups.size() > 0) {
-                return mDisplayGroups.get(0);
-            }
-        }
-        return null;
-    }
     private List<PhraseGroup> mTempGroups;           // Contains all phrases.
     private List<PhraseGroup> mFilteredGroups;       // Contains phrases filtered from mTempGroups.
 

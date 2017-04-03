@@ -2,6 +2,7 @@ package com.wolfie.odile.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -79,6 +80,7 @@ public class PhraseGroup implements Parcelable {
      * only a list of only one PhraseGroup, whose heading matches the specified heading.
      * Assumes the Phrases in the DataSet are ordered by group name.
      */
+    @NonNull
     public static List<PhraseGroup> buildGroups(String heading, DataSet dataSet) {
         int totalPhrases = 0;
         List<PhraseGroup> groups = new ArrayList<>();
@@ -126,6 +128,7 @@ public class PhraseGroup implements Parcelable {
      * The single PhraseGroup contains all the Phrases from the DataSet, ordered.
      * As a convenience, a null DataSet parameter means create an empty dataSet in the target.
      */
+    @NonNull
     public static List<PhraseGroup> buildSingleGroup(String heading, DataSet dataSet) {
         List<Phrase> phrases = new ArrayList<>();
         if (dataSet != null) {

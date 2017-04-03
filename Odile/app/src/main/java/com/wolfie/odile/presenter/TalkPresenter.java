@@ -17,6 +17,8 @@ import com.wolfie.odile.view.activity.ServiceBinder;
 import com.wolfie.odile.view.activity.ServiceBinder.ServiceBinderListener;
 import com.wolfie.odile.view.fragment.ListFragment;
 
+import java.util.List;
+
 public class TalkPresenter extends BasePresenter<TalkUi>
         implements ServiceBinderListener, StatusHandler.StatusChangeListener {
 
@@ -63,9 +65,9 @@ public class TalkPresenter extends BasePresenter<TalkUi>
      */
     public void onShow() {
         ListPresenter listPresenter = getUi().findPresenter(ListFragment.class);
-        PhraseGroup phraseGroup = listPresenter.getDisplayGroups();
+        List<PhraseGroup> phraseGroups = listPresenter.getDisplayGroups();
         // TODO support null phrase group
-        getUi().startService(new TalkerCommand(TalkerCommand.Command.SET_PHRASES, phraseGroup));
+        getUi().startService(new TalkerCommand(TalkerCommand.Command.SET_PHRASES, phraseGroups));
     }
 
     @Override

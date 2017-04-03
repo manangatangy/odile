@@ -2,26 +2,42 @@ package com.wolfie.odile.talker;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
+import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.PhraseGroup;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TalkerCommand implements Parcelable {
 
     public Command mCommand;
-    public PhraseGroup mPhraseGroup;
+    @NonNull
+    public List<PhraseGroup> mPhraseGroups;
 
-    public TalkerCommand(Command command, PhraseGroup phraseGroup) {
+    private TalkerCommand() {
+        mPhraseGroups = new ArrayList<>();
+    }
+
+    public TalkerCommand(Command command, @NonNull List<PhraseGroup> phraseGroups) {
         mCommand = command;
-        mPhraseGroup = phraseGroup;
+        mPhraseGroups = phraseGroups;
     }
 
     public TalkerCommand(Parcel in) {
+        this();
         read(in);
     }
 
     private void read(Parcel in) {
         mCommand = Command.CREATOR.createFromParcel(in);
-        mPhraseGroup = new PhraseGroup(in);
+        mPhraseGroups.clear();
+        int size = in.readInt();
+        for (int i = 0; i < size; i++) {
+            PhraseGroup phraseGroup = new PhraseGroup(in);
+            mPhraseGroups.add(phraseGroup);
+        }
     }
 
     @Override
@@ -43,7 +59,12 @@ public class TalkerCommand implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         mCommand.writeToParcel(dest, flags);
-        mPhraseGroup.writeToParcel(dest, flags);
+        int size = mPhraseGroups.size();
+        dest.writeInt(size);
+        for (int i = 0; i < size; i++) {
+            PhraseGroup phraseGroup = mPhraseGroups.get(i);
+            phraseGroup.writeToParcel(dest, flags);
+        }
     }
 
     public enum Command implements Parcelable {
