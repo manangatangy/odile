@@ -13,6 +13,7 @@ import com.wolfie.odile.talker.TalkerService;
 import com.wolfie.odile.talker.TalkerStatus;
 import com.wolfie.odile.view.ActionSheetUi;
 import com.wolfie.odile.view.activity.OdileActivity;
+import com.wolfie.odile.view.activity.ServiceBinder;
 import com.wolfie.odile.view.activity.ServiceBinder.ServiceBinderListener;
 import com.wolfie.odile.view.fragment.ListFragment;
 
@@ -36,7 +37,7 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         } else {
             getUi().show();
         }
-        getUi().getOdileActivity().setServiceBinderListener(this);
+        getUi().bindServiceAndListen(this);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         super.pause();
         mIsShowing = getUi().isShowing();
         getUi().dismissKeyboard(false);
-        getUi().getOdileActivity().setServiceBinderListener(null);
+        getUi().unbindServiceAndIgnore();
     }
 
     @Override
@@ -126,6 +127,9 @@ public class TalkPresenter extends BasePresenter<TalkUi>
     }
 
     public interface TalkUi extends ActionSheetUi {
+
+        void bindServiceAndListen(ServiceBinder.ServiceBinderListener serviceBinderListener);
+        void unbindServiceAndIgnore();
 
         void setTitleText(String title);
         void setSubTitleText(String subTitle);

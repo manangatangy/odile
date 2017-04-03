@@ -21,6 +21,7 @@ import com.wolfie.odile.talker.StatusHandler;
 import com.wolfie.odile.talker.TalkerCommand;
 import com.wolfie.odile.talker.TalkerService;
 import com.wolfie.odile.view.activity.OdileActivity;
+import com.wolfie.odile.view.activity.ServiceBinder;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,7 +58,7 @@ public class TalkFragment extends ActionSheetFragment implements TalkUi {
     TextView mTextError;
 
     private Unbinder mUnbinder2;
-
+    private ServiceBinder mServiceBinder = new ServiceBinder();
     private TalkPresenter mTalkPresenter;
 
     @Override
@@ -109,14 +110,25 @@ public class TalkFragment extends ActionSheetFragment implements TalkUi {
 
     @Override
     public void onResume() {
-//        doBindService();
         super.onResume();
     }
 
     @Override
     public void onPause() {
-//        doUnbindService();
         super.onPause();
+    }
+
+    @Override
+    public void bindServiceAndListen(ServiceBinder.ServiceBinderListener serviceBinderListener) {
+        mServiceBinder.bindService(getOdileActivity(), getContext());
+        mServiceBinder.setServiceBinderListener(serviceBinderListener);
+
+    }
+
+    @Override
+    public void unbindServiceAndIgnore() {
+        mServiceBinder.unbindService(getOdileActivity());
+        mServiceBinder.setServiceBinderListener(null);
     }
 
     @Override

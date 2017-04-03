@@ -47,7 +47,6 @@ public class OdileActivity extends SimpleActivity {
     @BindView(R.id.progress_overlay)
     View mProgressOverlayView;
 
-    private ServiceBinder mServiceBinder;
     private MainPresenter mMainPresenter;
 
     @Override
@@ -89,12 +88,6 @@ public class OdileActivity extends SimpleActivity {
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, REQUEST_TTS_DATA_CHECK);
-
-        mServiceBinder = new ServiceBinder();
-    }
-
-    public void setServiceBinderListener(ServiceBinderListener serviceBinderListener) {
-        mServiceBinder.setServiceBinderListener(serviceBinderListener);
     }
 
     @Override
@@ -159,13 +152,11 @@ public class OdileActivity extends SimpleActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mServiceBinder.bindService(this, getApplicationContext());
         mMainPresenter.setActivity(this);       // Hacky.
     }
 
     @Override
     public void onPause() {
-        mServiceBinder.unbindService(this);
         super.onPause();
     }
 
@@ -257,53 +248,5 @@ public class OdileActivity extends SimpleActivity {
         void onQueryTextChange(String newText);
         void onQueryClose();
     }
-
-//    private TalkerService mBoundTalkerService;
-//    private boolean mServiceIsBound = false;
-//
-//    // Ref http://developer.android.com/reference/android/app/Service.html#LocalServiceSample
-//    private ServiceConnection mServiceConnection = new ServiceConnection() {
-//        @Override
-//        public void onServiceConnected(ComponentName className, IBinder service) {
-//            mBoundTalkerService = ((TalkerService.LocalBinder)service).getService();
-//            if (mServiceBoundListener != null) {
-//                mServiceBoundListener.onServiceBound(mBoundTalkerService);
-//            }
-////            mBoundTalkerService.addStatusChangeListener(OdileActivity.this);
-//        }
-//        @Override
-//        public void onServiceDisconnected(ComponentName className) {
-//            if (mServiceBoundListener != null) {
-//                mServiceBoundListener.onServiceUnBound(mBoundTalkerService);
-//            }
-//            mBoundTalkerService = null;
-//        }
-//    };
-//
-//    void doBindService() {
-//        bindService(new Intent(OdileActivity.this, TalkerService.class), mServiceConnection, Context.BIND_AUTO_CREATE);
-//        mServiceIsBound = true;
-//    }
-//
-//    void doUnbindService() {
-//        if (mServiceIsBound) {
-//            unbindService(mServiceConnection);
-//            // It seems that the mBoundTalkerService is sometimes null
-//            if (mServiceBoundListener != null && mBoundTalkerService != null) {
-//                mServiceBoundListener.onServiceUnBound(mBoundTalkerService);
-//            }
-//            mBoundTalkerService = null;
-//            mServiceIsBound = false;
-//        }
-//    }
-//
-//    private ServiceBoundListener mServiceBoundListener;
-//    public void setServiceBoundListener(ServiceBoundListener serviceBoundListener) {
-//        mServiceBoundListener = serviceBoundListener;
-//    }
-//    public interface ServiceBoundListener {
-//        void onServiceBound(TalkerService mBoundTalkerService);
-//        void onServiceUnBound(TalkerService mBoundTalkerService);
-//    }
 
 }

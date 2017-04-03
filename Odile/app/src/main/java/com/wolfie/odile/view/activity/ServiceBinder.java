@@ -34,12 +34,12 @@ public class ServiceBinder implements ServiceConnection {
         mServiceBinderListener = serviceBinderListener;
     }
 
-    void bindService(OdileActivity odileActivity, Context packageContext) {
+    public void bindService(OdileActivity odileActivity, Context packageContext) {
         odileActivity.bindService(new Intent(packageContext, TalkerService.class), this, Context.BIND_AUTO_CREATE);
         mServiceIsBound = true;
     }
 
-    void unbindService(OdileActivity odileActivity) {
+    public void unbindService(OdileActivity odileActivity) {
         if (mServiceIsBound) {
             odileActivity.unbindService(this);       // Does not cause a callback.
             doUnbind();
