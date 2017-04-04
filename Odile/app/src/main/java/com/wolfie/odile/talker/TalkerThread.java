@@ -45,7 +45,7 @@ public class TalkerThread extends TimerHandlerThread {
             case SET_MODE:
                 // TODO ???
                 break;
-            case SET_PHRASES:
+            case SET_PHRASES:       // TODO rename to RESET
                 mPhrases = getPhrases(talkerCommand.mPhraseGroups);
                 mTalkerStatus.setTotal(mPhrases.size());
                 // State should not be running; make sure of it.

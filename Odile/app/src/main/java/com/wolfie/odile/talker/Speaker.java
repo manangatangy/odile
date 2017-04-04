@@ -2,11 +2,15 @@ package com.wolfie.odile.talker;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 
+import java.util.HashMap;
 import java.util.Locale;
 
-public class Speaker {
+public class Speaker extends UtteranceProgressListener {
 
+    // TODO support multi languages
+    // TODO support completion notification
     private Locale mLanguageLocale = new Locale("ru", "RU");
     // https://android-developers.googleblog.com/2009/09/introduction-to-text-to-speech-in.html
     private TextToSpeech mTextToSpeech;
@@ -28,6 +32,7 @@ public class Speaker {
                 }
             }
         });
+        mTextToSpeech.setOnUtteranceProgressListener(this);
     }
 
     public void stop() {
@@ -49,9 +54,26 @@ public class Speaker {
         } else if (mTextToSpeech == null) {
             return "Error: TextToSpeech failed to initialise";
         } else {
-            mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+            HashMap<String, String> params = new HashMap();
+            params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "an-utterance--id");
+            mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, params);
             return null;
         }
+    }
+
+    @Override
+    public void onStart(String utteranceId) {
+
+    }
+
+    @Override
+    public void onDone(String utteranceId) {
+
+    }
+
+    @Override
+    public void onError(String utteranceId) {
+
     }
 
     /*
