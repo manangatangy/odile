@@ -3,6 +3,7 @@ package com.wolfie.odile.presenter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.util.Log;
 
 import com.wolfie.odile.R;
 import com.wolfie.odile.model.PhraseGroup;
@@ -63,11 +64,13 @@ public class TalkPresenter extends BasePresenter<TalkUi>
 
     @Override
     public void onServiceBound(TalkService mBoundTalkService) {
+        Log.d("TalkPresenter", "onServiceBound");
         mBoundTalkService.getStatusChannel().addStatusListener(this);
         // Causes callback to onSpeakerInfo().
     }
     @Override
     public void onServiceUnBound(TalkService mBoundTalkService) {
+        Log.d("TalkPresenter", "onServiceUnBound");
         mBoundTalkService.getStatusChannel().removeStatusListener(this);
     }
 

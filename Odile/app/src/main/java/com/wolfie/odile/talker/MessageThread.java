@@ -6,6 +6,7 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.PhraseGroup;
@@ -20,7 +21,8 @@ import java.util.List;
  * ready for messages.  Ref: http://stackoverflow.com/a/4855788
  * Parent thread also calls {@link MessageThread#sendCommand(ServiceCommand)}.
  */
-public class MessageThread extends HandlerThread implements Handler.Callback {
+public class MessageThread extends HandlerThread
+        implements Handler.Callback, TextSpeaker.SpeakerListener {
 
     // Events handled by this thread queue here.
     private Handler mHandler;	        // Owned in the new, child thread.
@@ -48,8 +50,7 @@ public class MessageThread extends HandlerThread implements Handler.Callback {
     }
 
     public void sendQuit() {
-        Message message = Message.obtain(mHandler, MessageThread.Event.QUIT, 0, 0, null);
-        mHandler.sendMessage(message);
+        mHandler.sendEmptyMessage(MessageThread.Event.QUIT);
     }
 
     //endregion -- these methods are called from the parent thread --
@@ -60,8 +61,9 @@ public class MessageThread extends HandlerThread implements Handler.Callback {
         return false;
     }
 
-    private void handleEvent(@TalkService.Command int command, @Nullable ServiceCommand serviceCommand) {
-        switch (command) {
+    private void handleEvent(@MessageThread.Event int event, @Nullable ServiceCommand serviceCommand) {
+        Log.d("MessageThread", "handleEvent, event=" + eventName(event));
+        switch (event) {
             case MessageThread.Event.SETMODE:
                 // TODO ???
                 break;
@@ -86,11 +88,16 @@ public class MessageThread extends HandlerThread implements Handler.Callback {
                     reset();
                 } else {
                     String text = mPhrases.get(count).getRussian();
-                    mTextSpeaker.speak(text);
+                    String speakError = mTextSpeaker.speak(text);
+                    if (speakError != null) {
+                        Log.d("MessageThread", "handleEvent, speakError=" + speakError);
+                    }
                     mSpeakerInfo.setText(text);
                     mSpeakerInfo.setCounter(count + 1);
                     setTimer(1000);
                 }
+                break;
+            case MessageThread.Event.UTTERED:
                 break;
             case MessageThread.Event.QUIT:
                 cancelTimer();  // Just in case.
@@ -109,6 +116,11 @@ public class MessageThread extends HandlerThread implements Handler.Callback {
         mSpeakerInfo.setState(SpeakerInfo.State.STOPPED);
     }
 
+    @Override
+    public void onDoneUttering(boolean error) {
+        mHandler.sendEmptyMessage(MessageThread.Event.UTTERED);
+    }
+
     private void setTimer(int timerPeriod) {
         cancelTimer();
         mHandler.sendEmptyMessageDelayed(MessageThread.Event.TIMEOUT, timerPeriod);
@@ -118,6 +130,25 @@ public class MessageThread extends HandlerThread implements Handler.Callback {
         mHandler.removeMessages(MessageThread.Event.TIMEOUT);
     }
 
+    private String eventName(@MessageThread.Event int event) {
+        switch (event) {
+            case MessageThread.Event.SETMODE:
+                return "SETMODE";
+            case MessageThread.Event.RESET:
+                return "RESET";
+            case MessageThread.Event.SPEAK:
+                return "SPEAK";
+            case MessageThread.Event.PAUSE:
+                return "PAUSE";
+            case MessageThread.Event.TIMEOUT:
+                return "TIMEOUT";
+            case MessageThread.Event.UTTERED:
+                return "UTTERED";
+            case MessageThread.Event.QUIT:
+                return "QUIT";
+        }
+        return null;
+    }
 
     @IntDef({
             MessageThread.Event.SETMODE,

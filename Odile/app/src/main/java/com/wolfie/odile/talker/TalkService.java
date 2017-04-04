@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.IntDef;
+import android.util.Log;
 
 /**
  * Send command to the service like this:
@@ -53,6 +54,7 @@ public class TalkService extends Service {
 
     @Override
     public void onCreate() {
+        Log.d("TalkService", "onCreate");
         mMessageThread = new MessageThread(mInfoChannel, this);
         mMessageThread.start();
         mMessageThread.waitUntilReady();
@@ -63,6 +65,7 @@ public class TalkService extends Service {
 
     @Override
     public void onDestroy() {
+        Log.d("TalkService", "onDestroy");
         if (mMessageThread != null) {
             mMessageThread.sendQuit();
             mMessageThread = null;

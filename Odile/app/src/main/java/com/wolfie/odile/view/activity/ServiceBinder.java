@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.wolfie.odile.talker.TalkService;
 
@@ -30,16 +32,18 @@ public class ServiceBinder implements ServiceConnection {
     private TalkService mBoundTalkService;
     private ServiceBinderListener mServiceBinderListener;
 
-    public void setServiceBinderListener(ServiceBinderListener serviceBinderListener) {
+    public void setServiceBinderListener(@Nullable ServiceBinderListener serviceBinderListener) {
         mServiceBinderListener = serviceBinderListener;
     }
 
     public void bindService(OdileActivity odileActivity, Context packageContext) {
+        Log.d("ServiceBinder", "bindService");
         odileActivity.bindService(new Intent(packageContext, TalkService.class), this, Context.BIND_AUTO_CREATE);
         mServiceIsBound = true;
     }
 
     public void unbindService(OdileActivity odileActivity) {
+        Log.d("ServiceBinder", "unbindService, mServiceIsBound=" + mServiceIsBound);
         if (mServiceIsBound) {
             odileActivity.unbindService(this);       // Does not cause a callback.
             doUnbind();
@@ -50,6 +54,7 @@ public class ServiceBinder implements ServiceConnection {
     private void doUnbind() {
         // Release reference to service and notify listener.
         // It seems that the mBoundTalkService is sometimes null
+        Log.d("ServiceBinder", "doUnbind");
         if (mServiceBinderListener != null && mBoundTalkService != null) {
             mServiceBinderListener.onServiceUnBound(mBoundTalkService);
         }
@@ -59,6 +64,7 @@ public class ServiceBinder implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         // Called back from Activity.bindService().
+        Log.d("ServiceBinder", "onServiceConnected(" + name + ")");
         mBoundTalkService = ((TalkService.LocalBinder)service).getService();
         if (mServiceBinderListener != null && mBoundTalkService != null) {
             mServiceBinderListener.onServiceBound(mBoundTalkService);
@@ -68,6 +74,7 @@ public class ServiceBinder implements ServiceConnection {
     @Override
     public void onServiceDisconnected(ComponentName name) {
         // May be called if service is killed, independent of call to unbindService().
+        Log.d("ServiceBinder", "onServiceDisconnected(" + name + ")");
         doUnbind();
     }
 

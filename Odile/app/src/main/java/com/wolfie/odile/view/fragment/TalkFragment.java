@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,6 +115,7 @@ public class TalkFragment extends ActionSheetFragment implements TalkUi {
 
     @Override
     public void bindServiceAndListen(ServiceBinder.ServiceBinderListener serviceBinderListener) {
+        Log.d("TalkFragment", "bindServiceAndListen");
         mServiceBinder.bindService(getOdileActivity(), getContext());
         mServiceBinder.setServiceBinderListener(serviceBinderListener);
 
@@ -121,6 +123,7 @@ public class TalkFragment extends ActionSheetFragment implements TalkUi {
 
     @Override
     public void unbindServiceAndIgnore() {
+        Log.d("TalkFragment", "unbindServiceAndIgnore");
         mServiceBinder.unbindService(getOdileActivity());
         mServiceBinder.setServiceBinderListener(null);
     }

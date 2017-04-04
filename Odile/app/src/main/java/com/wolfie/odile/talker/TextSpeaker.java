@@ -3,6 +3,7 @@ package com.wolfie.odile.talker;
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.support.annotation.Nullable;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -17,6 +18,8 @@ public class TextSpeaker extends UtteranceProgressListener {
     private boolean mTextToSpeechReady = false;
     private boolean mTextToSpeechLanguageAvailable = false;
 
+    private SpeakerListener mSpeakerListener;
+
     public TextSpeaker(Context context) {
         mTextToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
@@ -26,13 +29,13 @@ public class TextSpeaker extends UtteranceProgressListener {
                     if (mTextToSpeech.isLanguageAvailable(mLanguageLocale) != TextToSpeech.LANG_NOT_SUPPORTED) {
                         mTextToSpeech.setLanguage(mLanguageLocale);
                         mTextToSpeechLanguageAvailable = true;
+                        mTextToSpeech.setOnUtteranceProgressListener(TextSpeaker.this);
                     }
                 } else {
                     mTextToSpeech = null;
                 }
             }
         });
-        mTextToSpeech.setOnUtteranceProgressListener(this);
     }
 
     public void stop() {
@@ -55,7 +58,7 @@ public class TextSpeaker extends UtteranceProgressListener {
             return "Error: TextToSpeech failed to initialise";
         } else {
             HashMap<String, String> params = new HashMap();
-            params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "an-utterance--id");
+            params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "an-utterance-id");
             mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, params);
             return null;
         }
@@ -63,17 +66,22 @@ public class TextSpeaker extends UtteranceProgressListener {
 
     @Override
     public void onStart(String utteranceId) {
-
     }
 
     @Override
     public void onDone(String utteranceId) {
-
+        hasUttered(false);
     }
 
     @Override
     public void onError(String utteranceId) {
+        hasUttered(true);
+    }
 
+    private void hasUttered(boolean error) {
+        if (mSpeakerListener != null) {
+            mSpeakerListener.onDoneUttering(error);
+        }
     }
 
     /*
@@ -90,4 +98,13 @@ public class TextSpeaker extends UtteranceProgressListener {
 
 https://android-developers.googleblog.com/2009/09/introduction-to-text-to-speech-in.html
      */
+
+    public void setSpeakerListener(@Nullable SpeakerListener speakerListener) {
+        mSpeakerListener = speakerListener;
+    }
+
+    public interface SpeakerListener {
+        void onDoneUttering(boolean error);       // Speaker has finished uttering the text.
+    }
+
 }
