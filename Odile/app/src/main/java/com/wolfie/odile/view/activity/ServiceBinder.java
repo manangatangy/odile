@@ -13,7 +13,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-import com.wolfie.odile.talker.TalkerService;
+import com.wolfie.odile.talker.TalkService;
 
 /**
  * Binds a service and notifies a listener on bind/unbind.
@@ -27,7 +27,7 @@ import com.wolfie.odile.talker.TalkerService;
 public class ServiceBinder implements ServiceConnection {
 
     private boolean mServiceIsBound = false;
-    private TalkerService mBoundTalkerService;
+    private TalkService mBoundTalkService;
     private ServiceBinderListener mServiceBinderListener;
 
     public void setServiceBinderListener(ServiceBinderListener serviceBinderListener) {
@@ -35,7 +35,7 @@ public class ServiceBinder implements ServiceConnection {
     }
 
     public void bindService(OdileActivity odileActivity, Context packageContext) {
-        odileActivity.bindService(new Intent(packageContext, TalkerService.class), this, Context.BIND_AUTO_CREATE);
+        odileActivity.bindService(new Intent(packageContext, TalkService.class), this, Context.BIND_AUTO_CREATE);
         mServiceIsBound = true;
     }
 
@@ -49,19 +49,19 @@ public class ServiceBinder implements ServiceConnection {
 
     private void doUnbind() {
         // Release reference to service and notify listener.
-        // It seems that the mBoundTalkerService is sometimes null
-        if (mServiceBinderListener != null && mBoundTalkerService != null) {
-            mServiceBinderListener.onServiceUnBound(mBoundTalkerService);
+        // It seems that the mBoundTalkService is sometimes null
+        if (mServiceBinderListener != null && mBoundTalkService != null) {
+            mServiceBinderListener.onServiceUnBound(mBoundTalkService);
         }
-        mBoundTalkerService = null;
+        mBoundTalkService = null;
     }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         // Called back from Activity.bindService().
-        mBoundTalkerService = ((TalkerService.LocalBinder)service).getService();
-        if (mServiceBinderListener != null && mBoundTalkerService != null) {
-            mServiceBinderListener.onServiceBound(mBoundTalkerService);
+        mBoundTalkService = ((TalkService.LocalBinder)service).getService();
+        if (mServiceBinderListener != null && mBoundTalkService != null) {
+            mServiceBinderListener.onServiceBound(mBoundTalkService);
         }
     }
 
@@ -72,8 +72,8 @@ public class ServiceBinder implements ServiceConnection {
     }
 
     public interface ServiceBinderListener {
-        void onServiceBound(TalkerService mBoundTalkerService);
-        void onServiceUnBound(TalkerService mBoundTalkerService);
+        void onServiceBound(TalkService mBoundTalkService);
+        void onServiceUnBound(TalkService mBoundTalkService);
     }
 
 }

@@ -1,7 +1,6 @@
 package com.wolfie.odile.presenter;
 
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -13,14 +12,13 @@ import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.PhraseGroup;
 import com.wolfie.odile.model.loader.AsyncListeningTask;
 import com.wolfie.odile.presenter.ListPresenter.ListUi;
-import com.wolfie.odile.talker.Speaker;
+import com.wolfie.odile.talker.TextSpeaker;
 import com.wolfie.odile.view.BaseUi;
 import com.wolfie.odile.view.activity.OdileActivity;
 import com.wolfie.odile.view.fragment.EditFragment;
 import com.wolfie.odile.view.fragment.TalkFragment;
 
 import java.util.List;
-import java.util.Locale;
 
 public class ListPresenter extends BasePresenter<ListUi> implements
         AsyncListeningTask.Listener<DataSet>, OdileActivity.SearchListener {
@@ -31,7 +29,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     @Nullable
     private String mGroupName;
 
-    private Speaker mSpeaker;
+    private TextSpeaker mTextSpeaker;
 
     // These values are not saved, but refreshed upon resume.
     // Note that mHeadings and mGroup are taken from here by
@@ -55,13 +53,13 @@ public class ListPresenter extends BasePresenter<ListUi> implements
         super.resume();
         // TODO - what about the searchCriterion ?
         loadPhrases();
-        mSpeaker = new Speaker(getContext());
+        mTextSpeaker = new TextSpeaker(getContext());
     }
 
     @Override
     public void pause() {
         super.pause();
-        mSpeaker.stop();
+        mTextSpeaker.stop();
     }
 
     @Override
@@ -208,7 +206,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     }
 
     public void onRussianTextClick(Phrase selectedPhrase) {
-        String errorMsg = mSpeaker.speak(selectedPhrase.getRussian());
+        String errorMsg = mTextSpeaker.speak(selectedPhrase.getRussian());
         if (errorMsg != null) {
             getUi().showBanner(errorMsg);
         }

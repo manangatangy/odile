@@ -13,8 +13,8 @@ import android.widget.TextView;
 import com.wolfie.odile.R;
 import com.wolfie.odile.presenter.TalkPresenter;
 import com.wolfie.odile.presenter.TalkPresenter.TalkUi;
-import com.wolfie.odile.talker.TalkerCommand;
-import com.wolfie.odile.talker.TalkerService;
+import com.wolfie.odile.talker.ServiceCommand;
+import com.wolfie.odile.talker.TalkService;
 import com.wolfie.odile.view.activity.ServiceBinder;
 
 import butterknife.BindView;
@@ -176,9 +176,9 @@ public class TalkFragment extends ActionSheetFragment implements TalkUi {
     }
 
     @Override
-    public void startService(TalkerCommand talkerCommand) {
-        Intent intent = new Intent(getContext(), TalkerService.class);
-        intent.putExtra(TalkerService.COMMAND_KEY, talkerCommand);
+    public void startService(ServiceCommand serviceCommand) {
+        Intent intent = new Intent(getContext(), TalkService.class);
+        intent.putExtra(TalkService.COMMAND_KEY, serviceCommand);
         getOdileActivity().startService(intent);
     }
 

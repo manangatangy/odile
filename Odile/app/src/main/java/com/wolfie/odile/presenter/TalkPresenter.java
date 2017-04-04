@@ -7,10 +7,10 @@ import android.support.annotation.StringRes;
 import com.wolfie.odile.R;
 import com.wolfie.odile.model.PhraseGroup;
 import com.wolfie.odile.presenter.TalkPresenter.TalkUi;
-import com.wolfie.odile.talker.StatusChannel;
-import com.wolfie.odile.talker.TalkerCommand;
-import com.wolfie.odile.talker.TalkerService;
-import com.wolfie.odile.talker.TalkerStatus;
+import com.wolfie.odile.talker.InfoChannel;
+import com.wolfie.odile.talker.ServiceCommand;
+import com.wolfie.odile.talker.TalkService;
+import com.wolfie.odile.talker.SpeakerInfo;
 import com.wolfie.odile.view.ActionSheetUi;
 import com.wolfie.odile.view.activity.OdileActivity;
 import com.wolfie.odile.view.activity.ServiceBinder;
@@ -20,12 +20,12 @@ import com.wolfie.odile.view.fragment.ListFragment;
 import java.util.List;
 
 public class TalkPresenter extends BasePresenter<TalkUi>
-        implements ServiceBinderListener, StatusChannel.StatusListener {
+        implements ServiceBinderListener, InfoChannel.InfoListener {
 
     private final static String KEY_TALK_ACTION_SHEET_SHOWING = "KEY_TALK_ACTION_SHEET_SHOWING";
 
     private boolean mIsShowing;
-    private TalkerStatus.State mTalkerState;    // Only valid after onStatus() called (not saved).
+    private SpeakerInfo.State mTalkerState;    // Only valid after onSpeakerInfo() called (not saved).
 
     public TalkPresenter(TalkPresenter.TalkUi talkUi) {
         super(talkUi);
@@ -62,29 +62,29 @@ public class TalkPresenter extends BasePresenter<TalkUi>
     }
 
     @Override
-    public void onServiceBound(TalkerService mBoundTalkerService) {
-        mBoundTalkerService.getStatusChannel().addStatusListener(this);
-        // Causes callback to onStatus().
+    public void onServiceBound(TalkService mBoundTalkService) {
+        mBoundTalkService.getStatusChannel().addStatusListener(this);
+        // Causes callback to onSpeakerInfo().
     }
     @Override
-    public void onServiceUnBound(TalkerService mBoundTalkerService) {
-        mBoundTalkerService.getStatusChannel().removeStatusListener(this);
+    public void onServiceUnBound(TalkService mBoundTalkService) {
+        mBoundTalkService.getStatusChannel().removeStatusListener(this);
     }
 
     @Override
-    public void onStatus(TalkerStatus talkerStatus) {
-        mTalkerState = talkerStatus.getState();
+    public void onSpeakerInfo(SpeakerInfo speakerInfo) {
+        mTalkerState = speakerInfo.getState();
 
-        getUi().setTitleText(talkerStatus.getState().title());
-        getUi().setSubTitleText(talkerStatus.getSubTitle());
-        String desc = (mTalkerState == TalkerStatus.State.STOPPED) ? "" : talkerStatus.getText();
+        getUi().setTitleText(speakerInfo.getState().title());
+        getUi().setSubTitleText(speakerInfo.getSubTitle());
+        String desc = (mTalkerState == SpeakerInfo.State.STOPPED) ? "" : speakerInfo.getText();
         getUi().setDescriptionText(desc);
 
-        getUi().setCloseButtonEnabled(mTalkerState != TalkerStatus.State.SPEAKING);
+        getUi().setCloseButtonEnabled(mTalkerState != SpeakerInfo.State.SPEAKING);
         getUi().setActionButtonEnabled(true);
-        getUi().setRepeatButtonEnabled(mTalkerState == TalkerStatus.State.PAUSED);
+        getUi().setRepeatButtonEnabled(mTalkerState == SpeakerInfo.State.PAUSED);
 
-        getUi().setActionButtonText(talkerStatus.getState().getActionText());
+        getUi().setActionButtonText(speakerInfo.getState().getActionText());
     }
 
     /**
@@ -97,10 +97,10 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         // the speaker gets to the end of the list, of if the CLOSE button clicked).
         // Note: mTalkerState will be null until we trigger a status change by
         // sending a command.
-        if (mTalkerState == null || mTalkerState == TalkerStatus.State.STOPPED) {
+        if (mTalkerState == null || mTalkerState == SpeakerInfo.State.STOPPED) {
             ListPresenter listPresenter = getUi().findPresenter(ListFragment.class);
             List<PhraseGroup> phraseGroups = listPresenter.getDisplayGroups();
-            getUi().startService(new TalkerCommand(TalkerCommand.Command.SET_PHRASES, phraseGroups));
+            getUi().startService(new ServiceCommand(TalkService.Command.RESET, phraseGroups));
         }
     }
 
@@ -109,15 +109,16 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         if (!showErrorIfSpeaking()) {
             // SET_PHRASE will set the state to STOPPED, so that the next time onShow()
             // occurs, the phrases can be assigned.
-            getUi().startService(new TalkerCommand(TalkerCommand.Command.SET_PHRASES));
+            getUi().startService(new ServiceCommand(TalkService.Command.RESET));
             getUi().hide();
         }
     }
 
     public void onClickAction() {
-        TalkerCommand.Command command = (mTalkerState == TalkerStatus.State.SPEAKING)
-                ? TalkerCommand.Command.PAUSE : TalkerCommand.Command.SPEAK;
-        getUi().startService(new TalkerCommand(command));
+        @TalkService.Command
+        int command = (mTalkerState == SpeakerInfo.State.SPEAKING)
+                ? TalkService.Command.PAUSE : TalkService.Command.SPEAK;
+        getUi().startService(new ServiceCommand(command));
         getUi().clearErrorMessage();
     }
 
@@ -138,7 +139,7 @@ public class TalkPresenter extends BasePresenter<TalkUi>
     }
 
     private boolean showErrorIfSpeaking() {
-        if (mTalkerState == TalkerStatus.State.SPEAKING) {
+        if (mTalkerState == SpeakerInfo.State.SPEAKING) {
             getUi().setErrorMessage(R.string.st040);
             return true;
         }
@@ -160,7 +161,7 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         void setRepeatButtonEnabled(boolean enabled);
         void setErrorMessage(@StringRes int resourceId);
         void clearErrorMessage();
-        void startService(TalkerCommand talkerCommand);
+        void startService(ServiceCommand serviceCommand);
         OdileActivity getOdileActivity();
     }
 

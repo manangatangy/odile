@@ -37,7 +37,7 @@
         ".MainNavDrawerActivity"
         -->
         <service
-            android:name=".talker.TalkerService"
+            android:name=".talker.TalkService"
             android:label="OdileTalkerService"
             android:exported="false"
             >

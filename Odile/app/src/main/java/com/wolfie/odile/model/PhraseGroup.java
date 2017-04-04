@@ -3,6 +3,7 @@ package com.wolfie.odile.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -143,6 +144,7 @@ public class PhraseGroup implements Parcelable {
         return groups;
     }
 
+    @NonNull
     public static List<String> buildHeadingsList(DataSet dataSet) {
         List<String> headings = new ArrayList<>();
         String currentGroup = null;
@@ -154,6 +156,22 @@ public class PhraseGroup implements Parcelable {
             }
         }
         return headings;
+    }
+
+    /**
+     * @return a list of all the Phrases in all of the PhraseGroups (which may be null).
+     */
+    @NonNull
+    public static List<Phrase> getAllPhrases(@Nullable List<PhraseGroup> phraseGroups) {
+        List<Phrase> phrases = new ArrayList<>();
+        if (phraseGroups != null) {
+            for (PhraseGroup phraseGroup : phraseGroups) {
+                for (Phrase phrase : phraseGroup.getPhrases()) {
+                    phrases.add(phrase);
+                }
+            }
+        }
+        return phrases;     // May be empty, but never null.
     }
 
 }

@@ -7,7 +7,7 @@ import android.speech.tts.UtteranceProgressListener;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class Speaker extends UtteranceProgressListener {
+public class TextSpeaker extends UtteranceProgressListener {
 
     // TODO support multi languages
     // TODO support completion notification
@@ -17,7 +17,7 @@ public class Speaker extends UtteranceProgressListener {
     private boolean mTextToSpeechReady = false;
     private boolean mTextToSpeechLanguageAvailable = false;
 
-    public Speaker(Context context) {
+    public TextSpeaker(Context context) {
         mTextToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {

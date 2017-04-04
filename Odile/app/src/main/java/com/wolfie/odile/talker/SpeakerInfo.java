@@ -1,16 +1,18 @@
 package com.wolfie.odile.talker;
 
 /**
+ * Comprises state of the {@link MessageThread}, which is communicated
+ * via {@link InfoChannel} to all {@link InfoChannel.InfoListener}s.
  * The status consists of several independent states and settings.
  */
-public class TalkerStatus {
+public class SpeakerInfo {
 
     private State mState;
     private int mCounter;               // base 0 index into phrase group
     private int mTotal;                 // Size of phrase group
     private String mText;               // Text being spoken.
 
-    public TalkerStatus() {
+    public SpeakerInfo() {
         mState = State.STOPPED;
         mCounter = 0;
         mTotal = 0;

@@ -6,16 +6,16 @@ import android.content.Context;
  * Created by david on 24/03/17.
  */
 
-public class TalkerNotifier implements StatusChannel.StatusListener {
+public class TalkNotifier implements InfoChannel.InfoListener {
 
     private Context mContext;
 
-    public TalkerNotifier(Context context) {
+    public TalkNotifier(Context context) {
         mContext = context;
     }
 
     @Override
-    public void onStatus(TalkerStatus talkerStatus) {
+    public void onSpeakerInfo(SpeakerInfo speakerInfo) {
 
     }
 }

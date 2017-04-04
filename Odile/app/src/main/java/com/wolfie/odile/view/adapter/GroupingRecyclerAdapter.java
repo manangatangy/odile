@@ -50,7 +50,7 @@ public class GroupingRecyclerAdapter extends PlaceholderRecyclerAdapter<BaseView
                 break;
             case VIEW_TYPE_ENTRY:
             default:
-                // For FIXED_EXPANDED mode, inflate the already expanded layout and
+                // For UTTERED mode, inflate the already expanded layout and
                 // don't set the listener for toggling.
                 view = inflateView(parent,
                         (mMode == AdapterMode.FIXED_EXPANDED)
