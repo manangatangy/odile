@@ -3,7 +3,9 @@ package com.wolfie.odile.talker;
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -11,12 +13,27 @@ import java.util.Locale;
 public class TextToSpeechManager extends UtteranceProgressListener {
 
     // TODO support multi languages
-    // TODO support completion notification
-    private Locale mLanguageLocale = new Locale("ru", "RU");
+    class LangSpec {
+        Locale mLocale;
+        String mName;
+        boolean mIsAvailable;
+        public LangSpec(Locale locale, String name) {
+            mLocale = locale;
+            mName = name;
+        }
+    }
+
+    private LangSpec[] mLangSpecs = {
+            new LangSpec(new Locale("ru", "RU"), "Russian"),
+            new LangSpec(new Locale("en", "AU"), "English")
+    };
+
+    @Language
+    private int mCurrentLanguage = Language.NONE;
+
     // https://android-developers.googleblog.com/2009/09/introduction-to-text-to-speech-in.html
     private TextToSpeech mTextToSpeech;
     private boolean mTextToSpeechReady = false;
-    private boolean mTextToSpeechLanguageAvailable = false;
     private SpeakerListener mSpeakerListener;
 
     public TextToSpeechManager(Context context) {
@@ -25,11 +42,11 @@ public class TextToSpeechManager extends UtteranceProgressListener {
             public void onInit(int status) {
                 if (status == TextToSpeech.SUCCESS) {
                     mTextToSpeechReady = true;
-                    if (mTextToSpeech.isLanguageAvailable(mLanguageLocale) != TextToSpeech.LANG_NOT_SUPPORTED) {
-                        mTextToSpeech.setLanguage(mLanguageLocale);
-                        mTextToSpeechLanguageAvailable = true;
-                        mTextToSpeech.setOnUtteranceProgressListener(TextToSpeechManager.this);
+                    for (LangSpec langSpec : mLangSpecs) {
+                        langSpec.mIsAvailable =
+                                (mTextToSpeech.isLanguageAvailable(langSpec.mLocale) != TextToSpeech.LANG_NOT_SUPPORTED);
                     }
+                    mTextToSpeech.setOnUtteranceProgressListener(TextToSpeechManager.this);
                 } else {
                     mTextToSpeech = null;
                 }
@@ -57,14 +74,22 @@ public class TextToSpeechManager extends UtteranceProgressListener {
     /**
      * @return null if ok, or error string otherwise.
      */
-    public String speak(String text) {
+    public String speak(@Language int language, String text) {
         if (!mTextToSpeechReady) {
             return "Error: TextToSpeech not yet initialised";
-        } else if (!mTextToSpeechLanguageAvailable) {
-            return "Error: TextToSpeech Russian not available";
+        } else if (!mLangSpecs[language].mIsAvailable) {
+            return "Error: TextToSpeech " + mLangSpecs[language].mName + " not available";
         } else if (mTextToSpeech == null) {
             return "Error: TextToSpeech failed to initialise";
         } else {
+            // Only set language if different to current setting.
+            if (mCurrentLanguage != language) {
+                mCurrentLanguage = language;
+                long start = System.nanoTime();
+                mTextToSpeech.setLanguage(mLangSpecs[language].mLocale);
+                long finish = System.nanoTime();
+                Log.d("TextToSpeechManager", "setLangauge elapsed millis = " + (finish - start)/1000000);
+            }
             HashMap<String, String> params = new HashMap();
             params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "an-utterance-id");
             mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, params);
@@ -117,6 +142,18 @@ public class TextToSpeechManager extends UtteranceProgressListener {
 
     public interface SpeakerListener {
         void onDoneUttering(boolean error);       // Speaker has finished uttering the text.
+    }
+
+    @IntDef({
+            Language.NONE,
+            Language.RUSSIAN,
+            Language.ENGLISH
+    })
+    public @interface Language {
+        int NONE = -1;
+        // Note: the following values are indices into mLangSpecs.
+        int RUSSIAN = 0;
+        int ENGLISH = 1;
     }
 
 }

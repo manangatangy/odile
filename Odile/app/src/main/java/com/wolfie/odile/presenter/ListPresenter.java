@@ -206,7 +206,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     }
 
     public void onRussianTextClick(Phrase selectedPhrase) {
-        String errorMsg = mTextToSpeechManager.speak(selectedPhrase.getRussian());
+        String errorMsg = mTextToSpeechManager.speak(TextToSpeechManager.Language.RUSSIAN, selectedPhrase.getRussian());
         if (errorMsg != null) {
             getUi().showBanner(errorMsg);
         }

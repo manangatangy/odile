@@ -278,7 +278,7 @@
 {  "mGroup": "Jim-4",  "mEnglish": "Do you want some tea?", "mRussian": "Хочешь чаю ?",  "mTranslit": "KHochesh' chayu"  },
 {  "mGroup": "Jim-4",  "mEnglish": "Price",		  			"mRussian": "Цена",  "mTranslit": "TSena"  },
 {  "mGroup": "Jim-4",  "mEnglish": "School", 	 			"mRussian": "Школа",  "mTranslit": "SHkola"  },
-{  "mGroup": "Jim-4",  "mEnglish": "Tongue or language",  	"mRussian": "Язык",  "mTranslit": "YAzyk"  },
+{  "mGroup": "Jim-4",  "mEnglish": "Tongue or langSpec",  	"mRussian": "Язык",  "mTranslit": "YAzyk"  },
 {  "mGroup": "Jim-4",  "mEnglish": "Egg", 		 			"mRussian": "Яйцо",  "mTranslit": "YAytso"  },
 
 {  "mGroup": "Misc",  "mEnglish": "Rabbit", 		 			"mRussian": "Кролик",  "mTranslit": "Krolik"  }

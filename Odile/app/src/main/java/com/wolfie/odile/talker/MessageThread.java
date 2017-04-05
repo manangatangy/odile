@@ -91,7 +91,7 @@ public class MessageThread extends HandlerThread
                 } else {
                     String text = mPhrases.get(count).getRussian();
                     mTextToSpeechManager.setSpeakerListener(this);      // Next event -> UTTERED
-                    String speakError = mTextToSpeechManager.speak(text);
+                    String speakError = mTextToSpeechManager.speak(TextToSpeechManager.Language.RUSSIAN, text);
                     if (speakError != null) {
                         Log.d("MessageThread", "handleEvent, speakError=" + speakError);
                     }
