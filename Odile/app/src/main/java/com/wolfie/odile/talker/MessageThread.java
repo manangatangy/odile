@@ -26,10 +26,11 @@ public class MessageThread extends HandlerThread
 
     // Events handled by this thread queue here.
     private Handler mHandler;	        // Owned in the new, child thread.
-
     private InfoChannel mInfoChannel;   // For sending info updates to.
+
     private SpeakerInfo mSpeakerInfo = new SpeakerInfo();
-    private List<Phrase> mPhrases;      // Currently spoken phrases.
+
+    private StepIterator mStepIterator = new StepIterator();
     private TextToSpeechManager mTextToSpeechManager;
 
     //region -- these methods are called from the parent thread --
@@ -65,12 +66,10 @@ public class MessageThread extends HandlerThread
     private void handleEvent(@MessageThread.Event int event, @Nullable ServiceCommand serviceCommand) {
         Log.d("MessageThread", "handleEvent, event=" + eventName(event));
         switch (event) {
-            case MessageThread.Event.SETMODE:
-                // TODO ???
-                break;
             case MessageThread.Event.RESET:
-                mPhrases = PhraseGroup.getAllPhrases(serviceCommand.getPhraseGroups());
-                mSpeakerInfo.setTotal(mPhrases.size());
+                List<Phrase> phrases = PhraseGroup.getAllPhrases(serviceCommand.getPhraseGroups());
+                mStepIterator.init(phrases, null);
+                mSpeakerInfo.setTotal(mStepIterator.getPhrasesSize());
                 resetAndCancelPendingEvents();
                 break;
             case MessageThread.Event.SPEAK:
@@ -83,24 +82,23 @@ public class MessageThread extends HandlerThread
                 cancelSpeech();
                 break;
             case MessageThread.Event.TIMEOUT:
-                // Fetch the phrase at [mSpeakerInfo.counter++] and speak it.
-                int count = mSpeakerInfo.getCounter();
-                if (mPhrases == null || count >= mPhrases.size()) {
+                StepIterator.SpeechStep step = mStepIterator.next();
+                if (step == null) {
                     // Reached end of the list; resetAndCancelPendingEvents for next cycle.
                     resetAndCancelPendingEvents();
                 } else {
-                    String text = mPhrases.get(count).getRussian();
                     mTextToSpeechManager.setSpeakerListener(this);      // Next event -> UTTERED
-                    String speakError = mTextToSpeechManager.speak(TextToSpeechManager.Language.RUSSIAN, text);
+                    String speakError = mTextToSpeechManager.speak(step);
                     if (speakError != null) {
                         Log.d("MessageThread", "handleEvent, speakError=" + speakError);
                     }
-                    mSpeakerInfo.setText(text);
-                    mSpeakerInfo.setCounter(count + 1);
+                    mSpeakerInfo.setText(step.getText());
+                    mSpeakerInfo.setCounter(mStepIterator.getCurrentPhrase());
                 }
                 break;
             case MessageThread.Event.UTTERED:
-                setTimer(1000);         // Next event -> TIMEOUT
+                setTimer(mTextToSpeechManager.getDelayFromLastStep());
+                // Next event -> TIMEOUT, using delay from last iteration.
                 break;
             case MessageThread.Event.QUIT:
                 // TODO Release resources.
@@ -118,6 +116,7 @@ public class MessageThread extends HandlerThread
         mSpeakerInfo.setCounter(0);
         mSpeakerInfo.setText(null);
         mSpeakerInfo.setState(SpeakerInfo.State.STOPPED);
+        mStepIterator.reset();
     }
 
     @Override
@@ -128,6 +127,7 @@ public class MessageThread extends HandlerThread
     private void setTimer(int timerPeriod) {
         cancelTimer();
         mHandler.sendEmptyMessageDelayed(MessageThread.Event.TIMEOUT, timerPeriod);
+        Log.d("MessageThread", "setTimer for " + timerPeriod);
     }
 
     private void cancelTimer() {

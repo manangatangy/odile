@@ -13,23 +13,20 @@ import java.util.Locale;
 public class TextToSpeechManager extends UtteranceProgressListener {
 
     // TODO support multi languages
-    class LangSpec {
-        Locale mLocale;
-        String mName;
-        boolean mIsAvailable;
-        public LangSpec(Locale locale, String name) {
-            mLocale = locale;
-            mName = name;
-        }
-    }
-
     private LangSpec[] mLangSpecs = {
             new LangSpec(new Locale("ru", "RU"), "Russian"),
             new LangSpec(new Locale("en", "AU"), "English")
     };
 
-    @Language
-    private int mCurrentLanguage = Language.NONE;
+    @SpeechSettings.Language
+    private int mCurrentLanguage = SpeechSettings.Language.NONE;
+    @SpeechSettings.Rate
+    private int mCurrentRate = SpeechSettings.Rate.NONE;
+    @SpeechSettings.Pitch
+    private int mCurrentPitch = SpeechSettings.Pitch.NONE;
+
+    // This member isn't used in the class. It's only held here for client convenience.
+    private int mDelay;
 
     // https://android-developers.googleblog.com/2009/09/introduction-to-text-to-speech-in.html
     private TextToSpeech mTextToSpeech;
@@ -72,9 +69,61 @@ public class TextToSpeechManager extends UtteranceProgressListener {
     }
 
     /**
+     * After this returns, client may fetch the {@link SpeechSettings#mDelay} associated
+     * with this {@link StepIterator.SpeechStep}
+     * @param step
+     * @return
+     */
+    public String speak(StepIterator.SpeechStep step) {
+        if (!mTextToSpeechReady) {
+            return "Error: TextToSpeech not yet initialised";
+        } else if (mTextToSpeech == null) {
+            return "Error: TextToSpeech failed to initialise";
+        }
+
+        @SpeechSettings.Language
+        int language = step.getSpeechSettings().getLanguage();
+        @SpeechSettings.Rate
+        int rate = step.getSpeechSettings().getRate();
+        @SpeechSettings.Pitch
+        int pitch = step.getSpeechSettings().getPitch();
+
+        // Only set language/rate/pitch if different to current settings.
+        if (mCurrentLanguage != language) {
+            if (!mLangSpecs[language].mIsAvailable) {
+                return "Error: TextToSpeech " + mLangSpecs[language].mName + " not available";
+            }
+            mCurrentLanguage = language;
+            long start = System.nanoTime();
+            mTextToSpeech.setLanguage(mLangSpecs[language].mLocale);
+            long finish = System.nanoTime();
+            Log.d("TextToSpeechManager", "setLangauge " + mCurrentLanguage + ", elapsed millis = " + (finish - start)/1000000);
+        }
+        if (mCurrentRate != rate) {
+            mCurrentRate = rate;
+            Log.d("TextToSpeechManager", "setRate " + mCurrentRate);
+        }
+        if (mCurrentPitch != pitch) {
+            mCurrentPitch = pitch;
+            Log.d("TextToSpeechManager", "setPitch " + mCurrentPitch);
+        }
+
+        HashMap<String, String> params = new HashMap();
+        params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "an-utterance-id");
+        mTextToSpeech.speak(step.getText(), TextToSpeech.QUEUE_FLUSH, params);
+        // Store delay for use until the next step() call.
+        mDelay = step.getSpeechSettings().getDelay();
+        return null;
+    }
+
+    public int getDelayFromLastStep() {
+        return mDelay;
+    }
+
+    /**
      * @return null if ok, or error string otherwise.
      */
-    public String speak(@Language int language, String text) {
+    public String speak(@SpeechSettings.Language int language, String text) {
         if (!mTextToSpeechReady) {
             return "Error: TextToSpeech not yet initialised";
         } else if (!mLangSpecs[language].mIsAvailable) {
@@ -144,16 +193,15 @@ public class TextToSpeechManager extends UtteranceProgressListener {
         void onDoneUttering(boolean error);       // Speaker has finished uttering the text.
     }
 
-    @IntDef({
-            Language.NONE,
-            Language.RUSSIAN,
-            Language.ENGLISH
-    })
-    public @interface Language {
-        int NONE = -1;
-        // Note: the following values are indices into mLangSpecs.
-        int RUSSIAN = 0;
-        int ENGLISH = 1;
+    class LangSpec {
+        Locale mLocale;
+        String mName;
+        boolean mIsAvailable;
+
+        public LangSpec(Locale locale, String name) {
+            mLocale = locale;
+            mName = name;
+        }
     }
 
 }
