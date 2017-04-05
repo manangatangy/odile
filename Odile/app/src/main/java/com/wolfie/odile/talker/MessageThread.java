@@ -71,47 +71,50 @@ public class MessageThread extends HandlerThread
             case MessageThread.Event.RESET:
                 mPhrases = PhraseGroup.getAllPhrases(serviceCommand.getPhraseGroups());
                 mSpeakerInfo.setTotal(mPhrases.size());
-                reset();
+                resetAndCancelPendingEvents();
                 break;
             case MessageThread.Event.SPEAK:
                 mSpeakerInfo.setState(SpeakerInfo.State.SPEAKING);
-                setTimer(100);
+                setTimer(100);          // Next event -> TIMEOUT
                 break;
             case MessageThread.Event.PAUSE:
                 mSpeakerInfo.setState(SpeakerInfo.State.PAUSED);
                 cancelTimer();
+                cancelSpeech();
                 break;
             case MessageThread.Event.TIMEOUT:
                 // Fetch the phrase at [mSpeakerInfo.counter++] and speak it.
                 int count = mSpeakerInfo.getCounter();
                 if (mPhrases == null || count >= mPhrases.size()) {
-                    // Reached end of the list; reset for next cycle.
-                    reset();
+                    // Reached end of the list; resetAndCancelPendingEvents for next cycle.
+                    resetAndCancelPendingEvents();
                 } else {
                     String text = mPhrases.get(count).getRussian();
+                    mTextToSpeechManager.setSpeakerListener(this);      // Next event -> UTTERED
                     String speakError = mTextToSpeechManager.speak(text);
                     if (speakError != null) {
                         Log.d("MessageThread", "handleEvent, speakError=" + speakError);
                     }
                     mSpeakerInfo.setText(text);
                     mSpeakerInfo.setCounter(count + 1);
-                    setTimer(1000);
                 }
                 break;
             case MessageThread.Event.UTTERED:
+                setTimer(1000);         // Next event -> TIMEOUT
                 break;
             case MessageThread.Event.QUIT:
-                cancelTimer();  // Just in case.
                 // TODO Release resources.
-                mTextToSpeechManager.stop();
+                resetAndCancelPendingEvents();
+                mTextToSpeechManager.shutdown();
                 quitSafely();
                 break;
         }
         mInfoChannel.sendInfo(mSpeakerInfo);
     }
 
-    private void reset() {
+    private void resetAndCancelPendingEvents() {
         cancelTimer();
+        cancelSpeech();
         mSpeakerInfo.setCounter(0);
         mSpeakerInfo.setText(null);
         mSpeakerInfo.setState(SpeakerInfo.State.STOPPED);
@@ -129,6 +132,11 @@ public class MessageThread extends HandlerThread
 
     private void cancelTimer() {
         mHandler.removeMessages(MessageThread.Event.TIMEOUT);
+    }
+
+    private void cancelSpeech() {
+        mTextToSpeechManager.setSpeakerListener(null);
+        mTextToSpeechManager.stop();
     }
 
     private String eventName(@MessageThread.Event int event) {

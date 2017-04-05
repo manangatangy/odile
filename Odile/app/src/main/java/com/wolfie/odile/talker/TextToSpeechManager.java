@@ -17,7 +17,6 @@ public class TextToSpeechManager extends UtteranceProgressListener {
     private TextToSpeech mTextToSpeech;
     private boolean mTextToSpeechReady = false;
     private boolean mTextToSpeechLanguageAvailable = false;
-
     private SpeakerListener mSpeakerListener;
 
     public TextToSpeechManager(Context context) {
@@ -39,6 +38,15 @@ public class TextToSpeechManager extends UtteranceProgressListener {
     }
 
     public void stop() {
+        if (mTextToSpeech != null) {
+            mTextToSpeech.stop();
+        }
+    }
+
+    /**
+     * After this call the instance can no longer be used.
+     */
+    public void shutdown() {
         if (mTextToSpeech != null) {
             mTextToSpeech.stop();
             mTextToSpeech.shutdown();

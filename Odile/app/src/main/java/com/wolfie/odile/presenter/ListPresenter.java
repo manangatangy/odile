@@ -59,7 +59,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     @Override
     public void pause() {
         super.pause();
-        mTextToSpeechManager.stop();
+        mTextToSpeechManager.shutdown();
     }
 
     @Override
