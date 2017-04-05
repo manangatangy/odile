@@ -22,7 +22,7 @@ import java.util.List;
  * Parent thread also calls {@link MessageThread#sendCommand(ServiceCommand)}.
  */
 public class MessageThread extends HandlerThread
-        implements Handler.Callback, TextSpeaker.SpeakerListener {
+        implements Handler.Callback, TextToSpeechManager.SpeakerListener {
 
     // Events handled by this thread queue here.
     private Handler mHandler;	        // Owned in the new, child thread.
@@ -30,14 +30,15 @@ public class MessageThread extends HandlerThread
     private InfoChannel mInfoChannel;   // For sending info updates to.
     private SpeakerInfo mSpeakerInfo = new SpeakerInfo();
     private List<Phrase> mPhrases;      // Currently spoken phrases.
-    private TextSpeaker mTextSpeaker;
+    private TextToSpeechManager mTextToSpeechManager;
 
     //region -- these methods are called from the parent thread --
 
     public MessageThread(InfoChannel infoChannel, Context context) {
         super("MessageThread");
         mInfoChannel = infoChannel;
-        mTextSpeaker = new TextSpeaker(context);
+        // TODO move the ctor call to the child thread
+        mTextToSpeechManager = new TextToSpeechManager(context);
     }
 
     public synchronized void waitUntilReady() {
@@ -88,7 +89,7 @@ public class MessageThread extends HandlerThread
                     reset();
                 } else {
                     String text = mPhrases.get(count).getRussian();
-                    String speakError = mTextSpeaker.speak(text);
+                    String speakError = mTextToSpeechManager.speak(text);
                     if (speakError != null) {
                         Log.d("MessageThread", "handleEvent, speakError=" + speakError);
                     }
@@ -102,7 +103,7 @@ public class MessageThread extends HandlerThread
             case MessageThread.Event.QUIT:
                 cancelTimer();  // Just in case.
                 // TODO Release resources.
-                mTextSpeaker.stop();
+                mTextToSpeechManager.stop();
                 quitSafely();
                 break;
         }

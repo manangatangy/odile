@@ -12,7 +12,7 @@ import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.PhraseGroup;
 import com.wolfie.odile.model.loader.AsyncListeningTask;
 import com.wolfie.odile.presenter.ListPresenter.ListUi;
-import com.wolfie.odile.talker.TextSpeaker;
+import com.wolfie.odile.talker.TextToSpeechManager;
 import com.wolfie.odile.view.BaseUi;
 import com.wolfie.odile.view.activity.OdileActivity;
 import com.wolfie.odile.view.fragment.EditFragment;
@@ -29,7 +29,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     @Nullable
     private String mGroupName;
 
-    private TextSpeaker mTextSpeaker;
+    private TextToSpeechManager mTextToSpeechManager;
 
     // These values are not saved, but refreshed upon resume.
     // Note that mHeadings and mGroup are taken from here by
@@ -53,13 +53,13 @@ public class ListPresenter extends BasePresenter<ListUi> implements
         super.resume();
         // TODO - what about the searchCriterion ?
         loadPhrases();
-        mTextSpeaker = new TextSpeaker(getContext());
+        mTextToSpeechManager = new TextToSpeechManager(getContext());
     }
 
     @Override
     public void pause() {
         super.pause();
-        mTextSpeaker.stop();
+        mTextToSpeechManager.stop();
     }
 
     @Override
@@ -206,7 +206,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     }
 
     public void onRussianTextClick(Phrase selectedPhrase) {
-        String errorMsg = mTextSpeaker.speak(selectedPhrase.getRussian());
+        String errorMsg = mTextToSpeechManager.speak(selectedPhrase.getRussian());
         if (errorMsg != null) {
             getUi().showBanner(errorMsg);
         }

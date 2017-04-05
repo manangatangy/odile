@@ -38,3 +38,9 @@ captures/
 
 # Keystore files
 *.jks
+compiler.xml
+encodings.xml
+misc.xml
+modules.xml
+vcs.xml
+profiles_settings.xml

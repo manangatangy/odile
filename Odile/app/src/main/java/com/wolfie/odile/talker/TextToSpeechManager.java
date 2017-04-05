@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class TextSpeaker extends UtteranceProgressListener {
+public class TextToSpeechManager extends UtteranceProgressListener {
 
     // TODO support multi languages
     // TODO support completion notification
@@ -20,7 +20,7 @@ public class TextSpeaker extends UtteranceProgressListener {
 
     private SpeakerListener mSpeakerListener;
 
-    public TextSpeaker(Context context) {
+    public TextToSpeechManager(Context context) {
         mTextToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -29,7 +29,7 @@ public class TextSpeaker extends UtteranceProgressListener {
                     if (mTextToSpeech.isLanguageAvailable(mLanguageLocale) != TextToSpeech.LANG_NOT_SUPPORTED) {
                         mTextToSpeech.setLanguage(mLanguageLocale);
                         mTextToSpeechLanguageAvailable = true;
-                        mTextToSpeech.setOnUtteranceProgressListener(TextSpeaker.this);
+                        mTextToSpeech.setOnUtteranceProgressListener(TextToSpeechManager.this);
                     }
                 } else {
                     mTextToSpeech = null;
@@ -96,7 +96,11 @@ public class TextSpeaker extends UtteranceProgressListener {
     ttsParams.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID,  MainActivity.this.getPackageName());
     mTts.speak(text, TextToSpeech.QUEUE_FLUSH, ttsParams);
 
-https://android-developers.googleblog.com/2009/09/introduction-to-text-to-speech-in.html
+    https://android-developers.googleblog.com/2009/09/introduction-to-text-to-speech-in.html
+
+    http://stackoverflow.com/questions/15718592/tts-tone-android
+
+    https://www.ivona.com/us/
      */
 
     public void setSpeakerListener(@Nullable SpeakerListener speakerListener) {
