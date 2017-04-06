@@ -12,7 +12,7 @@ import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.PhraseGroup;
 import com.wolfie.odile.model.loader.AsyncListeningTask;
 import com.wolfie.odile.presenter.ListPresenter.ListUi;
-import com.wolfie.odile.talker.SpeechSettings;
+import com.wolfie.odile.talker.SpeechParm;
 import com.wolfie.odile.talker.TextToSpeechManager;
 import com.wolfie.odile.view.BaseUi;
 import com.wolfie.odile.view.activity.OdileActivity;
@@ -207,7 +207,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     }
 
     public void onRussianTextClick(Phrase selectedPhrase) {
-        String errorMsg = mTextToSpeechManager.speak(SpeechSettings.Language.RUSSIAN, selectedPhrase.getRussian());
+        String errorMsg = mTextToSpeechManager.speak(SpeechParm.Language.RUSSIAN, selectedPhrase.getRussian());
         if (errorMsg != null) {
             getUi().showBanner(errorMsg);
         }

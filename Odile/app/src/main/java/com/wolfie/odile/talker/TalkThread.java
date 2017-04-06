@@ -8,20 +8,18 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.wolfie.odile.model.Phrase;
-import com.wolfie.odile.model.PhraseGroup;
-
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class for a thread that processes Commands, which are issued
  * in the owning/parent/creating thread, and received in this thread.
- * Protocol: parent thread calls {@link MessageThread#start()}, then
- * {@link MessageThread#waitUntilReady()} which blocks when the thread is
+ * Protocol: parent thread calls {@link TalkThread#start()}, then
+ * {@link TalkThread#waitUntilReady()} which blocks when the thread is
  * ready for messages.  Ref: http://stackoverflow.com/a/4855788
- * Parent thread also calls {@link MessageThread#sendCommand(ServiceCommand)}.
+ * Parent thread also calls {@link TalkThread#sendCommand(ServiceCommand)}.
  */
-public class MessageThread extends HandlerThread
+public class TalkThread extends HandlerThread
         implements Handler.Callback, TextToSpeechManager.SpeakerListener {
 
     // Events handled by this thread queue here.
@@ -30,13 +28,13 @@ public class MessageThread extends HandlerThread
 
     private SpeakerInfo mSpeakerInfo = new SpeakerInfo();
 
-    private StepIterator mStepIterator = new StepIterator();
+    private Stepper mStepper = new Stepper();
     private TextToSpeechManager mTextToSpeechManager;
 
     //region -- these methods are called from the parent thread --
 
-    public MessageThread(InfoChannel infoChannel, Context context) {
-        super("MessageThread");
+    public TalkThread(InfoChannel infoChannel, Context context) {
+        super("TalkThread");
         mInfoChannel = infoChannel;
         // TODO move the ctor call to the child thread
         mTextToSpeechManager = new TextToSpeechManager(context);
@@ -52,7 +50,7 @@ public class MessageThread extends HandlerThread
     }
 
     public void sendQuit() {
-        mHandler.sendEmptyMessage(MessageThread.Event.QUIT);
+        mHandler.sendEmptyMessage(TalkThread.Event.QUIT);
     }
 
     //endregion -- these methods are called from the parent thread --
@@ -63,44 +61,48 @@ public class MessageThread extends HandlerThread
         return false;
     }
 
-    private void handleEvent(@MessageThread.Event int event, @Nullable ServiceCommand serviceCommand) {
-        Log.d("MessageThread", "handleEvent, event=" + eventName(event));
+    private void handleEvent(@TalkThread.Event int event, @Nullable ServiceCommand serviceCommand) {
+        Log.d("TalkThread", "handleEvent, event=" + eventName(event));
         switch (event) {
-            case MessageThread.Event.RESET:
-                List<Phrase> phrases = PhraseGroup.getAllPhrases(serviceCommand.getPhraseGroups());
-                mStepIterator.init(phrases, null);
-                mSpeakerInfo.setTotal(mStepIterator.getPhrasesSize());
+            case TalkThread.Event.RESET:
+                // It's ok to send RESET with null lists.
+                mStepper.init(
+                        serviceCommand.getPhraseGroups(),
+                        serviceCommand.getSpeechParms());
+                mSpeakerInfo.setTotal(mStepper.getPhrasesSize());
                 resetAndCancelPendingEvents();
                 break;
-            case MessageThread.Event.SPEAK:
+            case TalkThread.Event.SPEAK:
                 mSpeakerInfo.setState(SpeakerInfo.State.SPEAKING);
                 setTimer(100);          // Next event -> TIMEOUT
                 break;
-            case MessageThread.Event.PAUSE:
+            case TalkThread.Event.PAUSE:
                 mSpeakerInfo.setState(SpeakerInfo.State.PAUSED);
                 cancelTimer();
                 cancelSpeech();
+                // Arrange so that the current phrase (first step) will be repeated upon SPEAK.
+                mStepper.resetToPhrase(true);
                 break;
-            case MessageThread.Event.TIMEOUT:
-                StepIterator.SpeechStep step = mStepIterator.next();
+            case TalkThread.Event.TIMEOUT:
+                Stepper.Step step = mStepper.nextStep();
                 if (step == null) {
-                    // Reached end of the list; resetAndCancelPendingEvents for next cycle.
+                    // Reached end of the list; resetAndCancelPendingEvents for nextStep cycle.
                     resetAndCancelPendingEvents();
                 } else {
                     mTextToSpeechManager.setSpeakerListener(this);      // Next event -> UTTERED
                     String speakError = mTextToSpeechManager.speak(step);
                     if (speakError != null) {
-                        Log.d("MessageThread", "handleEvent, speakError=" + speakError);
+                        Log.d("TalkThread", "handleEvent, speakError=" + speakError);
                     }
                     mSpeakerInfo.setText(step.getText());
-                    mSpeakerInfo.setCounter(mStepIterator.getCurrentPhrase());
+                    mSpeakerInfo.setCounter(mStepper.getPhraseIndex());
                 }
                 break;
-            case MessageThread.Event.UTTERED:
+            case TalkThread.Event.UTTERED:
                 setTimer(mTextToSpeechManager.getDelayFromLastStep());
                 // Next event -> TIMEOUT, using delay from last iteration.
                 break;
-            case MessageThread.Event.QUIT:
+            case TalkThread.Event.QUIT:
                 // TODO Release resources.
                 resetAndCancelPendingEvents();
                 mTextToSpeechManager.shutdown();
@@ -116,22 +118,22 @@ public class MessageThread extends HandlerThread
         mSpeakerInfo.setCounter(0);
         mSpeakerInfo.setText(null);
         mSpeakerInfo.setState(SpeakerInfo.State.STOPPED);
-        mStepIterator.reset();
+        mStepper.reset();
     }
 
     @Override
     public void onDoneUttering(boolean error) {
-        mHandler.sendEmptyMessage(MessageThread.Event.UTTERED);
+        mHandler.sendEmptyMessage(TalkThread.Event.UTTERED);
     }
 
     private void setTimer(int timerPeriod) {
         cancelTimer();
-        mHandler.sendEmptyMessageDelayed(MessageThread.Event.TIMEOUT, timerPeriod);
-        Log.d("MessageThread", "setTimer for " + timerPeriod);
+        mHandler.sendEmptyMessageDelayed(TalkThread.Event.TIMEOUT, timerPeriod);
+        Log.d("TalkThread", "setTimer for " + timerPeriod);
     }
 
     private void cancelTimer() {
-        mHandler.removeMessages(MessageThread.Event.TIMEOUT);
+        mHandler.removeMessages(TalkThread.Event.TIMEOUT);
     }
 
     private void cancelSpeech() {
@@ -139,42 +141,38 @@ public class MessageThread extends HandlerThread
         mTextToSpeechManager.stop();
     }
 
-    private String eventName(@MessageThread.Event int event) {
+    private String eventName(@TalkThread.Event int event) {
         switch (event) {
-            case MessageThread.Event.SETMODE:
-                return "SETMODE";
-            case MessageThread.Event.RESET:
+            case TalkThread.Event.RESET:
                 return "RESET";
-            case MessageThread.Event.SPEAK:
+            case TalkThread.Event.SPEAK:
                 return "SPEAK";
-            case MessageThread.Event.PAUSE:
+            case TalkThread.Event.PAUSE:
                 return "PAUSE";
-            case MessageThread.Event.TIMEOUT:
+            case TalkThread.Event.TIMEOUT:
                 return "TIMEOUT";
-            case MessageThread.Event.UTTERED:
+            case TalkThread.Event.UTTERED:
                 return "UTTERED";
-            case MessageThread.Event.QUIT:
+            case TalkThread.Event.QUIT:
                 return "QUIT";
         }
         return null;
     }
 
     @IntDef({
-            MessageThread.Event.SETMODE,
-            MessageThread.Event.RESET,
-            MessageThread.Event.SPEAK,
-            MessageThread.Event.PAUSE,
-            MessageThread.Event.TIMEOUT,
-            MessageThread.Event.UTTERED,
-            MessageThread.Event.QUIT
+            TalkThread.Event.RESET,
+            TalkThread.Event.SPEAK,
+            TalkThread.Event.PAUSE,
+            TalkThread.Event.TIMEOUT,
+            TalkThread.Event.UTTERED,
+            TalkThread.Event.QUIT
     })
     public @interface Event {
-        int SETMODE = TalkService.Command.SETMODE;
         int RESET   = TalkService.Command.RESET;
         int SPEAK   = TalkService.Command.SPEAK;
         int PAUSE   = TalkService.Command.PAUSE;
-        int TIMEOUT = 4;
-        int UTTERED = 5;
-        int QUIT    = 6;
+        int TIMEOUT = 3;
+        int UTTERED = 4;
+        int QUIT    = 5;
     }
 }

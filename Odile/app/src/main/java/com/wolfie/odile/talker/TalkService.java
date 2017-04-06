@@ -8,23 +8,11 @@ import android.support.annotation.IntDef;
 import android.util.Log;
 
 /**
- * Send command to the service like this:
- *
- Intent intent = new Intent(getBaseContext(), SimService.class);
- intent.putExtra("KEY_FOO", aParcelable);
- Bundle extras = new Bundle();
- extras.putSerializable(SimService.SETTINGS_KEY, simSettings);
- intent.putExtras(extras);
- startService(intent);
-
- Foo foo = getIntent().getExtras().getParcelable("KEY_FOO");
-
- * The Service owns the InfoChannel and the the MessageThread.
- * Ref: http://stackoverflow.com/a/15772151
- */
-
-/**
+ * Responds to ServiceCommands and owns/controls the TalkThread and TalkNotifier.
+ * Has an InfoChannel that receives SpeakerInfo messages from the TalkThread and
+ * notifies various listeners, which are TalkNotifier and TalkPresenter.
  * Some references:
+ * http://stackoverflow.com/a/15772151
  * http://stackoverflow.com/questions/4300291/example-communication-between-activity-and-service-using-messaging?rq=1
  * This has a general example of a service/activity communication and it also has a tip
  * about placing the service in a different thread to the activity, as follows:
@@ -38,7 +26,7 @@ public class TalkService extends Service {
 
     private InfoChannel mInfoChannel = new InfoChannel();
 
-    private MessageThread mMessageThread;
+    private TalkThread mTalkThread;
     private TalkNotifier mTalkNotifier;
 
     public class LocalBinder extends Binder {
@@ -55,9 +43,9 @@ public class TalkService extends Service {
     @Override
     public void onCreate() {
         Log.d("TalkService", "onCreate");
-        mMessageThread = new MessageThread(mInfoChannel, this);
-        mMessageThread.start();
-        mMessageThread.waitUntilReady();
+        mTalkThread = new TalkThread(mInfoChannel, this);
+        mTalkThread.start();
+        mTalkThread.waitUntilReady();
         // notifier should only be created when backgrounding the activity
 //        mTalkNotifier = new TalkNotifier(this);
 //        mInfoChannel.addStatusListener(mTalkNotifier);
@@ -66,44 +54,42 @@ public class TalkService extends Service {
     @Override
     public void onDestroy() {
         Log.d("TalkService", "onDestroy");
-        if (mMessageThread != null) {
-            mMessageThread.sendQuit();
-            mMessageThread = null;
+        if (mTalkThread != null) {
+            mTalkThread.sendQuit();
+            mTalkThread = null;
         }
         // TODO shutdown the notifier
         // No need to remove listeners from InfoChannel; it is destroyed.
     }
 
+    /**
+     * @return InfoChannel for clients wishing to listen for SpeakerInfo.
+     */
     public InfoChannel getStatusChannel() {
         return mInfoChannel;
     }
 
-    /**
-     * START:
-     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // get ServiceCommand from intent
         if (intent != null && intent.getExtras() != null) {
             ServiceCommand serviceCommand = intent.getExtras().getParcelable(COMMAND_KEY);
             if (serviceCommand != null) {
-                mMessageThread.sendCommand(serviceCommand);
+                mTalkThread.sendCommand(serviceCommand);
             }
         }
         return START_STICKY;
     }
 
     @IntDef({
-            Command.SETMODE,
             Command.RESET,
             Command.SPEAK,
             Command.PAUSE
     })
     public @interface Command {
-        int SETMODE = 0;
-        int RESET = 1;
-        int SPEAK = 2;
-        int PAUSE = 3;
+        int RESET = 0;
+        int SPEAK = 1;
+        int PAUSE = 2;
     }
 
 }

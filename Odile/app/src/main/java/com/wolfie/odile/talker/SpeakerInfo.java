@@ -1,7 +1,7 @@
 package com.wolfie.odile.talker;
 
 /**
- * Comprises state of the {@link MessageThread}, which is communicated
+ * Comprises state of the {@link TalkThread}, which is communicated
  * via {@link InfoChannel} to all {@link InfoChannel.InfoListener}s.
  * The status consists of several independent states and settings.
  */

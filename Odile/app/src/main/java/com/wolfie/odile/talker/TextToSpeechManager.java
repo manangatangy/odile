@@ -3,7 +3,6 @@ package com.wolfie.odile.talker;
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -18,12 +17,12 @@ public class TextToSpeechManager extends UtteranceProgressListener {
             new LangSpec(new Locale("en", "AU"), "English")
     };
 
-    @SpeechSettings.Language
-    private int mCurrentLanguage = SpeechSettings.Language.NONE;
-    @SpeechSettings.Rate
-    private int mCurrentRate = SpeechSettings.Rate.NONE;
-    @SpeechSettings.Pitch
-    private int mCurrentPitch = SpeechSettings.Pitch.NONE;
+    @SpeechParm.Language
+    private int mCurrentLanguage = SpeechParm.Language.NONE;
+    @SpeechParm.Rate
+    private int mCurrentRate = SpeechParm.Rate.NONE;
+    @SpeechParm.Pitch
+    private int mCurrentPitch = SpeechParm.Pitch.NONE;
 
     // This member isn't used in the class. It's only held here for client convenience.
     private int mDelay;
@@ -69,25 +68,31 @@ public class TextToSpeechManager extends UtteranceProgressListener {
     }
 
     /**
-     * After this returns, client may fetch the {@link SpeechSettings#mDelay} associated
-     * with this {@link StepIterator.SpeechStep}
+     * As well as speaking the phrase, this method fetches the associated delay from
+     * the {@link Stepper.Step} and holds it locally, so that the client
+     * of {@link TextToSpeechManager} may use it on the UTTERED event.
      * @param step
-     * @return
+     * @return null if all went well, or an error string otherwise.
      */
-    public String speak(StepIterator.SpeechStep step) {
+    public String speak(Stepper.Step step) {
         if (!mTextToSpeechReady) {
             return "Error: TextToSpeech not yet initialised";
         } else if (mTextToSpeech == null) {
             return "Error: TextToSpeech failed to initialise";
         }
 
-        @SpeechSettings.Language
-        int language = step.getSpeechSettings().getLanguage();
-        @SpeechSettings.Rate
-        int rate = step.getSpeechSettings().getRate();
-        @SpeechSettings.Pitch
-        int pitch = step.getSpeechSettings().getPitch();
+        @SpeechParm.Language
+        int language = step.getSpeechParms().getLanguage();
+        @SpeechParm.Rate
+        int rate = step.getSpeechParms().getRate();
+        @SpeechParm.Pitch
+        int pitch = step.getSpeechParms().getPitch();
 
+        // Dont speak, just issue the UTTERED callback
+        if (step.getSpeechParms().getSilenceMode() == SpeechParm.SilenceMode.STAY_SILENT) {
+            hasUttered(false);
+            return null;
+        }
         // Only set language/rate/pitch if different to current settings.
         if (mCurrentLanguage != language) {
             if (!mLangSpecs[language].mIsAvailable) {
@@ -111,8 +116,8 @@ public class TextToSpeechManager extends UtteranceProgressListener {
         HashMap<String, String> params = new HashMap();
         params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "an-utterance-id");
         mTextToSpeech.speak(step.getText(), TextToSpeech.QUEUE_FLUSH, params);
-        // Store delay for use until the next step() call.
-        mDelay = step.getSpeechSettings().getDelay();
+        // Store delay for use until the nextStep step() call.
+        mDelay = step.getSpeechParms().getDelay();
         return null;
     }
 
@@ -123,7 +128,7 @@ public class TextToSpeechManager extends UtteranceProgressListener {
     /**
      * @return null if ok, or error string otherwise.
      */
-    public String speak(@SpeechSettings.Language int language, String text) {
+    public String speak(@SpeechParm.Language int language, String text) {
         if (!mTextToSpeechReady) {
             return "Error: TextToSpeech not yet initialised";
         } else if (!mLangSpecs[language].mIsAvailable) {

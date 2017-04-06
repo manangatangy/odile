@@ -10,6 +10,7 @@ import com.wolfie.odile.model.PhraseGroup;
 import com.wolfie.odile.presenter.TalkPresenter.TalkUi;
 import com.wolfie.odile.talker.InfoChannel;
 import com.wolfie.odile.talker.ServiceCommand;
+import com.wolfie.odile.talker.SpeechParm;
 import com.wolfie.odile.talker.TalkService;
 import com.wolfie.odile.talker.SpeakerInfo;
 import com.wolfie.odile.view.ActionSheetUi;
@@ -18,6 +19,7 @@ import com.wolfie.odile.view.activity.ServiceBinder;
 import com.wolfie.odile.view.activity.ServiceBinder.ServiceBinderListener;
 import com.wolfie.odile.view.fragment.ListFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TalkPresenter extends BasePresenter<TalkUi>
@@ -103,14 +105,32 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         if (mTalkerState == null || mTalkerState == SpeakerInfo.State.STOPPED) {
             ListPresenter listPresenter = getUi().findPresenter(ListFragment.class);
             List<PhraseGroup> phraseGroups = listPresenter.getDisplayGroups();
-            getUi().startService(new ServiceCommand(TalkService.Command.RESET, phraseGroups));
+            getUi().startService(
+                    new ServiceCommand(TalkService.Command.RESET, phraseGroups, mSpeechSettings));
         }
     }
+
+    static List<SpeechParm> mSpeechSettings = new ArrayList<SpeechParm>();
+    static {
+        mSpeechSettings.add(new SpeechParm(
+                SpeechParm.Language.RUSSIAN,
+                SpeechParm.Rate.NORMAL,
+                SpeechParm.Pitch.NORMAL,
+                SpeechParm.SilenceMode.SPEAK_IT,
+                1000));
+        mSpeechSettings.add(new SpeechParm(
+                SpeechParm.Language.ENGLISH,
+                SpeechParm.Rate.NORMAL,
+                SpeechParm.Pitch.NORMAL,
+                SpeechParm.SilenceMode.SPEAK_IT,
+                1000));
+    }
+
 
     public void onClickClose() {
         // Check if talking and show error message if so, else close.
         if (!showErrorIfSpeaking()) {
-            // SET_PHRASE will set the state to STOPPED, so that the next time onShow()
+            // Reset will set the state to STOPPED, so that the next time onShow()
             // occurs, the phrases can be assigned.
             getUi().startService(new ServiceCommand(TalkService.Command.RESET));
             getUi().hide();

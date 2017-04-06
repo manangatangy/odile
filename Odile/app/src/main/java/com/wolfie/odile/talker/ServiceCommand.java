@@ -9,10 +9,17 @@ import com.wolfie.odile.model.PhraseGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This specifies a {@link TalkService.Command} passed in an intent to the
+ * {@link TalkService}.  Only the {@link #mCommand} field is mandatory.
+ */
 public class ServiceCommand implements Parcelable {
 
-    private int mCommand;       // This type is @TalkService.Command (but this upsets Parcel.readInt)
+    @TalkService.Command
+    private int mCommand;
+    @Nullable
     private List<PhraseGroup> mPhraseGroups;
+    private List<SpeechParm> mSpeechParms;
 
     public ServiceCommand(@TalkService.Command int command) {
         mCommand = command;
@@ -22,9 +29,12 @@ public class ServiceCommand implements Parcelable {
         read(in);
     }
 
-    public ServiceCommand(@TalkService.Command int command, List<PhraseGroup> phraseGroups) {
+    public ServiceCommand(@TalkService.Command int command,
+                          List<PhraseGroup> phraseGroups,
+                          List<SpeechParm> speechParms) {
         mCommand = command;
         mPhraseGroups = phraseGroups;
+        mSpeechParms = speechParms;
     }
 
     @TalkService.Command
@@ -36,7 +46,12 @@ public class ServiceCommand implements Parcelable {
     public List<PhraseGroup> getPhraseGroups() {
         return mPhraseGroups;
     }
+    @Nullable
+    public List<SpeechParm> getSpeechParms() {
+        return mSpeechParms;
+    }
 
+    @SuppressWarnings("WrongConstant")
     private void read(Parcel in) {
         mCommand = in.readInt();
         int size = in.readInt();
@@ -45,6 +60,14 @@ public class ServiceCommand implements Parcelable {
             for (int i = 0; i < size; i++) {
                 PhraseGroup phraseGroup = new PhraseGroup(in);
                 mPhraseGroups.add(phraseGroup);
+            }
+        }
+        size = in.readInt();
+        if (size > 0) {
+            mSpeechParms = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                SpeechParm speechParm = new SpeechParm(in);
+                mSpeechParms.add(speechParm);
             }
         }
     }
@@ -74,6 +97,14 @@ public class ServiceCommand implements Parcelable {
             for (int i = 0; i < size; i++) {
                 PhraseGroup phraseGroup = mPhraseGroups.get(i);
                 phraseGroup.writeToParcel(dest, flags);
+            }
+        }
+        size = (mSpeechParms == null) ? 0 : mSpeechParms.size();
+        dest.writeInt(size);
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                SpeechParm speechParm = mSpeechParms.get(i);
+                speechParm.writeToParcel(dest, flags);
             }
         }
     }
