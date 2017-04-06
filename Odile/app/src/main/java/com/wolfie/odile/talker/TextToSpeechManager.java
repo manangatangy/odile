@@ -52,7 +52,10 @@ public class TextToSpeechManager extends UtteranceProgressListener {
 
     public void stop() {
         if (mTextToSpeech != null) {
+            long start = System.nanoTime();
             mTextToSpeech.stop();
+            long finish = System.nanoTime();
+            Log.d("TextToSpeechManager", "stop " + mCurrentLanguage + ", elapsed millis = " + (finish - start)/1000000);
         }
     }
 

@@ -37,16 +37,16 @@ public class TalkFragment extends ActionSheetFragment implements TalkUi {
     TextView mTextDescription;
 
     @Nullable
-    @BindView(R.id.button_close)
-    Button mButtonClose;
+    @BindView(R.id.button_1)
+    Button mButton1;
 
     @Nullable
-    @BindView(R.id.button_action)
-    Button mButtonAction;
+    @BindView(R.id.button_2)
+    Button mButton2;
 
     @Nullable
-    @BindView(R.id.button_repeat)
-    Button mButtonRepeat;
+    @BindView(R.id.button_3)
+    Button mButton3;
 
     @Nullable
     @BindView(R.id.text_error)
@@ -75,22 +75,22 @@ public class TalkFragment extends ActionSheetFragment implements TalkUi {
         // This bind will re-bind the superclass members, so the entire view hierarchy must be
         // available, hence the content should be added to the parent view first.
         mUnbinder2 = ButterKnife.bind(this, view);
-        mButtonClose.setOnClickListener(new View.OnClickListener() {
+        mButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mTalkPresenter.onClickClose();
+                mTalkPresenter.onClickButton1();
             }
         });
-        mButtonAction.setOnClickListener(new View.OnClickListener() {
+        mButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mTalkPresenter.onClickAction();
+                mTalkPresenter.onClickButton2();
             }
         });
-        mButtonRepeat.setOnClickListener(new View.OnClickListener() {
+        mButton3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mTalkPresenter.onClickRepeat();
+                mTalkPresenter.onClickButton3();
             }
         });
 
@@ -143,28 +143,33 @@ public class TalkFragment extends ActionSheetFragment implements TalkUi {
     }
 
     @Override
-    public void setCloseButtonEnabled(boolean enabled) {
-        mButtonClose.setEnabled(enabled);
+    public void setButton1Text(String text) {
+        mButton1.setText(text);
     }
 
     @Override
-    public void setActionButtonText(String text) {
-        mButtonAction.setText(text);
+    public void setButton1Enabled(boolean enabled) {
+        mButton1.setEnabled(enabled);
     }
 
     @Override
-    public void setActionButtonEnabled(boolean enabled) {
-        mButtonAction.setEnabled(enabled);
+    public void setButton2Text(String text) {
+        mButton2.setText(text);
     }
 
     @Override
-    public void setRepeatButtonText(String text) {
-        mButtonRepeat.setText(text);
+    public void setButton2Enabled(boolean enabled) {
+        mButton2.setEnabled(enabled);
     }
 
     @Override
-    public void setRepeatButtonEnabled(boolean enabled) {
-        mButtonRepeat.setEnabled(enabled);
+    public void setButton3Text(String text) {
+        mButton3.setText(text);
+    }
+
+    @Override
+    public void setButton3Enabled(boolean enabled) {
+        mButton3.setEnabled(enabled);
     }
 
     @Override

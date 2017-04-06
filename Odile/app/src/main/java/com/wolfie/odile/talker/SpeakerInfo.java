@@ -56,21 +56,31 @@ public class SpeakerInfo {
     }
 
     public enum State {
-        STOPPED("Selected: ", "SPEAK"),
-        SPEAKING("Speaking: ", "PAUSE"),
-        PAUSED("Paused at: ", "RESUME");
+        STOPPED(    "Selected: ",   "CLOSE",    "SPEAK",   ""),
+        SPEAKING(   "Speaking: ",   "REPEAT",   "PAUSE",   "BACK 1"),
+        PAUSED(     "Paused at: ",  "CLOSE",    "RESUME",  "BACK 1");
 
         private String mTitle;
-        private String mActionText;
-        private State(String title, String actionText) {
+        private String mAction1Text;
+        private String mAction2Text;
+        private String mAction3Text;
+        private State(String title, String action1Text, String action2Text, String action3Text) {
             mTitle = title;
-            mActionText = actionText;
+            mAction1Text = action1Text;
+            mAction2Text = action2Text;
+            mAction3Text = action3Text;
         }
         public String title() {
             return mTitle;
         }
-        public String getActionText() {
-            return mActionText;
+        public String getAction1Text() {
+            return mAction1Text;
+        }
+        public String getAction2Text() {
+            return mAction2Text;
+        }
+        public String getAction3Text() {
+            return mAction3Text;
         }
     }
 

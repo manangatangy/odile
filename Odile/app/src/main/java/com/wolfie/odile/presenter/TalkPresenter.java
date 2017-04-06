@@ -85,11 +85,13 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         String desc = (mTalkerState == SpeakerInfo.State.STOPPED) ? "" : speakerInfo.getText();
         getUi().setDescriptionText(desc);
 
-        getUi().setCloseButtonEnabled(mTalkerState != SpeakerInfo.State.SPEAKING);
-        getUi().setActionButtonEnabled(true);
-        getUi().setRepeatButtonEnabled(mTalkerState == SpeakerInfo.State.PAUSED);
+        getUi().setButton1Enabled(true);
+        getUi().setButton2Enabled(true);
+        getUi().setButton3Enabled(mTalkerState != SpeakerInfo.State.STOPPED);
 
-        getUi().setActionButtonText(speakerInfo.getState().getActionText());
+        getUi().setButton1Text(speakerInfo.getState().getAction1Text());
+        getUi().setButton2Text(speakerInfo.getState().getAction2Text());
+        getUi().setButton3Text(speakerInfo.getState().getAction3Text());
     }
 
     /**
@@ -122,22 +124,29 @@ public class TalkPresenter extends BasePresenter<TalkUi>
                 SpeechParm.Language.ENGLISH,
                 SpeechParm.Rate.NORMAL,
                 SpeechParm.Pitch.NORMAL,
-                SpeechParm.SilenceMode.SPEAK_IT,
+                SpeechParm.SilenceMode.STAY_SILENT,
                 1000));
     }
 
-
-    public void onClickClose() {
-        // Check if talking and show error message if so, else close.
-        if (!showErrorIfSpeaking()) {
+    /*
+    state       button1     button2     button3
+    STOPPED     CLOSE       SPEAK       --
+    SPEAKING    REPEAT      PAUSE       BACK-ONE
+    PAUSED      CLOSE       RESUME      BACK_ONE
+     */
+    public void onClickButton1() {
+        if (mTalkerState != SpeakerInfo.State.SPEAKING) {
             // Reset will set the state to STOPPED, so that the next time onShow()
             // occurs, the phrases can be assigned.
             getUi().startService(new ServiceCommand(TalkService.Command.RESET));
             getUi().hide();
+        } else {
+            getUi().startService(new ServiceCommand(TalkService.Command.REPEAT));
+            getUi().clearErrorMessage();
         }
     }
 
-    public void onClickAction() {
+    public void onClickButton2() {
         @TalkService.Command
         int command = (mTalkerState == SpeakerInfo.State.SPEAKING)
                 ? TalkService.Command.PAUSE : TalkService.Command.SPEAK;
@@ -145,8 +154,11 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         getUi().clearErrorMessage();
     }
 
-    public void onClickRepeat() {
-
+    public void onClickButton3() {
+        if (mTalkerState != SpeakerInfo.State.STOPPED) {
+            getUi().startService(new ServiceCommand(TalkService.Command.BACK1));
+            getUi().clearErrorMessage();
+        }
     }
 
     @Override
@@ -177,11 +189,12 @@ public class TalkPresenter extends BasePresenter<TalkUi>
         void setTitleText(String title);
         void setSubTitleText(String subTitle);
         void setDescriptionText(String description);
-        void setCloseButtonEnabled(boolean enabled);
-        void setActionButtonText(String text);
-        void setActionButtonEnabled(boolean enabled);
-        void setRepeatButtonText(String text);
-        void setRepeatButtonEnabled(boolean enabled);
+        void setButton1Text(String text);
+        void setButton1Enabled(boolean enabled);
+        void setButton2Text(String text);
+        void setButton2Enabled(boolean enabled);
+        void setButton3Text(String text);
+        void setButton3Enabled(boolean enabled);
         void setErrorMessage(@StringRes int resourceId);
         void clearErrorMessage();
         void startService(ServiceCommand serviceCommand);

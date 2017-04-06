@@ -8,9 +8,6 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Class for a thread that processes Commands, which are issued
  * in the owning/parent/creating thread, and received in this thread.
@@ -74,14 +71,14 @@ public class TalkThread extends HandlerThread
                 break;
             case TalkThread.Event.SPEAK:
                 mSpeakerInfo.setState(SpeakerInfo.State.SPEAKING);
-                setTimer(100);          // Next event -> TIMEOUT
+                setTimer(10);          // Next event -> TIMEOUT
                 break;
             case TalkThread.Event.PAUSE:
                 mSpeakerInfo.setState(SpeakerInfo.State.PAUSED);
                 cancelTimer();
                 cancelSpeech();
-                // Arrange so that the current phrase (first step) will be repeated upon SPEAK.
-                mStepper.resetToPhrase(true);
+                // Arrange so that the current phrase (current step) will be repeated upon SPEAK.
+                mStepper.backStep(false);
                 break;
             case TalkThread.Event.TIMEOUT:
                 Stepper.Step step = mStepper.nextStep();
@@ -101,6 +98,29 @@ public class TalkThread extends HandlerThread
             case TalkThread.Event.UTTERED:
                 setTimer(mTextToSpeechManager.getDelayFromLastStep());
                 // Next event -> TIMEOUT, using delay from last iteration.
+                break;
+            case TalkThread.Event.REPEAT:
+                // Repeat can be invoked whether or not paused.  If paused then the index has
+                // already be adjusted by call to Stepper.backStep(false), since repeating
+                // the current step is the default behaviour of PAUSE.  If not then perform a
+                // pause and a speak.
+                if (mSpeakerInfo.getState() == SpeakerInfo.State.SPEAKING) {
+                    cancelTimer();
+                    cancelSpeech();
+                    mStepper.backStep(false);
+                    setTimer(10);          // Next event -> TIMEOUT
+                }
+                break;
+            case TalkThread.Event.BACK1:
+                if (mSpeakerInfo.getState() != SpeakerInfo.State.STOPPED) {
+                    cancelTimer();
+                    cancelSpeech();
+                    mStepper.backStep(false);
+                    mStepper.backStep(false);
+                    if (mSpeakerInfo.getState() == SpeakerInfo.State.SPEAKING) {
+                        setTimer(10);          // Next event -> TIMEOUT
+                    }
+                }
                 break;
             case TalkThread.Event.QUIT:
                 // TODO Release resources.
@@ -149,6 +169,10 @@ public class TalkThread extends HandlerThread
                 return "SPEAK";
             case TalkThread.Event.PAUSE:
                 return "PAUSE";
+            case TalkThread.Event.REPEAT:
+                return "REPEAT";
+            case TalkThread.Event.BACK1:
+                return "BACK1";
             case TalkThread.Event.TIMEOUT:
                 return "TIMEOUT";
             case TalkThread.Event.UTTERED:
@@ -163,6 +187,8 @@ public class TalkThread extends HandlerThread
             TalkThread.Event.RESET,
             TalkThread.Event.SPEAK,
             TalkThread.Event.PAUSE,
+            TalkThread.Event.REPEAT,
+            TalkThread.Event.BACK1,
             TalkThread.Event.TIMEOUT,
             TalkThread.Event.UTTERED,
             TalkThread.Event.QUIT
@@ -171,8 +197,10 @@ public class TalkThread extends HandlerThread
         int RESET   = TalkService.Command.RESET;
         int SPEAK   = TalkService.Command.SPEAK;
         int PAUSE   = TalkService.Command.PAUSE;
-        int TIMEOUT = 3;
-        int UTTERED = 4;
-        int QUIT    = 5;
+        int REPEAT  = TalkService.Command.REPEAT;
+        int BACK1   = TalkService.Command.BACK1;
+        int TIMEOUT = 10;
+        int UTTERED = 11;
+        int QUIT    = 12;
     }
 }

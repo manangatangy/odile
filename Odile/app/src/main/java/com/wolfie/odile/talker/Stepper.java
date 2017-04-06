@@ -47,7 +47,7 @@ public class Stepper {
 
     /**
      * @return the phrase/Parms (currently pointed to), or null if we've reached end of lists.
-     * Advance the pointers to point at the item to be returned on the nextStep invocation.
+     * Then advance the pointers to point at the item to be returned on the nextStep invocation.
      *
      */
     public Step nextStep() {
@@ -79,7 +79,7 @@ public class Stepper {
      * @param firstStep if true, resets to the first {@link SpeechParm} in the
      *                  {@link Phrase}, else to the one just issued.
      */
-    public void resetToPhrase(boolean firstStep) {
+    public void backStep(boolean firstStep) {
         if (mPhraseIndex == 0 && mSpeechParmIndex == 0) {
             // Haven't yet had a call to nextStep(); nothing to reset.
             return;
@@ -94,6 +94,7 @@ public class Stepper {
         if (firstStep) {
             mSpeechParmIndex = 0;
         }
+        Log.d("Stepper", "backStep to " + mSpeechParmIndex + " / " + mPhraseIndex);
     }
 
     /**
