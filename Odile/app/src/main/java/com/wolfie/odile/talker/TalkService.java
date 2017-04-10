@@ -86,14 +86,16 @@ public class TalkService extends Service {
             Command.SPEAK,
             Command.PAUSE,
             Command.REPEAT,
-            Command.BACK1,
+            Command.PREVIOUS,
+            Command.NEXT
     })
     public @interface Command {
         int RESET = 0;
         int SPEAK = 1;
         int PAUSE = 2;
         int REPEAT = 3;     // Repeat step that is currently speaking.
-        int BACK1 = 4;      // Speak the previous step.
+        int PREVIOUS = 4;   // Back one phrase.
+        int NEXT = 6;       // Forward one phrase.
     }
 
 }

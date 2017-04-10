@@ -26,6 +26,9 @@ public class TalkThread extends HandlerThread
     private SpeakerInfo mSpeakerInfo = new SpeakerInfo();
 
     private Stepper mStepper = new Stepper();
+    private Stepper.Step mStep;
+    boolean mWholePhrase = false;
+
     private TextToSpeechManager mTextToSpeechManager;
 
     //region -- these methods are called from the parent thread --
@@ -61,6 +64,75 @@ public class TalkThread extends HandlerThread
     private void handleEvent(@TalkThread.Event int event, @Nullable ServiceCommand serviceCommand) {
         Log.d("TalkThread", "handleEvent, event=" + eventName(event));
         switch (event) {
+            case TalkThread.Event.SPEAK:
+                mSpeakerInfo.setState(SpeakerInfo.State.SPEAKING);
+                // Fall through to timeout case.
+            case TalkThread.Event.TIMEOUT:
+                // While state is speaking (and we are awaiting timeout events), mStep
+                // points to the current step being spoken. When timeout occurs, we fetch the
+                // next step, speak it, and assign it back into mStep. The flag mWholeStep
+                // indicates to move next on to the the immediate next step, or to the
+                // start of the next phrase (if true).
+                mStep = mStepper.next(mStep, mWholePhrase);
+                mWholePhrase = false;
+                if (mStep == null) {        // Reached end of the list.
+                    resetAndCancelPendingEvents();
+                } else {
+                    speak(mStep, this);     // Next event -> UTTERED
+                }
+                break;
+            case TalkThread.Event.UTTERED:
+                setTimer(mStep.getSpeechParm().getDelay());
+                // Next event -> TIMEOUT, using delay from last iteration.
+                break;
+            case TalkThread.Event.PAUSE:
+                // On pause, point mStep back to the start of the previous phrase, so that upon
+                // speak event, mStep will be advanced to the start (ie mWholePhrase set)
+                // of the same current step.
+                mSpeakerInfo.setState(SpeakerInfo.State.PAUSED);
+                cancelTimer();
+                cancelSpeech();
+                mStep = mStepper.previous(mStep, mWholePhrase = true);
+                break;
+            case TalkThread.Event.PREVIOUS:
+                cancelSpeech();
+                if (mSpeakerInfo.getState() == SpeakerInfo.State.PAUSED) {
+                    // In paused state, mWholePhrase is true and mStep positioned at (current - 1)
+                    speak(mStep, null);
+                    mStep = mStepper.previous(mStep, true);
+                } else {
+                    cancelTimer();
+                    // Arrange to speak the first step of the previous phrase
+                    mStep = mStepper.previous(mStep, mWholePhrase = true);
+                    mStep = mStepper.previous(mStep, mWholePhrase);
+                    setTimer(10);          // Next event -> TIMEOUT
+                }
+                break;
+            case TalkThread.Event.REPEAT:
+                cancelSpeech();
+                if (mSpeakerInfo.getState() == SpeakerInfo.State.PAUSED) {
+                    // In paused state, mWholePhrase is true and mStep positioned at (current - 1)
+                    speak(mStepper.next(mStep, true), null);
+                } else {
+                    cancelTimer();
+                    mStep = mStepper.previous(mStep, mWholePhrase = true);
+                    setTimer(10);          // Next event -> TIMEOUT
+                }
+                break;
+            case TalkThread.Event.NEXT:
+                cancelSpeech();
+                if (mSpeakerInfo.getState() == SpeakerInfo.State.PAUSED) {
+                    // In paused state, mWholePhrase is true and mStep positioned at (current - 1)
+                    mStep = mStepper.next(mStep, true);
+                    speak(mStepper.next(mStep, true), null);
+                } else {
+                    cancelTimer();
+                    mWholePhrase = true;
+                    setTimer(10);          // Next event -> TIMEOUT
+                }
+                break;
+
+
             case TalkThread.Event.RESET:
                 // It's ok to send RESET with null lists.
                 mStepper.init(
@@ -69,59 +141,7 @@ public class TalkThread extends HandlerThread
                 mSpeakerInfo.setTotal(mStepper.getPhrasesSize());
                 resetAndCancelPendingEvents();
                 break;
-            case TalkThread.Event.SPEAK:
-                mSpeakerInfo.setState(SpeakerInfo.State.SPEAKING);
-                setTimer(10);          // Next event -> TIMEOUT
-                break;
-            case TalkThread.Event.PAUSE:
-                mSpeakerInfo.setState(SpeakerInfo.State.PAUSED);
-                cancelTimer();
-                cancelSpeech();
-                // Arrange so that the current phrase (current step) will be repeated upon SPEAK.
-                mStepper.backStep(false);
-                break;
-            case TalkThread.Event.TIMEOUT:
-                Stepper.Step step = mStepper.nextStep();
-                if (step == null) {
-                    // Reached end of the list; resetAndCancelPendingEvents for nextStep cycle.
-                    resetAndCancelPendingEvents();
-                } else {
-                    mTextToSpeechManager.setSpeakerListener(this);      // Next event -> UTTERED
-                    String speakError = mTextToSpeechManager.speak(step);
-                    if (speakError != null) {
-                        Log.d("TalkThread", "handleEvent, speakError=" + speakError);
-                    }
-                    mSpeakerInfo.setText(step.getText());
-                    mSpeakerInfo.setCounter(mStepper.getPhraseIndex());
-                }
-                break;
-            case TalkThread.Event.UTTERED:
-                setTimer(mTextToSpeechManager.getDelayFromLastStep());
-                // Next event -> TIMEOUT, using delay from last iteration.
-                break;
-            case TalkThread.Event.REPEAT:
-                // Repeat can be invoked whether or not paused.  If paused then the index has
-                // already be adjusted by call to Stepper.backStep(false), since repeating
-                // the current step is the default behaviour of PAUSE.  If not then perform a
-                // pause and a speak.
-                if (mSpeakerInfo.getState() == SpeakerInfo.State.SPEAKING) {
-                    cancelTimer();
-                    cancelSpeech();
-                    mStepper.backStep(false);
-                    setTimer(10);          // Next event -> TIMEOUT
-                }
-                break;
-            case TalkThread.Event.BACK1:
-                if (mSpeakerInfo.getState() != SpeakerInfo.State.STOPPED) {
-                    cancelTimer();
-                    cancelSpeech();
-                    mStepper.backStep(false);
-                    mStepper.backStep(false);
-                    if (mSpeakerInfo.getState() == SpeakerInfo.State.SPEAKING) {
-                        setTimer(10);          // Next event -> TIMEOUT
-                    }
-                }
-                break;
+
             case TalkThread.Event.QUIT:
                 // TODO Release resources.
                 resetAndCancelPendingEvents();
@@ -132,13 +152,30 @@ public class TalkThread extends HandlerThread
         mInfoChannel.sendInfo(mSpeakerInfo);
     }
 
+    private void speak(Stepper.Step step, TextToSpeechManager.SpeakerListener speakerListener) {
+        if (step != null) {
+            mTextToSpeechManager.setSpeakerListener(speakerListener);
+            String speakError = mTextToSpeechManager.speak(step);
+            if (speakError != null) {
+                Log.d("TalkThread", "handleEvent, speakError=" + speakError);
+            }
+            mSpeakerInfo.setText(step.getText());
+            mSpeakerInfo.setCounter(step.getPhraseIndex() + 1);
+        }
+    }
+
+    /**
+     * Clears state of list iteration (Mset = null, mWholePhrase = false) so that the next
+     * call to Stepper.next() returns the first Step in the list.
+     */
     private void resetAndCancelPendingEvents() {
         cancelTimer();
         cancelSpeech();
         mSpeakerInfo.setCounter(0);
         mSpeakerInfo.setText(null);
         mSpeakerInfo.setState(SpeakerInfo.State.STOPPED);
-        mStepper.reset();
+        mStep = null;
+        mWholePhrase = false;
     }
 
     @Override
@@ -171,8 +208,10 @@ public class TalkThread extends HandlerThread
                 return "PAUSE";
             case TalkThread.Event.REPEAT:
                 return "REPEAT";
-            case TalkThread.Event.BACK1:
-                return "BACK1";
+            case TalkThread.Event.PREVIOUS:
+                return "PREVIOUS";
+            case TalkThread.Event.NEXT:
+                return "NEXT";
             case TalkThread.Event.TIMEOUT:
                 return "TIMEOUT";
             case TalkThread.Event.UTTERED:
@@ -188,19 +227,21 @@ public class TalkThread extends HandlerThread
             TalkThread.Event.SPEAK,
             TalkThread.Event.PAUSE,
             TalkThread.Event.REPEAT,
-            TalkThread.Event.BACK1,
+            TalkThread.Event.PREVIOUS,
+            TalkThread.Event.NEXT,
             TalkThread.Event.TIMEOUT,
             TalkThread.Event.UTTERED,
             TalkThread.Event.QUIT
     })
     public @interface Event {
-        int RESET   = TalkService.Command.RESET;
-        int SPEAK   = TalkService.Command.SPEAK;
-        int PAUSE   = TalkService.Command.PAUSE;
-        int REPEAT  = TalkService.Command.REPEAT;
-        int BACK1   = TalkService.Command.BACK1;
-        int TIMEOUT = 10;
-        int UTTERED = 11;
-        int QUIT    = 12;
+        int RESET       = TalkService.Command.RESET;
+        int SPEAK       = TalkService.Command.SPEAK;
+        int PAUSE       = TalkService.Command.PAUSE;
+        int REPEAT      = TalkService.Command.REPEAT;
+        int PREVIOUS    = TalkService.Command.PREVIOUS;
+        int NEXT        = TalkService.Command.NEXT;
+        int TIMEOUT     = 10;
+        int UTTERED     = 11;
+        int QUIT        = 12;
     }
 }

@@ -49,6 +49,18 @@ public class TalkFragment extends ActionSheetFragment implements TalkUi {
     Button mButton3;
 
     @Nullable
+    @BindView(R.id.button_4)
+    Button mButton4;
+
+    @Nullable
+    @BindView(R.id.button_5)
+    Button mButton5;
+
+    @Nullable
+    @BindView(R.id.button_6)
+    Button mButton6;
+
+    @Nullable
     @BindView(R.id.text_error)
     TextView mTextError;
 
@@ -91,6 +103,24 @@ public class TalkFragment extends ActionSheetFragment implements TalkUi {
             @Override
             public void onClick(View v) {
                 mTalkPresenter.onClickButton3();
+            }
+        });
+        mButton4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTalkPresenter.onClickButton4();
+            }
+        });
+        mButton5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTalkPresenter.onClickButton5();
+            }
+        });
+        mButton6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTalkPresenter.onClickButton6();
             }
         });
 
@@ -170,6 +200,36 @@ public class TalkFragment extends ActionSheetFragment implements TalkUi {
     @Override
     public void setButton3Enabled(boolean enabled) {
         mButton3.setEnabled(enabled);
+    }
+
+    @Override
+    public void setButton4Text(String text) {
+        mButton4.setText(text);
+    }
+
+    @Override
+    public void setButton4Enabled(boolean enabled) {
+        mButton4.setEnabled(enabled);
+    }
+
+    @Override
+    public void setButton5Text(String text) {
+        mButton5.setText(text);
+    }
+
+    @Override
+    public void setButton5Enabled(boolean enabled) {
+        mButton5.setEnabled(enabled);
+    }
+
+    @Override
+    public void setButton6Text(String text) {
+        mButton6.setText(text);
+    }
+
+    @Override
+    public void setButton6Enabled(boolean enabled) {
+        mButton6.setEnabled(enabled);
     }
 
     @Override

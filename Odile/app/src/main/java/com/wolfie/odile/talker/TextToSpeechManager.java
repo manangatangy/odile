@@ -24,9 +24,6 @@ public class TextToSpeechManager extends UtteranceProgressListener {
     @SpeechParm.Pitch
     private int mCurrentPitch = SpeechParm.Pitch.NONE;
 
-    // This member isn't used in the class. It's only held here for client convenience.
-    private int mDelay;
-
     // https://android-developers.googleblog.com/2009/09/introduction-to-text-to-speech-in.html
     private TextToSpeech mTextToSpeech;
     private boolean mTextToSpeechReady = false;
@@ -85,14 +82,14 @@ public class TextToSpeechManager extends UtteranceProgressListener {
         }
 
         @SpeechParm.Language
-        int language = step.getSpeechParms().getLanguage();
+        int language = step.getSpeechParm().getLanguage();
         @SpeechParm.Rate
-        int rate = step.getSpeechParms().getRate();
+        int rate = step.getSpeechParm().getRate();
         @SpeechParm.Pitch
-        int pitch = step.getSpeechParms().getPitch();
+        int pitch = step.getSpeechParm().getPitch();
 
         // Dont speak, just issue the UTTERED callback
-        if (step.getSpeechParms().getSilenceMode() == SpeechParm.SilenceMode.STAY_SILENT) {
+        if (step.getSpeechParm().getSilenceMode() == SpeechParm.SilenceMode.STAY_SILENT) {
             hasUttered(false);
             return null;
         }
@@ -119,13 +116,7 @@ public class TextToSpeechManager extends UtteranceProgressListener {
         HashMap<String, String> params = new HashMap();
         params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "an-utterance-id");
         mTextToSpeech.speak(step.getText(), TextToSpeech.QUEUE_FLUSH, params);
-        // Store delay for use until the nextStep step() call.
-        mDelay = step.getSpeechParms().getDelay();
         return null;
-    }
-
-    public int getDelayFromLastStep() {
-        return mDelay;
     }
 
     /**
