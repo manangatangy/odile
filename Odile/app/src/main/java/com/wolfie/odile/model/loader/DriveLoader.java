@@ -59,6 +59,8 @@ public class DriveLoader {
             super(mContext, listener);
         }
 
+        // Google sheet http://stackoverflow.com/a/42424918
+
         @Override
         public DriveResult runInBackgroundConnected(DriveId driveId) {
             Log.i(MainPresenter.TAG, "runInBackgroundConnected");
@@ -107,6 +109,13 @@ public class DriveLoader {
             }
             return driveResult;
         }
+
+        /*
+        String fileId = "1ZdR3L3qP4Bkq8noWLJHSr_iBau0DNT4Kli4SxNc2YEo";
+OutputStream outputStream = new ByteArrayOutputStream();
+driveService.files().export(fileId, "application/pdf")
+        .executeMediaAndDownloadTo(outputStream);
+         */
     }
 
 }

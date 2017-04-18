@@ -98,6 +98,7 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
     }
 
     public void restoreFromGoogleDrive() {
+        mOdileActivity.showLoadingOverlay();
         disconnect();
         mGoogleApiClient = new GoogleApiClient.Builder(mOdileActivity)
                 .addApi(Drive.API)
@@ -110,11 +111,13 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
 
     @Override
     public void onConnectionSuspended(int cause) {
+        mOdileActivity.hideLoadingOverlay();
         Log.i(TAG, "GoogleApiClient connection suspended");
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        mOdileActivity.hideLoadingOverlay();
         if (!connectionResult.hasResolution()) {      // Show the localized error dialog.
             GoogleApiAvailability.getInstance()
                     .getErrorDialog(mOdileActivity, connectionResult.getErrorCode(), 0).show();
@@ -129,20 +132,24 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
 
     @Override
     public void onConnected(Bundle connectionHint) {
+        mOdileActivity.hideLoadingOverlay();
         Log.i(TAG, "GoogleApiClient connected");
         IntentSender intentSender = Drive.DriveApi
                 .newOpenFileActivityBuilder()
-                .setMimeType(new String[] { "text/plain", "text/html" })
+                .setMimeType(new String[] { "text/plain", "text/html", "application/vnd.google-apps.spreadsheet" })
                 .build(mGoogleApiClient);
         try {
+            mOdileActivity.showLoadingOverlay();
             mOdileActivity.startIntentSenderForResult(intentSender, REQUEST_DRIVE_OPENER, null, 0, 0, 0);
             // Calls back ==> retrieveFileContents()
         } catch (IntentSender.SendIntentException e) {
+            mOdileActivity.hideLoadingOverlay();
             Log.w(TAG, "Unable to send intent", e);
         }
     }
 
     public void retrieveFileContents(@Nullable DriveId driveId) {
+        mOdileActivity.hideLoadingOverlay();
         if (driveId == null) {
             showMessage("No Google Drive file was selected");
         } else {
