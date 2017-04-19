@@ -101,6 +101,7 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
         mGoogleApiClient = null;
     }
 
+    // entry point
     public void restoreFromGoogleDrive() {
         mOdileActivity.showLoadingOverlay();
         disconnect();
@@ -158,7 +159,7 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
             showMessage("No Google Drive file was selected");
         } else {
             mOdileActivity.showLoadingOverlay();
-            boolean isSheet = false;
+            boolean isSheet = true;
             if (isSheet) {
                 mSheetLoader.restore(true, driveId, this);
             } else {

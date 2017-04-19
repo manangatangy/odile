@@ -20,6 +20,7 @@ import com.wolfie.odile.R;
 import com.wolfie.odile.presenter.DrawerPresenter;
 import com.wolfie.odile.presenter.ListPresenter;
 import com.wolfie.odile.presenter.MainPresenter;
+import com.wolfie.odile.view.fragment.DriveFragment;
 import com.wolfie.odile.view.fragment.EditFragment;
 import com.wolfie.odile.view.fragment.FileFragment;
 import com.wolfie.odile.view.fragment.ListFragment;
@@ -71,6 +72,9 @@ public class OdileActivity extends SimpleActivity {
 
         // Create the file (activity sheet) fragment into it's container.
         setupFragment(FileFragment.class.getName(), R.id.fragment_container_file, null);
+
+        // Create the drive (activity sheet) fragment into it's container.
+        setupFragment(DriveFragment.class.getName(), R.id.fragment_container_drive, null);
 
         // Create the talk (activity sheet) fragment into it's container.
         setupFragment(TalkFragment.class.getName(), R.id.fragment_container_talk, null);

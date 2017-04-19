@@ -2,17 +2,18 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 ext {
-    supportLibVersion = '23.1.1'
+    supportLibVersion = '25.0.1'
     // Can't bump from 23.1.1 to 25.0.1 because the toolbar height changes in 25.0.1
+    // However I need to go 25.0.1 because something in easypermissions 0.3.1 depends on it I think
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
     defaultConfig {
         applicationId "com.wolfie.odile"
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
     }
@@ -34,7 +35,7 @@ dependencies {
     compile "com.android.support:support-annotations:$supportLibVersion"
     compile 'com.google.android.gms:play-services-drive:10.2.1'
     compile 'com.google.android.gms:play-services-auth:10.2.1'
-    compile 'pub.devrel:easypermissions:0.2.1'
+    compile 'pub.devrel:easypermissions:0.3.1'
     compile('com.google.api-client:google-api-client-android:1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }

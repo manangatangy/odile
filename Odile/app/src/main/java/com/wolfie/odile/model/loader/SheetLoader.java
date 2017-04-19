@@ -52,6 +52,8 @@ public class SheetLoader {
         mGoogleAccountCredential = GoogleAccountCredential.usingOAuth2(
                 mContext, Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
+        mGoogleAccountCredential.setSelectedAccountName("david.x.weiss@gmail.com");
+
         new SheetLoader.RestoreFromSheetTask(listener).execute(driveId);
     }
 

@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.wolfie.odile.view.BaseUi;
 import com.wolfie.odile.presenter.DrawerPresenter.DrawerUi;
+import com.wolfie.odile.view.fragment.DriveFragment;
 import com.wolfie.odile.view.fragment.FileFragment;
 import com.wolfie.odile.view.fragment.ListFragment;
 
@@ -109,7 +110,10 @@ public class DrawerPresenter extends BasePresenter<DrawerUi> {
 //        filePresenter.backup();
     }
     public void onMenuLoad() {
-//        getUi().closeDrawer();
+        getUi().closeDrawer();
+//        DrivePresenter drivePresenter = getUi().findPresenter(DriveFragment.class);
+//        drivePresenter.init();
+
         MainPresenter mainPresenter = getUi().findPresenter(null);
         mainPresenter.restoreFromGoogleDrive();
     }

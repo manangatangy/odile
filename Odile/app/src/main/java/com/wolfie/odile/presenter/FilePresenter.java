@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import com.wolfie.odile.R;
 import com.wolfie.odile.model.loader.AsyncListeningTask;
 import com.wolfie.odile.model.loader.IoLoader;
+import com.wolfie.odile.model.loader.LoaderResult;
 import com.wolfie.odile.view.ActionSheetUi;
 import com.wolfie.odile.presenter.FilePresenter.FileUi;
 import com.wolfie.odile.view.fragment.ListFragment;
@@ -26,7 +27,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.wolfie.odile.presenter.SettingsPresenter.PREF_SESSION_BACKUP_EMAIL_ADDRESS;
 
 public class FilePresenter extends BasePresenter<FileUi>
-        implements AsyncListeningTask.Listener<IoLoader.IoResult> {
+        implements AsyncListeningTask.Listener<LoaderResult> {
 
     public final static String STORAGE_PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
     private final static String KEY_FILE_ACTION_SHEET_SHOWING = "KEY_FILE_ACTION_SHEET_SHOWING";
@@ -219,7 +220,7 @@ public class FilePresenter extends BasePresenter<FileUi>
     }
 
     @Override
-    public void onCompletion(IoLoader.IoResult ioResult) {
+    public void onCompletion(LoaderResult ioResult) {
         if (ioResult.mFailureMessage != null) {
             getUi().setErrorMessage(ioResult.mFailureMessage);
         }
