@@ -22,7 +22,9 @@ import com.wolfie.odile.model.database.Source;
 import com.wolfie.odile.model.loader.AsyncListeningTask;
 import com.wolfie.odile.model.loader.DriveLoader;
 import com.wolfie.odile.model.loader.IoLoader;
+import com.wolfie.odile.model.loader.LoaderResult;
 import com.wolfie.odile.model.loader.PhraseLoader;
+import com.wolfie.odile.model.loader.SheetLoader;
 import com.wolfie.odile.view.BaseUi;
 import com.wolfie.odile.view.activity.BaseActivity;
 import com.wolfie.odile.view.activity.OdileActivity;
@@ -40,7 +42,7 @@ import static com.wolfie.odile.view.activity.OdileActivity.REQUEST_DRIVE_RESOLUT
 public class MainPresenter extends BasePresenter<BaseUi> implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        AsyncListeningTask.Listener<DriveLoader.DriveResult> {
+        AsyncListeningTask.Listener<LoaderResult> {
 
     public static final String TAG = "OdileMainPresenter";
 
@@ -50,6 +52,7 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
     private IoLoader mIoLoader;
     private PhraseLoader mPhraseLoader;
     private DriveLoader mDriveLoader;
+    private SheetLoader mSheetLoader;
 
     // This presenter cannot use getUi() no ui (all the ui is performed by the other frags)
     public MainPresenter(BaseUi baseUi, Context context) {
@@ -61,6 +64,7 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
         mIoLoader = new IoLoader(mSource);
         mPhraseLoader = new PhraseLoader(mSource);
         mDriveLoader = new DriveLoader(context, mSource);
+        mSheetLoader = new SheetLoader(context, mSource);
     }
 
     public IoLoader getIoLoader() {
@@ -154,19 +158,24 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
             showMessage("No Google Drive file was selected");
         } else {
             mOdileActivity.showLoadingOverlay();
-            mDriveLoader.restore(true, driveId, this);
+            boolean isSheet = false;
+            if (isSheet) {
+                mSheetLoader.restore(true, driveId, this);
+            } else {
+                mDriveLoader.restore(true, driveId, this);
+            }
         }
     }
 
     @Override
-    public void onCompletion(DriveLoader.DriveResult driveResult) {
-        if (driveResult.mFailureMessage != null) {
-            showMessage(driveResult.mFailureMessage);
-        } else if (driveResult.mSuccessMessage != null) {
+    public void onCompletion(LoaderResult loaderResult) {
+        if (loaderResult.mFailureMessage != null) {
+            showMessage(loaderResult.mFailureMessage);
+        } else if (loaderResult.mSuccessMessage != null) {
             // Refresh list
             ListPresenter listPresenter = mOdileActivity.findPresenter(ListFragment.class);
             listPresenter.loadPhrases();
-            showMessage(driveResult.mSuccessMessage);
+            showMessage(loaderResult.mSuccessMessage);
         }
         mOdileActivity.closeMenuDrawer();
         mOdileActivity.hideLoadingOverlay();

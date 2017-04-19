@@ -21,11 +21,6 @@ import java.util.List;
 
 public class DriveLoader {
 
-    public class DriveResult {
-        public String mSuccessMessage;
-        public String mFailureMessage;
-    }
-
     private Source mDataSource;
     private Context mContext;
 
@@ -37,43 +32,29 @@ public class DriveLoader {
         mDataSource = dataSource;
     }
 
-    public void restore(boolean isOverwrite, DriveId driveId, AsyncListeningTask.Listener<DriveResult> listener) {
+    public void restore(boolean isOverwrite, DriveId driveId, AsyncListeningTask.Listener<LoaderResult> listener) {
         mIsOverwrite = isOverwrite;
         new RestoreFromDriveTask(listener).execute(driveId);
     }
 
-    public class SuccessResult extends DriveResult {
-        public SuccessResult(String successMessage) {
-            mSuccessMessage = successMessage;
-        }
-    }
-
-    public class FailureResult extends DriveResult {
-        public FailureResult(String failureMessage) {
-            mFailureMessage = failureMessage;
-        }
-    }
-
-    private class RestoreFromDriveTask extends AsyncConnectedTask<DriveId, DriveResult> {
-        public RestoreFromDriveTask(@Nullable Listener<DriveResult> listener) {
+    private class RestoreFromDriveTask extends AsyncConnectedTask<DriveId, LoaderResult> {
+        public RestoreFromDriveTask(@Nullable Listener<LoaderResult> listener) {
             super(mContext, listener);
         }
 
-        // Google sheet http://stackoverflow.com/a/42424918
-
         @Override
-        public DriveResult runInBackgroundConnected(DriveId driveId) {
+        public LoaderResult runInBackgroundConnected(DriveId driveId) {
             Log.i(MainPresenter.TAG, "runInBackgroundConnected");
             DriveFile driveFile = driveId.asDriveFile();
             DriveApi.DriveContentsResult driveContentsResult =
                     driveFile.open(getGoogleApiClient(), DriveFile.MODE_READ_ONLY, null).await();
             Log.i(MainPresenter.TAG, "driveFile.open");
             if (!driveContentsResult.getStatus().isSuccess()) {
-                return new FailureResult("Can't open Google Drive file");
+                return LoaderResult.makeFailure("Can't open Google Drive file");
             }
             DriveContents driveContents = driveContentsResult.getDriveContents();
             Log.i(MainPresenter.TAG, "getDriveContents");
-            DriveResult driveResult = null;
+            LoaderResult driveResult = null;
             InputStreamReader isr = null;
             try {
                 isr = new InputStreamReader(driveContents.getInputStream());
@@ -91,11 +72,11 @@ public class DriveLoader {
                         mDataSource.insert(phrase);
                     }
                 }
-                driveResult = new SuccessResult("Restored from Google Drive " + phrases.size() + " phrases");
+                driveResult = LoaderResult.makeSuccess("Restored from Google Drive " + phrases.size() + " phrases");
             } catch (JsonIOException jioe) {
-                return new FailureResult("JsonIOException reading Google Drive file");
+                return LoaderResult.makeFailure("JsonIOException reading Google Drive file");
             } catch (JsonSyntaxException jse) {
-                return new FailureResult("JsonSyntaxException parsing Google Drive file");
+                return LoaderResult.makeFailure("JsonSyntaxException parsing Google Drive file");
             } finally {
                 driveContents.discard(getGoogleApiClient());
                 try {
@@ -103,19 +84,12 @@ public class DriveLoader {
                         isr.close();
                     }
                 } catch (IOException ioe) {
-                    driveResult = new FailureResult("IOException closing Google Drive file");
+                    driveResult = LoaderResult.makeFailure("IOException closing Google Drive file");
                     // Won't be returned if exception was thrown prior to the finally clause executing.
                 }
             }
             return driveResult;
         }
-
-        /*
-        String fileId = "1ZdR3L3qP4Bkq8noWLJHSr_iBau0DNT4Kli4SxNc2YEo";
-OutputStream outputStream = new ByteArrayOutputStream();
-driveService.files().export(fileId, "application/pdf")
-        .executeMediaAndDownloadTo(outputStream);
-         */
     }
 
 }
