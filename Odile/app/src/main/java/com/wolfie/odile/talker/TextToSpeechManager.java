@@ -62,7 +62,11 @@ public class TextToSpeechManager extends UtteranceProgressListener {
     public void shutdown() {
         if (mTextToSpeech != null) {
             mTextToSpeech.stop();
-            mTextToSpeech.shutdown();
+            try {
+                mTextToSpeech.shutdown();
+            } catch (IllegalArgumentException iae) {
+                // Don't know why this happens :/
+            }
             mTextToSpeech = null;
         }
     }
