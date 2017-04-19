@@ -32,8 +32,8 @@ dependencies {
     compile "com.android.support:design:$supportLibVersion"
     compile "com.android.support:support-v4:$supportLibVersion"
     compile "com.android.support:support-annotations:$supportLibVersion"
-
-    compile 'com.google.android.gms:play-services-auth:10.2.0'
+    compile 'com.google.android.gms:play-services-drive:10.2.1'
+    compile 'com.google.android.gms:play-services-auth:10.2.1'
     compile 'pub.devrel:easypermissions:0.2.1'
     compile('com.google.api-client:google-api-client-android:1.22.0') {
         exclude group: 'org.apache.httpcomponents'
@@ -41,7 +41,7 @@ dependencies {
     compile('com.google.apis:google-api-services-sheets:v4-rev469-1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-    
+
     // Butterknife
     compile 'com.jakewharton:butterknife:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
