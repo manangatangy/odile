@@ -2,18 +2,21 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 ext {
-    supportLibVersion = '25.0.1'
+    supportLibVersion = '23.1.1'
     // Can't bump from 23.1.1 to 25.0.1 because the toolbar height changes in 25.0.1
     // However I need to go 25.0.1 because something in easypermissions 0.3.1 depends on it I think
+    // However it's not just the toolbar height that changes in 25.0.1, it's also the search
+    // edit field height, which looks rubbish.  So back to 23 and use easyperm 0.2.1 and
+    // avoid the onPermChanged callback somehow.
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
     defaultConfig {
         applicationId "com.wolfie.odile"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -29,13 +32,13 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // Android Support Library
-    compile "com.android.support:appcompat-v7:$supportLibVersion"
-    compile "com.android.support:design:$supportLibVersion"
-    compile "com.android.support:support-v4:$supportLibVersion"
+    compile "com.android.support:appcompat-v7:23.1.1"
+    compile "com.android.support:design:23.1.1"
+    compile "com.android.support:support-v4:23.1.1"
     compile "com.android.support:support-annotations:$supportLibVersion"
     compile 'com.google.android.gms:play-services-drive:10.2.1'
     compile 'com.google.android.gms:play-services-auth:10.2.1'
-    compile 'pub.devrel:easypermissions:0.3.1'
+    compile 'pub.devrel:easypermissions:0.2.1'
     compile('com.google.api-client:google-api-client-android:1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
