@@ -75,6 +75,14 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
         return mPhraseLoader;
     }
 
+    public DriveLoader getDriveLoader() {
+        return mDriveLoader;
+    }
+
+    public SheetLoader getSheetLoader() {
+        return mSheetLoader;
+    }
+
     /**
      * The Google drive code is here because it doesn't need any UI (ie Fragment), but it
      * does need onActivityResult handler.  Since there are visibility clashes between
@@ -128,6 +136,7 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
                     .getErrorDialog(mOdileActivity, connectionResult.getErrorCode(), 0).show();
         } else {
             try {
+                // This will open an account picker if no account yet selected.
                 connectionResult.startResolutionForResult(mOdileActivity, REQUEST_DRIVE_RESOLUTION);
             } catch (IntentSender.SendIntentException e) {
                 Log.e(TAG, "Exception while starting resolution activity", e);
@@ -159,7 +168,7 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
             showMessage("No Google Drive file was selected");
         } else {
             mOdileActivity.showLoadingOverlay();
-            boolean isSheet = true;
+            boolean isSheet = false;
             if (isSheet) {
                 mSheetLoader.restore(true, driveId, this);
             } else {

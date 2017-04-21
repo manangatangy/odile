@@ -1,5 +1,8 @@
 package com.wolfie.odile.view.activity;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.IntentSender;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -101,7 +104,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return null;
     }
 
-    // TODO - save/restore this member
+    // TODO - save/restore this member and maybe also mActivityResultFragmentMap
     private Map<Integer, BaseFragment> mPermissionsFragmentMap= new HashMap<>();
 
     public void requestPermissions(final @NonNull BaseFragment baseFragment,
@@ -115,8 +118,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         BaseFragment baseFragment = mPermissionsFragmentMap.get(requestCode);
         if (baseFragment != null) {
             baseFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            mPermissionsFragmentMap.remove(requestCode);
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-        mPermissionsFragmentMap.remove(requestCode);
     }
 
     /**

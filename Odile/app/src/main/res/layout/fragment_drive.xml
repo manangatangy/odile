@@ -16,7 +16,7 @@
         android:layout_gravity="center"
         android:paddingTop="20dp"
         android:textSize="20sp"
-        tools:text="Restore from Google Drive"
+        android:text="Restore from Google Drive"
         />
     <TextView
         android:id="@+id/text_description"

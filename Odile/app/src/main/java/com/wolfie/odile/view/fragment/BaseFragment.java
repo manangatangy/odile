@@ -1,5 +1,6 @@
 package com.wolfie.odile.view.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -154,6 +155,9 @@ public abstract class BaseFragment extends Fragment implements BaseUi {
      * This method will be called after the fragment invokes {@link BaseActivity#requestPermissions}
      */
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
     }
 
     public KeyboardVisibility getKeyboardVisibility() {

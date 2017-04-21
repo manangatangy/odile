@@ -1,7 +1,12 @@
 package com.wolfie.odile.view.fragment;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.ResolveInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -22,6 +27,7 @@ import com.wolfie.odile.R;
 import com.wolfie.odile.presenter.DrivePresenter;
 import com.wolfie.odile.presenter.DrivePresenter.DriveUi;
 import com.wolfie.odile.presenter.DrivePresenter.FileType;
+import com.wolfie.odile.presenter.FilePresenter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,14 +38,20 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+import static com.wolfie.odile.presenter.DrivePresenter.GET_ACCOUNTS_PERMISSION;
+import static com.wolfie.odile.view.activity.OdileActivity.REQUEST_DRIVE_OPENER;
+
 /**
  */
 
 public class DriveFragment extends ActionSheetFragment
         implements DriveUi, CompoundButton.OnCheckedChangeListener {
 
-    public static final int PERMISSIONS_REQUEST_STORAGE = 123;
-    public static final int REQUEST_BACKUP_EMAIL = 555;
+    static final int PERMISSIONS_REQUEST_GET_ACCOUNTS = 123;
+    static final int REQUEST_ACCOUNT_PICKER = 1000;
+    static final int REQUEST_AUTHORIZATION = 1001;
+    static final int REQUEST_DRIVE_RESOLUTION = 346;
+    static final int REQUEST_DRIVE_OPENER = 347;
 
     @Nullable
     @BindView(R.id.text_title)
@@ -158,16 +170,70 @@ public class DriveFragment extends ActionSheetFragment
         mUnbinder2.unbind();
     }
 
+
+    // 1
+    @Override
+    public void requestGetAccountsPermissions() {
+        mBaseActivity.requestPermissions(this,
+                new String[] { GET_ACCOUNTS_PERMISSION },
+                PERMISSIONS_REQUEST_GET_ACCOUNTS);
+    }
+    // 2
+    @Override
+    public void requestAccountPicker(Intent intent) {
+        startActivityForResult(intent, REQUEST_ACCOUNT_PICKER);
+    }
+    // 3
+    @Override
+    public void requestDriveResolution(IntentSender intentSender)
+            throws IntentSender.SendIntentException {
+        startIntentSenderForResult(intentSender, REQUEST_DRIVE_RESOLUTION, null, 0, 0, 0, null);
+    }
+    // 4
+    @Override
+    public void requestDriveOpener(IntentSender intentSender)
+            throws IntentSender.SendIntentException {
+        startIntentSenderForResult(intentSender, REQUEST_DRIVE_OPENER, null, 0, 0, 0, null);
+    }
+    @Override
+    public void requestAuthorization(Intent intent) {
+        startActivityForResult(intent, REQUEST_AUTHORIZATION);
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-//        mDrivePresenter.onRequestPermissionsResult(requestCode, grantResults);
+        mDrivePresenter.onRequestGetAccountsPermissionsResult(grantResults);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-//        if (requestCode == REQUEST_BACKUP_EMAIL) {
-//            mFilePresenter.onEmailActivityResult(resultCode, intent);
-//        }
+        switch(requestCode) {
+            case REQUEST_DRIVE_RESOLUTION:
+                mDrivePresenter.onRequestDriveResolutionResult(resultCode, intent);
+                break;
+            case REQUEST_AUTHORIZATION:
+                mDrivePresenter.onRequestAuthorizationResult(resultCode, intent);
+                break;
+            case REQUEST_DRIVE_OPENER:
+                mDrivePresenter.onRequestDriveOpenerResult(resultCode, intent);
+                break;
+            case REQUEST_ACCOUNT_PICKER:
+                mDrivePresenter.onRequestAccountPickerResult(resultCode, intent);
+                break;
+        }
+    }
+
+    /**
+     * Checks whether the device currently has a network connection.
+     * @return true if the device has a network connection, false otherwise.
+     */
+    @Override
+    public boolean isDeviceOnline() {
+        ConnectivityManager connMgr =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
     }
 
     @Override

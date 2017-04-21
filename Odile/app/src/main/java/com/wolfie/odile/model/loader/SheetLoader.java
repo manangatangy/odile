@@ -36,24 +36,33 @@ public class SheetLoader {
 
     private Source mDataSource;
     private Context mContext;
-    private GoogleAccountCredential mGoogleAccountCredential;
 
     // During restore, optionally delete existing entries first.
     private boolean mIsOverwrite;
+    private GoogleAccountCredential mGoogleAccountCredential;
 
     public SheetLoader(Context context, Source dataSource) {
         mContext = context;
         mDataSource = dataSource;
     }
 
+    @Deprecated
     public void restore(boolean isOverwrite, DriveId driveId,
                         AsyncListeningTask.Listener<LoaderResult> listener) {
-        mIsOverwrite = isOverwrite;
-        mGoogleAccountCredential = GoogleAccountCredential.usingOAuth2(
+
+        GoogleAccountCredential googleAccountCredential
+                = GoogleAccountCredential.usingOAuth2(
                 mContext, Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-        mGoogleAccountCredential.setSelectedAccountName("david.x.weiss@gmail.com");
+        googleAccountCredential.setSelectedAccountName("david.x.weiss@gmail.com");
+        restore(isOverwrite, driveId, googleAccountCredential, listener);
+    }
 
+    public void restore(boolean isOverwrite, DriveId driveId,
+                        GoogleAccountCredential googleAccountCredential,
+                        AsyncListeningTask.Listener<LoaderResult> listener) {
+        mIsOverwrite = isOverwrite;
+        mGoogleAccountCredential = googleAccountCredential;
         new SheetLoader.RestoreFromSheetTask(listener).execute(driveId);
     }
 
