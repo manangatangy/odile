@@ -32,14 +32,21 @@ public class DriveLoader {
         mDataSource = dataSource;
     }
 
+    public void restore(boolean isOverwrite, DriveId driveId, String accountName,
+                        AsyncListeningTask.Listener<LoaderResult> listener) {
+        mIsOverwrite = isOverwrite;
+        new RestoreFromDriveTask(accountName, listener).execute(driveId);
+    }
+
+    @Deprecated
     public void restore(boolean isOverwrite, DriveId driveId, AsyncListeningTask.Listener<LoaderResult> listener) {
         mIsOverwrite = isOverwrite;
-        new RestoreFromDriveTask(listener).execute(driveId);
+        new RestoreFromDriveTask("david.x.weiss@gmail.com", listener).execute(driveId);
     }
 
     private class RestoreFromDriveTask extends AsyncConnectedTask<DriveId, LoaderResult> {
-        public RestoreFromDriveTask(@Nullable Listener<LoaderResult> listener) {
-            super(mContext, listener);
+        public RestoreFromDriveTask(String accountName, @Nullable Listener<LoaderResult> listener) {
+            super(mContext, accountName, listener);
         }
 
         @Override

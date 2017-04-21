@@ -111,11 +111,12 @@ public class DrawerPresenter extends BasePresenter<DrawerUi> {
     }
     public void onMenuLoad() {
         getUi().closeDrawer();
-//        DrivePresenter drivePresenter = getUi().findPresenter(DriveFragment.class);
-//        drivePresenter.init();
 
-        MainPresenter mainPresenter = getUi().findPresenter(null);
-        mainPresenter.restoreFromGoogleDrive();
+        DrivePresenter drivePresenter = getUi().findPresenter(DriveFragment.class);
+        drivePresenter.init();
+
+//        MainPresenter mainPresenter = getUi().findPresenter(null);
+//        mainPresenter.restoreFromGoogleDrive();
     }
 
     public interface DrawerUi extends BaseUi {

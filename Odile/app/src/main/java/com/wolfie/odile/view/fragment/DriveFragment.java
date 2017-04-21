@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,9 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.wolfie.odile.R;
 import com.wolfie.odile.presenter.DrivePresenter;
 import com.wolfie.odile.presenter.DrivePresenter.DriveUi;
@@ -40,6 +43,7 @@ import butterknife.Unbinder;
 
 import static com.wolfie.odile.presenter.DrivePresenter.GET_ACCOUNTS_PERMISSION;
 import static com.wolfie.odile.view.activity.OdileActivity.REQUEST_DRIVE_OPENER;
+import static com.wolfie.odile.view.activity.OdileActivity.REQUEST_DRIVE_RESOLUTION;
 
 /**
  */
@@ -185,15 +189,27 @@ public class DriveFragment extends ActionSheetFragment
     }
     // 3
     @Override
-    public void requestDriveResolution(IntentSender intentSender)
-            throws IntentSender.SendIntentException {
-        startIntentSenderForResult(intentSender, REQUEST_DRIVE_RESOLUTION, null, 0, 0, 0, null);
+    public void requestDriveResolution(ConnectionResult connectionResult) {
+        try {
+            // This will open an account picker if no account yet selected.
+            startIntentSenderForResult(connectionResult.getResolution().getIntentSender(),
+                    REQUEST_DRIVE_RESOLUTION, null, 0, 0, 0, null);
+        } catch (IntentSender.SendIntentException sie) {
+            Log.e("requestDriveResolution", "Exception while starting resolution activity", sie);
+            Toast.makeText(getContext(), "Exception while starting resolution activity",
+                    Toast.LENGTH_LONG).show();
+        }
     }
     // 4
     @Override
-    public void requestDriveOpener(IntentSender intentSender)
-            throws IntentSender.SendIntentException {
-        startIntentSenderForResult(intentSender, REQUEST_DRIVE_OPENER, null, 0, 0, 0, null);
+    public void requestDriveOpener(IntentSender intentSender) {
+        try {
+            startIntentSenderForResult(intentSender, REQUEST_DRIVE_OPENER, null, 0, 0, 0, null);
+        } catch (IntentSender.SendIntentException sie) {
+            Log.e("requestDriveOpener", "Exception while starting drive opener activity", sie);
+            Toast.makeText(getContext(), "Exception while starting drive opener activity",
+                    Toast.LENGTH_LONG).show();
+        }
     }
     @Override
     public void requestAuthorization(Intent intent) {

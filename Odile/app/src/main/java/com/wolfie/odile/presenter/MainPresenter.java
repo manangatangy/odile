@@ -116,6 +116,7 @@ public class MainPresenter extends BasePresenter<BaseUi> implements
         mGoogleApiClient = new GoogleApiClient.Builder(mOdileActivity)
                 .addApi(Drive.API)
                 .addScope(Drive.SCOPE_FILE)
+                .setAccountName("david.x.weiss@gmail.com")      // This inhbits account-select dialog
                 .addOnConnectionFailedListener(this)
                 .addConnectionCallbacks(this)
                 .build();

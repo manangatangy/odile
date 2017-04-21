@@ -64,7 +64,7 @@
     <string name="st050">Odile needs to access your Google account (via Contacts) \nAccess has previously been denied\nGo to settings/apps/odile \nto grant permission</string>
     <string name="st051">Access to Google account not permitted</string>
     <string name="st052">No network connection available</string>
-    <string name="st053">SHOULD NOT OCCUR</string>
+    <string name="st053"></string>
     <string name="st054"></string>
     <string name="st055"></string>
     <string name="st056"></string>

@@ -14,10 +14,13 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.OpenFileActivityBuilder;
@@ -37,6 +40,7 @@ import com.wolfie.odile.view.fragment.ListFragment;
 import java.util.Arrays;
 
 import static android.app.Activity.RESULT_OK;
+import static com.wolfie.odile.view.activity.OdileActivity.REQUEST_DRIVE_RESOLUTION;
 
 /**
  */
@@ -111,16 +115,16 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
         getUi().dismissKeyboard(false);
         getUi().clearErrorMessage();
         mFileType = getUi().getFileType();
-        // Initialize credentials and service object.
-        mGoogleAccountCredential = GoogleAccountCredential.usingOAuth2(
-                getContext(),
-                Arrays.asList(CREDENTIAL_OAUTH2_SCOPES)).setBackOff(new ExponentialBackOff());
+//        if (mFileType == FileType.TYPE_JSON) {
+//            connectGoogleApiClient();
+//        } else {
+            // Initialize credentials and service object.
+            mGoogleAccountCredential = GoogleAccountCredential.usingOAuth2(
+                    getContext(),
+                    Arrays.asList(CREDENTIAL_OAUTH2_SCOPES)).setBackOff(new ExponentialBackOff());
+
+
         checkPreconditionsAndSelectDriveFile();
-//        File ioFile = getFile();
-//        MainPresenter mainPresenter = getUi().findPresenter(null);
-//        if (mainPresenter != null) {
-//            IoLoader ioLoader = mainPresenter.getIoLoader();
-//            ioLoader.inport(getUi().isOverwrite(), ioFile, this);
 //        }
     }
 
@@ -140,10 +144,22 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
         } else if (! getUi().isDeviceOnline()) {
             getUi().setErrorMessage(R.string.st052);
         } else {
-            connectGoogleApiClient(mGoogleAccountCredential.getSelectedAccountName());
+            connectGoogleApiClient();
 //            new SheetsActivity.MakeRequestTask(mCredential).execute();
         }
     }
+
+    // TODO
+    // 1. define String getAccountName that uses local member (mAccountName) and also checks the
+    // prefs if local value in null (which happens after restore). If the member has not yet been
+    // stored in prefs, then everytime this method is called, it will check the prefs, which is
+    // a slight inefficiency.
+    // 2. also define a setAccountName method which stores to prefs as well as local member.
+    // 3. use the getAccountName value instead of mGoogleAccountCredential.getSelectedAccountName()
+    // 4. define method getGoogleAccountCredential that is a lazy creator.
+    // 5. remove member mGoogleAccountCredential and use lazy creator for newChooseAccountIntent
+    // and for SheetLoader.restore
+    // 6. use correct sheet id
 
     private void chooseAccount() {
         int permissionCheck = ContextCompat.checkSelfPermission(getContext(), GET_ACCOUNTS_PERMISSION);
@@ -190,14 +206,19 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
         }
     }
 
-    private void connectGoogleApiClient(String accountName) {
+    private void connectGoogleApiClient() {
+        // At this stage, an account name must have been selected and stored by
+        // chooseAccount/onRequestAccountPickerResult, so no need to null check.
+        String accountName = getUi().getActivity()
+                .getPreferences(Context.MODE_PRIVATE)
+                .getString(PREF_ACCOUNT_NAME, null);
         disconnectGoogleApiClient();
         mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                 .addApi(Drive.API)
                 .addScope(Drive.SCOPE_FILE)
+                .setAccountName(accountName)      // This inhbits account-select dialog
                 .addOnConnectionFailedListener(this)
                 .addConnectionCallbacks(this)
-                .setAccountName(accountName)
                 .build();
         mGoogleApiClient.connect();
     }
@@ -209,15 +230,30 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
         mGoogleApiClient = null;
     }
 
+    /**
+     * On the first connect, the connection will fail with SIGN_IN_REQUIRED. The resolution
+     * to this will ask the user to select an Account from the device, to be used th sign in.
+     * This Account will be stored as the default-account for the app, and will be reused
+     * automatically as needed.  The default sign in account will indeed be needed, when
+     * the {@link com.wolfie.odile.model.loader.AsyncConnectedTask} creates its own
+     * api-client (in a background thread).
+     */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 //        mOdileActivity.hideLoadingOverlay();
-        if (!connectionResult.hasResolution()) {      // Show the localized error dialog.
+        if (connectionResult.hasResolution()) {
+            getUi().requestDriveResolution(connectionResult);
+        } else {
             GoogleApiAvailability.getInstance()
                     .getErrorDialog(getUi().getActivity(), connectionResult.getErrorCode(), 0).show();
+        }
+    }
+
+    public void onRequestDriveResolutionResult(int resultCode, Intent intent) {
+        if (resultCode == RESULT_OK) {
+            connectGoogleApiClient();
         } else {
-            getUi().setErrorMessage(R.string.st053);        // SHOULD NOT OCCUR
-//            connectionResult.startResolutionForResult(mOdileActivity, REQUEST_DRIVE_RESOLUTION);
+            Toast.makeText(getContext(), "Can't resolve Google Drive connection", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -235,13 +271,7 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
                 .newOpenFileActivityBuilder()
                 .setMimeType(mFileType.getMimeType())
                 .build(mGoogleApiClient);
-        try {
-//            mOdileActivity.showLoadingOverlay();
-            getUi().requestDriveOpener(intentSender);
-        } catch (IntentSender.SendIntentException e) {
-//            mOdileActivity.hideLoadingOverlay();
-            Log.w(TAG, "Unable to send intent", e);
-        }
+        getUi().requestDriveOpener(intentSender);
     }
 
     public void onRequestDriveOpenerResult(int resultCode, Intent intent) {
@@ -256,9 +286,13 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
             MainPresenter mainPresenter = getUi().findPresenter(null);
             if (mainPresenter != null) {
 //            mOdileActivity.showLoadingOverlay();
+                // accountName is available in
+                String accountName = getUi().getActivity()
+                        .getPreferences(Context.MODE_PRIVATE)
+                        .getString(PREF_ACCOUNT_NAME, null);
                 if (mFileType == FileType.TYPE_JSON) {
-//                    mainPresenter.getDriveLoader().restore(isOverwrite, driveId,
-//                            mGoogleAccountCredential.getSelectedAccountName(), this);
+                    mainPresenter.getDriveLoader().restore(isOverwrite, driveId,
+                            accountName, this);
                 } else {
                     mainPresenter.getSheetLoader().restore(isOverwrite, driveId,
                             mGoogleAccountCredential, this);
@@ -281,8 +315,6 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
         }
     }
 
-    public void onRequestDriveResolutionResult(int resultCode, Intent intent) {
-    }
     public void onRequestAuthorizationResult(int resultCode, Intent intent) {
     }
 
@@ -334,8 +366,8 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
 
         void requestAccountPicker(Intent intent);
         void requestAuthorization(Intent intent);
-        void requestDriveResolution(IntentSender intentSender) throws IntentSender.SendIntentException;
-        void requestDriveOpener(IntentSender intentSender) throws IntentSender.SendIntentException;
+        void requestDriveResolution(ConnectionResult connectionResult);
+        void requestDriveOpener(IntentSender intentSender);
         void requestGetAccountsPermissions();
 
         boolean isDeviceOnline();

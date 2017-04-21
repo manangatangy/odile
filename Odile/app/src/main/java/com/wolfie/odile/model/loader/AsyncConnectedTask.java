@@ -20,10 +20,11 @@ public abstract class AsyncConnectedTask<PARAMS, RESULT> extends AsyncListeningT
 
     private GoogleApiClient mClient;
 
-    public AsyncConnectedTask(Context context, Listener<RESULT> listener) {
+    public AsyncConnectedTask(Context context, String accountName, Listener<RESULT> listener) {
         super(listener);
         GoogleApiClient.Builder builder = new GoogleApiClient.Builder(context)
                 .addApi(Drive.API)
+                .setAccountName(accountName)
                 .addScope(Drive.SCOPE_FILE);
         mClient = builder.build();
     }
