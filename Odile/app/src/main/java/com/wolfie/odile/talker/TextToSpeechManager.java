@@ -35,10 +35,6 @@ public class TextToSpeechManager extends UtteranceProgressListener {
             public void onInit(int status) {
                 if (status == TextToSpeech.SUCCESS) {
                     mTextToSpeechReady = true;
-                    for (LangSpec langSpec : mLangSpecs) {
-                        langSpec.mIsAvailable =
-                                (mTextToSpeech.isLanguageAvailable(langSpec.mLocale) != TextToSpeech.LANG_NOT_SUPPORTED);
-                    }
                     mTextToSpeech.setOnUtteranceProgressListener(TextToSpeechManager.this);
                 } else {
                     mTextToSpeech = null;
@@ -99,7 +95,7 @@ public class TextToSpeechManager extends UtteranceProgressListener {
         }
         // Only set language/rate/pitch if different to current settings.
         if (mCurrentLanguage != language) {
-            if (!mLangSpecs[language].mIsAvailable) {
+            if (!mLangSpecs[language].isAvailable()) {
                 return "Error: TextToSpeech " + mLangSpecs[language].mName + " not available";
             }
             mCurrentLanguage = language;
@@ -129,7 +125,7 @@ public class TextToSpeechManager extends UtteranceProgressListener {
     public String speak(@SpeechParm.Language int language, String text) {
         if (!mTextToSpeechReady) {
             return "Error: TextToSpeech not yet initialised";
-        } else if (!mLangSpecs[language].mIsAvailable) {
+        } else if (!mLangSpecs[language].isAvailable()) {
             return "Error: TextToSpeech " + mLangSpecs[language].mName + " not available";
         } else if (mTextToSpeech == null) {
             return "Error: TextToSpeech failed to initialise";
@@ -176,7 +172,6 @@ public class TextToSpeechManager extends UtteranceProgressListener {
      http://stackoverflow.com/questions/11409177/unable-to-detect-completion-of-tts-callback-android
 
 
-
     Map<String,String> ttsParams = new HashMap<String, String>();
     ttsParams.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID,  MainActivity.this.getPackageName());
     mTts.speak(text, TextToSpeech.QUEUE_FLUSH, ttsParams);
@@ -199,11 +194,18 @@ public class TextToSpeechManager extends UtteranceProgressListener {
     class LangSpec {
         Locale mLocale;
         String mName;
-        boolean mIsAvailable;
+        private Boolean mIsAvailable;
 
         public LangSpec(Locale locale, String name) {
             mLocale = locale;
             mName = name;
+        }
+
+        public boolean isAvailable() {
+            if (mIsAvailable == null) {
+                mIsAvailable = (mTextToSpeech.isLanguageAvailable(mLocale) != TextToSpeech.LANG_NOT_SUPPORTED);
+            }
+            return  mIsAvailable;
         }
     }
 
