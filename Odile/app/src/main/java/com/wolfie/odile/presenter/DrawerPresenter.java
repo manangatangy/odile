@@ -89,34 +89,35 @@ public class DrawerPresenter extends BasePresenter<DrawerUi> {
 //        SettingsPresenter settingsPresenter = getUi().findPresenter(SettingsFragment.class);
 //        settingsPresenter.show();
     }
+
     public void onMenuHelp() {
         getUi().closeDrawer();
 //        HelpPresenter helpPresenter = getUi().findPresenter(HelpFragment.class);
 //        helpPresenter.show();
     }
+
     public void onMenuExportClick() {
         getUi().closeDrawer();
         FilePresenter filePresenter = getUi().findPresenter(FileFragment.class);
         filePresenter.exporting();
     }
+
     public void onMenuImportClick() {
         getUi().closeDrawer();
         FilePresenter filePresenter = getUi().findPresenter(FileFragment.class);
         filePresenter.importing();
     }
+
     public void onMenuSave() {
         getUi().closeDrawer();
 //        FilePresenter filePresenter = getUi().findPresenter(FileFragment.class);
 //        filePresenter.backup();
     }
+
     public void onMenuLoad() {
         getUi().closeDrawer();
-
         DrivePresenter drivePresenter = getUi().findPresenter(DriveFragment.class);
         drivePresenter.init();
-
-//        MainPresenter mainPresenter = getUi().findPresenter(null);
-//        mainPresenter.restoreFromGoogleDrive();
     }
 
     public interface DrawerUi extends BaseUi {

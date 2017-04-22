@@ -95,7 +95,7 @@ public class SheetLoader {
         public LoaderResult runInBackground(DriveId driveId) {
             LoaderResult driveResult = null;
             try {
-                List<String> list = getDataFromApi();
+                List<String> list = getDataFromOdile(driveId);
                 Log.i(MainPresenter.TAG, TextUtils.join("\n", list));
                 driveResult = LoaderResult.makeSuccess("Restored sheet");
             } catch (IOException ioe) {
@@ -158,6 +158,48 @@ public class SheetLoader {
         private List<String> getDataFromApi() throws IOException {
             String spreadsheetId = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms";
             String range = "Class Data!A2:E";
+            List<String> results = new ArrayList<String>();
+            ValueRange response = this.mService.spreadsheets().values()
+                    .get(spreadsheetId, range)
+                    .execute();
+            List<List<Object>> values = response.getValues();
+            if (values != null) {
+                results.add("Name, Major");
+                for (List row : values) {
+                    results.add(row.get(0) + ", " + row.get(4));
+                }
+            }
+            return results;
+        }
+
+        /**
+         *  https://docs.google.com/spreadsheets/d/1l_uoIHCQeztpWnsjP6reufTy-oqXEJP2SrTjhX0-_o0/edit
+         * @return List of names and majors
+         * @throws IOException
+         */
+        private List<String> getDataFromOdile(DriveId driveId) throws IOException {
+            String spreadsheetId = driveId.getResourceId();
+//                    "1l_uoIHCQeztpWnsjP6reufTy-oqXEJP2SrTjhX0-_o0";
+            String range = "!A2:C";
+            List<String> results = new ArrayList<String>();
+            ValueRange response = this.mService.spreadsheets().values()
+                    .get(spreadsheetId, range)
+                    .execute();
+            List<List<Object>> values = response.getValues();
+            if (values != null) {
+                for (List row : values) {
+                    results.add(getField(0, row) + ", " + getField(1, row) + ", " + getField(2, row));
+                }
+            }
+            return results;
+        }
+
+        public String getField(int i, List row) {
+            return (i < row.size()) ? row.get(i).toString() : "";
+        }
+
+        private List<String> getDataFromApi(String spreadsheetId) throws IOException {
+            String range = "!A2:C";
             List<String> results = new ArrayList<String>();
             ValueRange response = this.mService.spreadsheets().values()
                     .get(spreadsheetId, range)

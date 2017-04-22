@@ -1,18 +1,13 @@
 package com.wolfie.odile.view.fragment;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.pm.ResolveInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,20 +24,12 @@ import com.wolfie.odile.R;
 import com.wolfie.odile.presenter.DrivePresenter;
 import com.wolfie.odile.presenter.DrivePresenter.DriveUi;
 import com.wolfie.odile.presenter.DrivePresenter.FileType;
-import com.wolfie.odile.presenter.FilePresenter;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-import static com.wolfie.odile.presenter.DrivePresenter.GET_ACCOUNTS_PERMISSION;
-import static com.wolfie.odile.view.activity.OdileActivity.REQUEST_DRIVE_OPENER;
-import static com.wolfie.odile.view.activity.OdileActivity.REQUEST_DRIVE_RESOLUTION;
+import static com.wolfie.odile.presenter.DrivePresenter.PERMISSION_GET_ACCOUNTS;
 
 /**
  */
@@ -174,20 +160,18 @@ public class DriveFragment extends ActionSheetFragment
         mUnbinder2.unbind();
     }
 
-
-    // 1
     @Override
     public void requestGetAccountsPermissions() {
         mBaseActivity.requestPermissions(this,
-                new String[] { GET_ACCOUNTS_PERMISSION },
+                new String[] {PERMISSION_GET_ACCOUNTS},
                 PERMISSIONS_REQUEST_GET_ACCOUNTS);
     }
-    // 2
+
     @Override
     public void requestAccountPicker(Intent intent) {
         startActivityForResult(intent, REQUEST_ACCOUNT_PICKER);
     }
-    // 3
+
     @Override
     public void requestDriveResolution(ConnectionResult connectionResult) {
         try {
@@ -200,7 +184,7 @@ public class DriveFragment extends ActionSheetFragment
                     Toast.LENGTH_LONG).show();
         }
     }
-    // 4
+
     @Override
     public void requestDriveOpener(IntentSender intentSender) {
         try {
@@ -211,6 +195,7 @@ public class DriveFragment extends ActionSheetFragment
                     Toast.LENGTH_LONG).show();
         }
     }
+
     @Override
     public void requestAuthorization(Intent intent) {
         startActivityForResult(intent, REQUEST_AUTHORIZATION);

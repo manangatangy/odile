@@ -81,6 +81,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     }
 
     public void loadPhrases() {
+        // Read in all phrases from the database ==> onCompletion()
         MainPresenter mainPresenter = getUi().findPresenter(null);
         if (mainPresenter != null) {
             mainPresenter.getPhraseLoader().read(this);
@@ -90,7 +91,7 @@ public class ListPresenter extends BasePresenter<ListUi> implements
     }
 
     /**
-     * Set the DataSet.  Use the existing group name and display the (possibly
+     * Receive the DataSet. Use the existing group name and display the (possibly
      * filtered) list on the ui. Then build a new list of group headings
      * which are passed to the DrawerPresenter.
      */

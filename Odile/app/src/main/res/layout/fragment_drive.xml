@@ -46,6 +46,7 @@
             android:id="@+id/file_type_sheet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="16dp"
             android:checked="true"
             android:textSize="10sp"
             android:text="Google Sheet Document file"
@@ -54,6 +55,7 @@
             android:id="@+id/file_type_json"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="16dp"
             android:textSize="10sp"
             android:text="Google plain text (json) file"
             />
@@ -61,6 +63,7 @@
             android:id="@+id/overwrite_existing_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="16dp"
             android:textOff="Off"
             android:textOn="On"
             android:layout_gravity="center"
@@ -78,7 +81,6 @@
         android:textColor="@android:color/holo_red_dark"
         android:paddingTop="10dp"
         android:textSize="14sp"
-        android:text="Some error"
         />
 
     <LinearLayout
