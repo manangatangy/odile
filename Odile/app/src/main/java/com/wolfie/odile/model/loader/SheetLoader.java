@@ -5,29 +5,19 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.android.gms.drive.DriveApi;
-import com.google.android.gms.drive.DriveContents;
-import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveId;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-import com.wolfie.odile.model.IoHelper;
-import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.database.Source;
 import com.wolfie.odile.presenter.MainPresenter;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SheetLoader {
@@ -44,18 +34,6 @@ public class SheetLoader {
     public SheetLoader(Context context, Source dataSource) {
         mContext = context;
         mDataSource = dataSource;
-    }
-
-    @Deprecated
-    public void restore(boolean isOverwrite, DriveId driveId,
-                        AsyncListeningTask.Listener<LoaderResult> listener) {
-
-        GoogleAccountCredential googleAccountCredential
-                = GoogleAccountCredential.usingOAuth2(
-                mContext, Arrays.asList(SCOPES))
-                .setBackOff(new ExponentialBackOff());
-        googleAccountCredential.setSelectedAccountName("david.x.weiss@gmail.com");
-        restore(isOverwrite, driveId, googleAccountCredential, listener);
     }
 
     public void restore(boolean isOverwrite, DriveId driveId,
@@ -95,7 +73,7 @@ public class SheetLoader {
         public LoaderResult runInBackground(DriveId driveId) {
             LoaderResult driveResult = null;
             try {
-                List<String> list = getDataFromOdile(driveId);
+                List<String> list = getDataFromSheet(driveId);
                 Log.i(MainPresenter.TAG, TextUtils.join("\n", list));
                 driveResult = LoaderResult.makeSuccess("Restored sheet");
             } catch (IOException ioe) {
@@ -173,13 +151,9 @@ public class SheetLoader {
         }
 
         /**
-         *  https://docs.google.com/spreadsheets/d/1l_uoIHCQeztpWnsjP6reufTy-oqXEJP2SrTjhX0-_o0/edit
-         * @return List of names and majors
-         * @throws IOException
          */
-        private List<String> getDataFromOdile(DriveId driveId) throws IOException {
+        private List<String> getDataFromSheet(DriveId driveId) throws IOException {
             String spreadsheetId = driveId.getResourceId();
-//                    "1l_uoIHCQeztpWnsjP6reufTy-oqXEJP2SrTjhX0-_o0";
             String range = "!A2:C";
             List<String> results = new ArrayList<String>();
             ValueRange response = this.mService.spreadsheets().values()
@@ -194,25 +168,10 @@ public class SheetLoader {
             return results;
         }
 
-        public String getField(int i, List row) {
+        private String getField(int i, List row) {
             return (i < row.size()) ? row.get(i).toString() : "";
         }
 
-        private List<String> getDataFromApi(String spreadsheetId) throws IOException {
-            String range = "!A2:C";
-            List<String> results = new ArrayList<String>();
-            ValueRange response = this.mService.spreadsheets().values()
-                    .get(spreadsheetId, range)
-                    .execute();
-            List<List<Object>> values = response.getValues();
-            if (values != null) {
-                results.add("Name, Major");
-                for (List row : values) {
-                    results.add(row.get(0) + ", " + row.get(4));
-                }
-            }
-            return results;
-        }
     }
 
 }

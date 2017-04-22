@@ -32,8 +32,8 @@ import butterknife.BindView;
 public class OdileActivity extends SimpleActivity {
 
     public static final int REQUEST_TTS_DATA_CHECK = 345;
-    public static final int REQUEST_DRIVE_RESOLUTION = 346;
-    public static final int REQUEST_DRIVE_OPENER = 347;
+//    public static final int REQUEST_DRIVE_RESOLUTION = 346;
+//    public static final int REQUEST_DRIVE_OPENER = 347;
 
     @BindView(R.id.layout_activity_drawer)
     public DrawerLayout mDrawer;
@@ -97,22 +97,22 @@ public class OdileActivity extends SimpleActivity {
                     startActivity(installIntent);
                 }
                 break;
-            case REQUEST_DRIVE_RESOLUTION:
-                if (resultCode == RESULT_OK) {
-                    mMainPresenter.restoreFromGoogleDrive();
-                } else {
-                    Toast.makeText(this, "Can't resolve Google Drive connection", Toast.LENGTH_LONG).show();
-                }
-                break;
-            case REQUEST_DRIVE_OPENER:
-                DriveId driveId = null;         // Null means no file selected.
-                if (resultCode == RESULT_OK) {
-                    driveId = data.getParcelableExtra(OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
-                }
-                mMainPresenter.retrieveFileContents(driveId);
+//            case REQUEST_DRIVE_RESOLUTION:
+//                if (resultCode == RESULT_OK) {
+//                    mMainPresenter.restoreFromGoogleDrive();
 //                } else {
+//                    Toast.makeText(this, "Can't resolve Google Drive connection", Toast.LENGTH_LONG).show();
 //                }
-                break;
+//                break;
+//            case REQUEST_DRIVE_OPENER:
+//                DriveId driveId = null;         // Null means no file selected.
+//                if (resultCode == RESULT_OK) {
+//                    driveId = data.getParcelableExtra(OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
+//                }
+//                mMainPresenter.retrieveFileContents(driveId);
+////                } else {
+////                }
+//                break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }
@@ -149,7 +149,7 @@ public class OdileActivity extends SimpleActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mMainPresenter.setActivity(this);       // Hacky.
+//        mMainPresenter.setActivity(this);       // Hacky.
     }
 
     @Override

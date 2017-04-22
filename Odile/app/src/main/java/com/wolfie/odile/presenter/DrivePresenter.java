@@ -202,6 +202,14 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
                 getUi().setErrorMessage(R.string.st050);
             } else {
                 getUi().requestGetAccountsPermissions();
+                /*
+                TODO After the user grants access, then an error occurs.
+                Error is:
+                Service com.wolfie.odile.talker.TalkService has leaked ServiceConnection
+                android.speech.tts.TextToSpeech$Connection@8d22dcb that was originally bound here
+                ...
+                at com.wolfie.odile.talker.TextToSpeechManager.<init>(TextToSpeechManager.java:33)
+                 */
             }
         } else {
             String accountName = getAccountName();
