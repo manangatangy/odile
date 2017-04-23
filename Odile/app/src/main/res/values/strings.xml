@@ -33,8 +33,9 @@
     <string name="st019">
         Select the storage type.
         \nPrivate storage can be access using adb/root
-        \nPublic storage requires granting STORAGE permission
-        \nInternal storage must be selected for auto emailing
+        \nPublic storage requires granting
+        \nSTORAGE permission,  Internal storage
+        \nmust be selected for auto emailing
     </string>
     <string name="st020">Private Storage Directory\n%1$s</string>
     <string name="st021">Public Storage Directory\n%1$s</string>

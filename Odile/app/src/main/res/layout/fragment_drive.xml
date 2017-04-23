@@ -25,7 +25,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:paddingTop="10dp"
-        android:textSize="10sp"
+        android:textSize="14sp"
         tools:text="Please edit your entry"
         />
     <View
@@ -46,17 +46,17 @@
             android:id="@+id/file_type_sheet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="12dp"
             android:checked="true"
-            android:textSize="10sp"
+            android:textSize="16sp"
             android:text="Google Sheet Document file"
             />
         <RadioButton
             android:id="@+id/file_type_json"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:textSize="10sp"
+            android:layout_margin="12dp"
+            android:textSize="16sp"
             android:text="Google plain text (json) file"
             />
         <android.support.v7.widget.SwitchCompat
@@ -64,11 +64,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            android:textSize="16sp"
             android:textOff="Off"
             android:textOn="On"
             android:layout_gravity="center"
             android:checked="true"
-            android:text="Overwrite existing database entries "
+            android:text="Overwrite existing \ndatabase entries "
             />
     </LinearLayout>
 

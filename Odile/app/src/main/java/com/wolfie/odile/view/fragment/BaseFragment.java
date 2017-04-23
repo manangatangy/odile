@@ -185,4 +185,18 @@ public abstract class BaseFragment extends Fragment implements BaseUi {
     public OdileActivity getOdileActivity() {
         return (mBaseActivity instanceof OdileActivity) ? (OdileActivity)mBaseActivity : null;
     }
+
+    public void showLoadingOverlay(String text) {
+        if (mBaseActivity instanceof OdileActivity) {
+            OdileActivity odileActivity = (OdileActivity)mBaseActivity;
+            odileActivity.showLoadingOverlay(text);
+        }
+    }
+
+    public void hideLoadingOverlay() {
+        if (mBaseActivity instanceof OdileActivity) {
+            OdileActivity odileActivity = (OdileActivity)mBaseActivity;
+            odileActivity.hideLoadingOverlay();
+        }
+    }
 }

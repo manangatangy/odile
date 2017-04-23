@@ -277,6 +277,13 @@ public class DriveFragment extends ActionSheetFragment
     @Override
     public void onShowComplete() {
         mDrivePresenter.onShow();
+//        showLoadingOverlay("hello world");
+//        getView().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                hideLoadingOverlay();
+//            }
+//        }, 3000);
     }
 
     @Override

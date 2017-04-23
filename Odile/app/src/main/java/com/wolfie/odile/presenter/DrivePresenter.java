@@ -257,6 +257,7 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
                 .addOnConnectionFailedListener(this)
                 .addConnectionCallbacks(this)
                 .build();
+        getUi().showLoadingOverlay("Connecting ...");
         mGoogleApiClient.connect();
     }
 
@@ -265,6 +266,7 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
             mGoogleApiClient.disconnect();
         }
         mGoogleApiClient = null;
+        getUi().hideLoadingOverlay();
     }
 
     /**
@@ -282,6 +284,7 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
         if (connectionResult.hasResolution()) {
             getUi().requestDriveResolution(connectionResult);
         } else {
+            getUi().hideLoadingOverlay();
             GoogleApiAvailability.getInstance()
                     .getErrorDialog(getUi().getActivity(), connectionResult.getErrorCode(), 0).show();
         }
@@ -293,6 +296,7 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
             // to connect again, which this time should callback to onConnected.
             connectGoogleApiClient();
         } else {
+            getUi().hideLoadingOverlay();
             Toast.makeText(getContext(), "Can't resolve Google Drive connection", Toast.LENGTH_LONG).show();
         }
     }
@@ -300,6 +304,7 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
     @Override
     public void onConnectionSuspended(int cause) {
         Log.i(TAG, "GoogleApiClient connection suspended");
+        getUi().hideLoadingOverlay();
     }
 
     @Override
@@ -310,9 +315,11 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
                 .setMimeType(getUi().getFileType().getMimeType())
                 .build(mGoogleApiClient);
         getUi().requestDriveOpener(intentSender);
+        getUi().showLoadingOverlay("Opening ...");
     }
 
     public void onRequestDriveOpenerResult(int resultCode, Intent intent) {
+        getUi().hideLoadingOverlay();
         DriveId driveId = null;
         if (resultCode == RESULT_OK) {
             driveId = intent.getParcelableExtra(OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
@@ -323,6 +330,7 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
             boolean isOverwrite = getUi().isOverwrite();
             MainPresenter mainPresenter = getUi().findPresenter(null);
             if (mainPresenter != null) {
+                getUi().showLoadingOverlay("Loading ...");
                 if (getUi().getFileType() == FileType.TYPE_JSON) {
                     mainPresenter.getDriveLoader().restore(isOverwrite, driveId,
                             getAccountName(), this);
@@ -336,6 +344,7 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
 
     @Override
     public void onCompletion(LoaderResult ioResult) {
+        getUi().hideLoadingOverlay();
         if (ioResult.mFailureMessage != null) {
             getUi().setErrorMessage(ioResult.mFailureMessage);
         }
@@ -402,6 +411,9 @@ public class DrivePresenter extends BasePresenter<DriveUi> implements
         void requestDriveResolution(ConnectionResult connectionResult);
         void requestDriveOpener(IntentSender intentSender);
         void requestGetAccountsPermissions();
+
+        void showLoadingOverlay(String text);
+        void hideLoadingOverlay();
 
         boolean isDeviceOnline();
     }

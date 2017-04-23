@@ -13,6 +13,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.wolfie.odile.model.Phrase;
 import com.wolfie.odile.model.database.Source;
 import com.wolfie.odile.presenter.MainPresenter;
 
@@ -73,105 +74,67 @@ public class SheetLoader {
         public LoaderResult runInBackground(DriveId driveId) {
             LoaderResult driveResult = null;
             try {
-                List<String> list = getDataFromSheet(driveId);
-                Log.i(MainPresenter.TAG, TextUtils.join("\n", list));
-                driveResult = LoaderResult.makeSuccess("Restored sheet");
+                List<Phrase> phrases = getDataFromSheet(driveId);
+
+                // Load into database, optionally clearing existing data first.
+                if (mIsOverwrite) {
+                    mDataSource.deleteAll();
+                }
+                for (int i = 0; i < phrases.size(); i++) {
+                    Phrase phrase = phrases.get(i);
+                    if (phrase != null) {
+                        // Protect against empty last record, caused by trailing comma in json
+                        mDataSource.insert(phrase);
+                    }
+                }
+                driveResult = LoaderResult.makeSuccess("Restored from Google Sheets " + phrases.size() + " phrases");
+
             } catch (IOException ioe) {
-                driveResult = LoaderResult.makeFailure("IOException closing Google Drive file");
+                driveResult = LoaderResult.makeFailure("IOException reading Google Sheets file");
             }
             return driveResult;
-
-//            DriveFile driveFile = driveId.asDriveFile();
-//            DriveApi.DriveContentsResult driveContentsResult =
-//                    driveFile.open(getGoogleApiClient(), DriveFile.MODE_READ_ONLY, null).await();
-//            Log.i(MainPresenter.TAG, "driveFile.open");
-//            if (!driveContentsResult.getStatus().isSuccess()) {
-//                return LoaderResult.makeFailure("Can't open Google Drive file");
-//            }
-//            DriveContents driveContents = driveContentsResult.getDriveContents();
-//            Log.i(MainPresenter.TAG, "getDriveContents");
-//            LoaderResult driveResult = null;
-//            InputStreamReader isr = null;
-//            try {
-//                isr = new InputStreamReader(driveContents.getInputStream());
-//                Log.i(MainPresenter.TAG, "getInputStream");
-//                List<Phrase> phrases = new IoHelper().inport(isr);
-//                Log.i(MainPresenter.TAG, "inport");
-//                // Load into database, optionally clearing existing data first.
-//                if (mIsOverwrite) {
-//                    mDataSource.deleteAll();
-//                }
-//                for (int i = 0; i < phrases.size(); i++) {
-//                    Phrase phrase = phrases.get(i);
-//                    if (phrase != null) {
-//                        // Protect against empty last record, caused by trailing comma in json
-//                        mDataSource.insert(phrase);
-//                    }
-//                }
-//                driveResult = LoaderResult.makeSuccess("Restored from Google Drive " + phrases.size() + " phrases");
-//            } catch (JsonIOException jioe) {
-//                return LoaderResult.makeFailure("JsonIOException reading Google Drive file");
-//            } catch (JsonSyntaxException jse) {
-//                return LoaderResult.makeFailure("JsonSyntaxException parsing Google Drive file");
-//            } finally {
-//                driveContents.discard(getGoogleApiClient());
-//                try {
-//                    if (isr != null) {
-//                        isr.close();
-//                    }
-//                } catch (IOException ioe) {
-//                    driveResult = LoaderResult.makeFailure("IOException closing Google Drive file");
-//                    // Won't be returned if exception was thrown prior to the finally clause executing.
-//                }
-//            }
-//            return driveResult;
         }
 
-        /**
-         * Fetch a list of names and majors of students in a sample spreadsheet:
-         * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
-         * @return List of names and majors
-         * @throws IOException
-         */
-        private List<String> getDataFromApi() throws IOException {
-            String spreadsheetId = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms";
-            String range = "Class Data!A2:E";
-            List<String> results = new ArrayList<String>();
-            ValueRange response = this.mService.spreadsheets().values()
-                    .get(spreadsheetId, range)
-                    .execute();
-            List<List<Object>> values = response.getValues();
-            if (values != null) {
-                results.add("Name, Major");
-                for (List row : values) {
-                    results.add(row.get(0) + ", " + row.get(4));
-                }
-            }
-            return results;
-        }
-
-        /**
-         */
-        private List<String> getDataFromSheet(DriveId driveId) throws IOException {
+        private List<Phrase> getDataFromSheet(DriveId driveId) throws IOException {
             String spreadsheetId = driveId.getResourceId();
             String range = "!A2:C";
-            List<String> results = new ArrayList<String>();
-            ValueRange response = this.mService.spreadsheets().values()
-                    .get(spreadsheetId, range)
-                    .execute();
+            List<Phrase> phrases = new ArrayList<Phrase>();
+            ValueRange response = this.mService.spreadsheets().values().get(spreadsheetId, range).execute();
             List<List<Object>> values = response.getValues();
             if (values != null) {
+                String group = null;
                 for (List row : values) {
-                    results.add(getField(0, row) + ", " + getField(1, row) + ", " + getField(2, row));
+                    String russian = getField(0, row);
+                    String english = getField(1, row);
+                    String translit = getField(2, row);
+                    // If there is only one field value (that's not empty or starts with
+                    // a dash, then the value is the new current group. No phrases are to
+                    // be created until a group record is encountered.
+                    if (russian != null && english == null && translit == null) {
+                        group = russian;
+                    } else if (group != null && russian != null && english != null) {
+                        if (translit == null) {
+                            translit = "";
+                        }
+                        Phrase phrase = Phrase.create(group, russian, english, translit,  null);
+                        phrases.add(phrase);
+                    }
                 }
             }
-            return results;
+            return phrases;
         }
 
         private String getField(int i, List row) {
-            return (i < row.size()) ? row.get(i).toString() : "";
+            // Returns null if the field is empty, blank, or starts with dash character.
+            String field = null;
+            if (i < row.size()) {
+                field = row.get(i).toString();
+                if (field.startsWith("-")) {
+                    field = null;
+                }
+            }
+            return field;
         }
-
     }
 
 }

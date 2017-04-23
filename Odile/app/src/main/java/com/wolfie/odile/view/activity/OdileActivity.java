@@ -12,6 +12,7 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.drive.DriveId;
@@ -40,6 +41,9 @@ public class OdileActivity extends SimpleActivity {
 
     @BindView(R.id.progress_overlay)
     View mProgressOverlayView;
+
+    @BindView(R.id.progress_overlay_text)
+    TextView mProgressOverlayText;
 
     private MainPresenter mMainPresenter;
 
@@ -183,7 +187,8 @@ public class OdileActivity extends SimpleActivity {
         });
     }
 
-    public void showLoadingOverlay() {
+    public void showLoadingOverlay(String text) {
+        mProgressOverlayText.setText(text);
         animateView(mProgressOverlayView, View.VISIBLE, 0.4f, 200);
     }
 

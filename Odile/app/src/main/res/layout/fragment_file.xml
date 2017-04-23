@@ -25,7 +25,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:paddingTop="10dp"
-        android:textSize="10sp"
+        android:textSize="12sp"
         tools:text="Please edit your entry"
         />
     <View
@@ -44,24 +44,25 @@
         >
         <RadioButton
             android:id="@+id/storage_type_private"
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:textSize="10sp"
+            android:textSize="12sp"
             android:text="private storage directory\n/storage/emulated/0/Android/data/com.wolfie.odile/files/"
             />
         <RadioButton
             android:id="@+id/storage_type_public"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
+            android:textSize="12sp"
             android:text="public storage directory\n/storage/emulated/0/Download/"
             />
         <RadioButton
             android:id="@+id/storage_type_internal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
+            android:textSize="12sp"
             android:text="internal storage directory\n/data/user/0/com.wolfie.odile/files/"
             />
         <android.support.design.widget.TextInputLayout
@@ -83,9 +84,12 @@
             android:layout_height="wrap_content"
             android:textOff="Off"
             android:textOn="On"
-            android:layout_gravity="center"
+            android:layout_gravity="right"
+            android:layout_marginRight="30dp"
+            android:paddingLeft="50dp"
+            android:textSize="16sp"
             android:checked="true"
-            android:text="Overwrite existing database entries "
+            android:text="Overwrite existing \ndatabase entries "
             />
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/email_backup_file_switch"
@@ -93,7 +97,11 @@
             android:layout_height="wrap_content"
             android:textOff="Off"
             android:textOn="On"
-            android:layout_gravity="center"
+            android:layout_gravity="right"
+            android:layout_marginRight="30dp"
+            android:paddingLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="16sp"
             android:checked="false"
             android:text="Auto email backup file "
             />
